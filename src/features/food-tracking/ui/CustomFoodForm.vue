@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useFoodTrackingStore } from '@/app/stores/foodTrackingStore'
+import { ref } from 'vue';
+import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
 
-const emit = defineEmits(['close'])
-const store = useFoodTrackingStore()
+const emit = defineEmits(['close']);
+const store = useFoodTrackingStore();
 
 const formData = ref({
   name: '',
@@ -11,24 +11,24 @@ const formData = ref({
   protein: 0,
   fat: 0,
   carbs: 0,
-})
+});
 
 const handleSubmit = () => {
   if (!formData.value.name.trim()) {
-    alert('Пожалуйста, введите название продукта')
-    return
+    alert('Пожалуйста, введите название продукта');
+    return;
   }
 
-  store.addCustomFood(formData.value)
+  store.addCustomFood(formData.value);
   formData.value = {
     name: '',
     calories: 0,
     protein: 0,
     fat: 0,
     carbs: 0,
-  }
-  emit('close')
-}
+  };
+  emit('close');
+};
 </script>
 
 <template>

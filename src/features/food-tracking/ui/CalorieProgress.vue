@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFoodTrackingStore } from '@/app/stores/foodTrackingStore'
-import { APP_CONFIG } from '@/app/config/config'
+import { computed } from 'vue';
+import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
+import { APP_CONFIG } from '@/app/config/config';
 
-const store = useFoodTrackingStore()
+const store = useFoodTrackingStore();
 
 const progressPercentage = computed(() =>
   Math.min(100, (store.dailyTotals.calories / APP_CONFIG.dailyCalorieGoal) * 100),
-)
+);
 
-const getMacroPercentage = (value: number, goal: number) => Math.min(100, (value / goal) * 100)
+const getMacroPercentage = (value: number, goal: number) => Math.min(100, (value / goal) * 100);
 </script>
 
 <template>

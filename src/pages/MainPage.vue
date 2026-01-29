@@ -1,11 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import FoodSearch from '@/features/food-search/components/FoodSearch.vue';
-import MealList from '@/features/food-tracking/components/MealList.vue';
-import CustomFoodForm from '@/features/food-tracking/components/CustomFoodForm.vue';
-import CalorieProgress from '@/features/food-tracking/components/CalorieProgress.vue';
+import FoodSearch from '@/features/food-search/ui/FoodSearch.vue';
+import MealList from '@/features/food-tracking//ui/MealList.vue';
+import CustomFoodForm from '@/features/food-tracking//ui/CustomFoodForm.vue';
+import CalorieProgress from '@/features/food-tracking//ui/CalorieProgress.vue';
+import DateSlider from '@/features/date-navigation/ui/DateSlider.vue';
+import DatePickerModal from '@/features/date-navigation/ui/DatePickerModal.vue';
 
 const showCustomFoodForm = ref(false);
+import { useDateStore } from '@/features/date-navigation/model/date.store'; // Импорт dateStore
+
+const dateStore = useDateStore();
+const showCalendar = ref(false);
+
+// Форматируем сегодняшнюю дату для кнопки
+const todayFormatted = computed(() => {
+  const today = new Date(dateStore.realToday);
+  return today.toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+  });
+});
 </script>
 
 <template>
@@ -16,17 +31,14 @@ const showCustomFoodForm = ref(false);
         <button @click="showCustomFoodForm = true" class="custom-food-btn">➕ Свой продукт</button>
       </div>
       <div class="date-display">
-        {{
-          new Date().toLocaleDateString('ru-RU', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        }}
+        <button @click="showCalendar = true" class="calendar-btn">📅</button>
+        <button @click="dateStore.goToToday()" class="today-btn">
+          {{ todayFormatted }}
+        </button>
       </div>
     </header>
 
+    <DateSlider ref="dateSliderRef" />
     <CalorieProgress />
     <FoodSearch />
     <MealList />
@@ -38,6 +50,7 @@ const showCustomFoodForm = ref(false);
           <CustomFoodForm @close="showCustomFoodForm = false" />
         </div>
       </div>
+      <DatePickerModal v-if="showCalendar" @close="showCalendar = false" />
     </Teleport>
   </div>
 </template>
@@ -45,8 +58,7 @@ const showCustomFoodForm = ref(false);
 <style scoped>
 .app-header {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 1.5rem 0;
+  padding: 1.5rem 0 0;
   position: relative;
 }
 
@@ -58,9 +70,54 @@ const showCustomFoodForm = ref(false);
 }
 
 .date-display {
+  display: flex;
+  justify-self: center;
   color: #6c757d;
-  font-size: 1.1rem;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
+}
+
+.calendar-btn {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-btn:hover {
+  background: #bbdefb;
+  transform: scale(1.1);
+}
+
+.today-btn {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.today-btn:hover {
+  background: #c8e6c9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.today-btn:active {
+  transform: translateY(0);
 }
 
 .header-actions {

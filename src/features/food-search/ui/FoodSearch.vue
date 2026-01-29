@@ -1,19 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useFoodSearch } from '@/composables/useFoodSearch';
-import { useTrackingStore } from '@/stores/trackingStore';
+import { useFoodSearch } from '@/features/food-search/lib/useFoodSearch';
+import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
 
-const { searchResults, loading, error, searchFoods } = useFoodSearch();
-const store = useTrackingStore();
+const { searchResults, loading, error, searchFoods, offlineMode, userLocale } = useFoodSearch();
+const store = useFoodTrackingStore();
+
 const query = ref('');
 const selectedMeal = ref<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
 const portion = ref(100);
+const activeTimeout = ref<NodeJS.Timeout | null>(null);
 
-const handleSearch = () => {
-  if (query.value.trim()) {
-    searchFoods(query.value);
+const filteredResults = computed(() => searchResults.value.slice(0, 8));
+
+watch(query, (newVal) => {
+  if (activeTimeout.value) {
+    clearTimeout(activeTimeout.value);
   }
-};
+
+  if (newVal.length < 2) {
+    searchResults.value = [];
+    return;
+  }
+
+  activeTimeout.value = setTimeout(() => {
+    if (newVal.length >= 2) {
+      searchFoods(newVal);
+    }
+  }, 500);
+});
 
 const addFood = (food: any) => {
   store.addFoodEntry(food, portion.value, selectedMeal.value);
@@ -25,14 +39,21 @@ const addFood = (food: any) => {
 
 <template>
   <div class="search-container">
+    <div v-if="offlineMode" class="api-warning">
+      <p>⚠️ Режим оффлайн. Поиск будет осуществляться только по локальной базе.</p>
+    </div>
+
     <div class="search-inputs">
       <input
         v-model="query"
-        @keyup.enter="handleSearch"
-        placeholder="Название продукта..."
+        placeholder="Название продукта (минимум 2 символа)..."
         class="food-input"
       />
-      <button @click="handleSearch" :disabled="loading" class="search-btn">
+      <button
+        @click="searchFoods(query)"
+        :disabled="loading || query.length < 2"
+        class="search-btn"
+      >
         {{ loading ? 'Поиск...' : 'Найти' }}
       </button>
     </div>
@@ -41,7 +62,7 @@ const addFood = (food: any) => {
       {{ error }}
     </div>
 
-    <div v-if="searchResults.length" class="results-container">
+    <div v-if="filteredResults.length" class="results-container">
       <div class="results-header">
         <span>Результаты поиска</span>
         <div class="portion-control">
@@ -61,16 +82,39 @@ const addFood = (food: any) => {
       </div>
 
       <div class="results-list">
-        <div v-for="food in searchResults" :key="food.id" class="food-item" @click="addFood(food)">
-          <div class="food-name">{{ food.name }}</div>
-          <div class="food-nutrition">
-            <span>{{ food.calories }} ккал</span>
-            <span>Б:{{ food.protein }}г</span>
-            <span>Ж:{{ food.fat }}г</span>
-            <span>У:{{ food.carbs }}г</span>
+        <div
+          v-for="food in filteredResults"
+          :key="food.id"
+          class="food-item"
+          @click="addFood(food)"
+        >
+          <div class="food-content">
+            <div class="food-name">
+              {{ food.name }}
+            </div>
+            <div class="food-nutrition">
+              <span>{{ food.calories }} ккал/100г</span>
+              <div class="macros">
+                <span>Б:{{ food.protein }}г</span>
+                <span>Ж:{{ food.fat }}г</span>
+                <span>У:{{ food.carbs }}г</span>
+              </div>
+            </div>
           </div>
+          <img
+            v-if="food.image"
+            :src="food.image"
+            alt="food preview"
+            class="food-image"
+            @click.stop
+          />
         </div>
       </div>
+    </div>
+
+    <div v-if="query.length >= 2 && filteredResults.length === 0" class="no-results">
+      Продукты не найдены. Попробуйте изменить запрос или добавьте продукт вручную через кнопку
+      "Свой продукт"
     </div>
   </div>
 </template>
@@ -82,6 +126,15 @@ const addFood = (food: any) => {
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.api-warning {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
 }
 
 .search-inputs {
@@ -106,7 +159,7 @@ const addFood = (food: any) => {
 }
 
 .search-btn {
-  padding: 0 1.5rem;
+  padding: 0.75rem 1.5rem;
   background: #4caf50;
   color: white;
   border: none;
@@ -131,6 +184,14 @@ const addFood = (food: any) => {
   background: #ffebee;
   border-radius: 4px;
   margin-bottom: 1rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 1rem;
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 1rem;
 }
 
 .results-header {
@@ -161,12 +222,14 @@ const addFood = (food: any) => {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
+  font-size: 0.95rem;
 }
 
 .meal-select {
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #ddd;
+  font-size: 1rem;
 }
 
 .results-list {
@@ -175,6 +238,9 @@ const addFood = (food: any) => {
 }
 
 .food-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.75rem;
   border: 1px solid #eee;
   border-radius: 8px;
@@ -188,9 +254,34 @@ const addFood = (food: any) => {
   transform: translateX(4px);
 }
 
+.food-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .food-name {
   font-weight: 600;
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
+}
+
+.food-badge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0 4px;
+  border-radius: 4px;
+  margin-left: 4px;
+  font-size: 0.8em;
+  vertical-align: middle;
+}
+
+.food-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-left: 1rem;
+  flex-shrink: 0;
 }
 
 .food-nutrition {
@@ -198,5 +289,13 @@ const addFood = (food: any) => {
   justify-content: space-between;
   font-size: 0.875rem;
   color: #666;
+}
+
+.macros {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.85em;
+  color: #6c757d;
 }
 </style>

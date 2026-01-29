@@ -1,5 +1,5 @@
 import LOCAL_FOODS from '@/assets/foods.json';
-import type { FoodItem } from '@/shared/types';
+import type { FoodItem } from '@/types';
 
 export const searchLocalFoods = (query: string): FoodItem[] => {
   const normalizedQuery = query.toLowerCase().trim();

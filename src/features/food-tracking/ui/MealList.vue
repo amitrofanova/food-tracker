@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useTrackingStore } from '@/stores/trackingStore';
+import { computed } from 'vue';
+import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
 import type { DailyEntry, MealType } from '@/types';
 
-const store = useTrackingStore();
+const store = useFoodTrackingStore();
 
 const mealTypes: { type: MealType; label: string }[] = [
   { type: 'breakfast', label: 'Завтрак' },
@@ -15,7 +16,10 @@ const getMealEntries = (mealType: MealType) =>
   store.currentDayEntries.filter((entry) => entry.mealType === mealType);
 
 const totalMealCalories = (mealType: MealType) =>
-  getMealEntries(mealType).reduce((sum, entry) => sum + entry.calories, 0);
+  getMealEntries(mealType).reduce(
+    (sum, entry) => sum + Math.round((entry.calories * entry.portion) / 100),
+    0,
+  );
 </script>
 
 <template>
@@ -34,10 +38,10 @@ const totalMealCalories = (mealType: MealType) =>
             <div class="entry-name">{{ entry.name }}</div>
             <div class="entry-portion">{{ entry.portion }}г</div>
             <div class="entry-nutrition">
-              <span>{{ entry.calories }} ккал</span>
-              <span>Б:{{ entry.protein }}г</span>
-              <span>Ж:{{ entry.fat }}г</span>
-              <span>У:{{ entry.carbs }}г</span>
+              <span>{{ Math.round((entry.calories * entry.portion) / 100) }} ккал</span>
+              <span>Б:{{ Math.round((entry.protein * entry.portion) / 100) }}г</span>
+              <span>Ж:{{ Math.round((entry.fat * entry.portion) / 100) }}г</span>
+              <span>У:{{ Math.round((entry.carbs * entry.portion) / 100) }}г</span>
             </div>
           </div>
           <button @click="store.removeEntry(entry.id)" class="delete-btn">✕</button>
@@ -71,6 +75,7 @@ const totalMealCalories = (mealType: MealType) =>
 .meal-header h3 {
   margin: 0;
   color: #1a1a1a;
+  font-size: 1.2rem;
 }
 
 .meal-total {
@@ -79,6 +84,7 @@ const totalMealCalories = (mealType: MealType) =>
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .empty-meal {
@@ -86,6 +92,7 @@ const totalMealCalories = (mealType: MealType) =>
   font-style: italic;
   text-align: center;
   padding: 1rem;
+  font-size: 0.95rem;
 }
 
 .entries-list {
@@ -111,11 +118,13 @@ const totalMealCalories = (mealType: MealType) =>
 
 .entry-content {
   flex: 1;
+  min-width: 0;
 }
 
 .entry-name {
   font-weight: 600;
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
 }
 
 .entry-portion {
@@ -125,7 +134,8 @@ const totalMealCalories = (mealType: MealType) =>
 }
 
 .entry-nutrition {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
   gap: 0.75rem;
   font-size: 0.875rem;
   color: #495057;
@@ -141,6 +151,7 @@ const totalMealCalories = (mealType: MealType) =>
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .delete-btn:hover {

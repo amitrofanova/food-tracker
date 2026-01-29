@@ -1,8 +1,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { searchFoods, searchByBarcode } from '@/app/services/apiService';
 import { searchLocalFoods } from '@/app/services/localDataService';
-import type { FoodItem } from '@/shared/types';
-import { useFoodTrackingStore } from '@/app/stores/foodTrackingStore';
+import type { FoodItem } from '@/types';
+import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
 
 export const useFoodSearch = () => {
   const searchResults = ref<FoodItem[]>([]);
