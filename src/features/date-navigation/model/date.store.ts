@@ -1,4 +1,3 @@
-// src/app/stores/dateStore.ts
 import { defineStore } from 'pinia';
 import { ref, computed, onMounted } from 'vue';
 import { formatDate } from '@/shared/utilities/formatDate';
@@ -44,6 +43,8 @@ export const useDateStore = defineStore('date', () => {
     if (!selectedDate.value || !isValidDate(selectedDate.value)) {
       selectedDate.value = realToday.value;
     }
+    console.log('TYPE', typeof selectedDate.value);
+
     return selectedDate.value;
   });
 

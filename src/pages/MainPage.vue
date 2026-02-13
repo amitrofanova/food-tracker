@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import FoodSearch from '@/features/food-search/ui/FoodSearch.vue';
-import MealList from '@/features/food-tracking//ui/MealList.vue';
-import CustomFoodForm from '@/features/food-tracking//ui/CustomFoodForm.vue';
-import CalorieProgress from '@/features/food-tracking//ui/CalorieProgress.vue';
+import { FoodSearch } from '@/features/food-search';
+import { MealList, CustomFoodForm, CalorieProgress } from '@/features/food-tracking';
 import DateSlider from '@/features/date-navigation/ui/DateSlider.vue';
 import DatePickerModal from '@/features/date-navigation/ui/DatePickerModal.vue';
+import { useFoodTrackingStore } from '@/features/food-tracking';
+import { useDateStore } from '@/features/date-navigation';
+
+const trackingStore = useFoodTrackingStore();
+console.log('🔍 FoodSearch store ID:', trackingStore.$id);
+
+const handleAddFood = (food, portion, meal) => {
+  trackingStore.addFoodEntry(food, portion, meal);
+};
 
 const showCustomFoodForm = ref(false);
-import { useDateStore } from '@/features/date-navigation/model/date.store'; // Импорт dateStore
 
 const dateStore = useDateStore();
 const showCalendar = ref(false);
@@ -40,8 +46,8 @@ const todayFormatted = computed(() => {
 
     <DateSlider ref="dateSliderRef" />
     <CalorieProgress />
-    <FoodSearch />
-    <MealList />
+    <FoodSearch @add="handleAddFood" />
+    <MealList :entries="trackingStore.currentDayEntries" />
 
     <Teleport to="body">
       <div v-if="showCustomFoodForm" class="modal-overlay" @click="showCustomFoodForm = false">

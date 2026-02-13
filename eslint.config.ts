@@ -19,5 +19,19 @@ export default defineConfigWithVueTs(
   ...pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
 
+  {
+    rules: {
+      '@typescript-eslint/no-use-before-define': [
+        'error',
+        {
+          functions: true,
+          classes: true,
+          variables: true,
+          typedefs: true,
+        },
+      ],
+    },
+  },
+
   skipFormatting,
 );

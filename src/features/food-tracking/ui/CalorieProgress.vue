@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
-import { APP_CONFIG } from '@/app/config/config';
+import { useFoodTrackingStore } from '@/features/food-tracking';
+import { APP_CONFIG } from '@/shared/config/config';
 
 const store = useFoodTrackingStore();
 

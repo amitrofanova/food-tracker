@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
-import type { DailyEntry, MealType } from '@/types';
+import { useFoodTrackingStore } from '@/features/food-tracking';
+import type { MealType } from '@/types';
 
 const store = useFoodTrackingStore();
 

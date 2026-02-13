@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useDateStore } from '@/features/date-navigation/model/date.store';
+import { useDateStore } from '@/features/date-navigation';
 import { formatDate } from '@/shared/utilities/formatDate';
 
 const dateStore = useDateStore();

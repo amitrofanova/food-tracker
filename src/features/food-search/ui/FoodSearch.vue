@@ -1,9 +1,11 @@
+<!-- src/features/food-search/ui/FoodSearch.vue -->
 <script setup lang="ts">
-import { useFoodSearch } from '@/features/food-search/lib/useFoodSearch';
-import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
+import { ref, watch, computed } from 'vue';
+import { useFoodSearch } from '@/features/food-search/lib/useSearch';
 
-const { searchResults, loading, error, searchFoods, offlineMode, userLocale } = useFoodSearch();
-const store = useFoodTrackingStore();
+const { searchResults, loading, error, searchFoods, offlineMode, clearResults } = useFoodSearch();
+
+const emit = defineEmits(['add']);
 
 const query = ref('');
 const selectedMeal = ref<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
@@ -18,7 +20,7 @@ watch(query, (newVal) => {
   }
 
   if (newVal.length < 2) {
-    searchResults.value = [];
+    clearResults();
     return;
   }
 
@@ -30,10 +32,10 @@ watch(query, (newVal) => {
 });
 
 const addFood = (food: any) => {
-  store.addFoodEntry(food, portion.value, selectedMeal.value);
+  emit('add', food, portion.value, selectedMeal.value);
   query.value = '';
   portion.value = 100;
-  searchResults.value = [];
+  clearResults();
 };
 </script>
 
@@ -86,7 +88,7 @@ const addFood = (food: any) => {
           v-for="food in filteredResults"
           :key="food.id"
           class="food-item"
-          @click="addFood(food)"
+          @click="addFood(food, portion)"
         >
           <div class="food-content">
             <div class="food-name">
@@ -101,13 +103,6 @@ const addFood = (food: any) => {
               </div>
             </div>
           </div>
-          <img
-            v-if="food.image"
-            :src="food.image"
-            alt="food preview"
-            class="food-image"
-            @click.stop
-          />
         </div>
       </div>
     </div>

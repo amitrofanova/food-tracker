@@ -1,6 +1,5 @@
-// src/app/composables/useDateNavigation.ts
 import { ref, computed, watch, nextTick } from 'vue';
-import { useDateStore } from '@/features/date-navigation/model/date.store';
+import { useDateStore } from '@/features/date-navigation';
 import { formatDate } from '@/shared/utilities/formatDate';
 
 export function useDateNavigation() {

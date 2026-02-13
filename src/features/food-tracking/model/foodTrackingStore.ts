@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
 import { ref, computed, onMounted } from 'vue';
 import type { FoodItem, DailyEntry, MealType } from '@/types';
-import { useDateStore } from '@/features/date-navigation/model/date.store';
+import { useDateStore } from '@/features/date-navigation';
 
 export const useFoodTrackingStore = defineStore('foodTracking', () => {
+  const entriesVersion = ref(0);
   const dateStore = useDateStore();
   const dailyEntries = ref<Record<string, DailyEntry[]>>({});
   const customFoods = ref<FoodItem[]>([]);
@@ -31,7 +32,9 @@ export const useFoodTrackingStore = defineStore('foodTracking', () => {
       mealType,
       timestamp: new Date(),
     };
+    console.log(entry);
 
+    entriesVersion.value++;
     if (!dailyEntries.value[dateStore.currentDate]) {
       dailyEntries.value[dateStore.currentDate] = [];
     }

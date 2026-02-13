@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useFoodTrackingStore } from '@/features/food-tracking/model/foodTrackingStore';
+import { useFoodTrackingStore } from '@/features/food-tracking';
 
 const emit = defineEmits(['close']);
 const store = useFoodTrackingStore();

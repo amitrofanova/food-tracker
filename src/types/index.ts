@@ -19,7 +19,6 @@ export type DailyEntry = {
   mealType: MealType;
   timestamp: Date;
   image?: string | null;
-  barcode?: string | null;
 } & Macronutrients & {
     calories: number;
   };
