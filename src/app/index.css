@@ -1,0 +1,40 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* Use a more-intuitive box-sizing model */
+}
+
+*:not(dialog) {
+  margin: 0; /* Remove default margin from most elements */
+}
+
+body {
+  line-height: 1.5; /* Add accessible line-height */
+  -webkit-font-smoothing: antialiased; /* Improve text rendering */
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%; /* Improve media defaults */
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit; /* Inherit fonts for form controls */
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word; /* Avoid text overflows */
+}
