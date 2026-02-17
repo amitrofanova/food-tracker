@@ -25,36 +25,23 @@ const nextDay = () => {
 </script>
 
 <template>
-  <div class="date-navigation">
+  <div class="nav-wrap">
     <button @click="prevDay" class="nav-btn">←</button>
-    <span class="current-date">{{ formattedDate }}</span>
+    <span>{{ formattedDate }}</span>
     <button @click="nextDay" class="nav-btn">→</button>
   </div>
 </template>
 
 <style scoped>
-.date-navigation {
+.nav-wrap {
   display: flex;
   align-items: center;
   gap: 16px;
   justify-content: center;
   padding: 8px;
-  margin-bottom: 20px;
 }
 .nav-btn {
-  background: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   padding: 4px 12px;
-  font-size: 1.2em;
   cursor: pointer;
-}
-.nav-btn:hover {
-  background: #eee;
-}
-.current-date {
-  font-weight: bold;
-  min-width: 120px;
-  text-align: center;
 }
 </style>
