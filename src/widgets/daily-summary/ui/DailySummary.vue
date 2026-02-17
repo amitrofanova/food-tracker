@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 
 const diaryStore = useDiaryStore();
 const { dailyTotals } = storeToRefs(diaryStore);
+const dailyGoal = 2000;
 </script>
 
 <template>
@@ -11,7 +12,8 @@ const { dailyTotals } = storeToRefs(diaryStore);
     <div class="totals">
       <div class="total-item">
         <span class="label">Калории</span>
-        <span class="value">{{ dailyTotals.calories }} ккал</span>
+        <span class="value">{{ dailyTotals.calories }} / {{ dailyGoal }} ккал</span>
+        <progress :value="dailyTotals.calories" :max="dailyGoal"></progress>
       </div>
       <div class="total-item">
         <span class="label">Белки</span>
@@ -32,13 +34,12 @@ const { dailyTotals } = storeToRefs(diaryStore);
 <style scoped>
 .daily-summary {
   padding: 16px;
-  background: #f5f5f5;
+  background: #eee;
   border-radius: 8px;
   margin-bottom: 20px;
 }
 .totals {
   display: flex;
-  flex-wrap: wrap;
   gap: 16px;
   justify-content: space-around;
 }
@@ -46,13 +47,5 @@ const { dailyTotals } = storeToRefs(diaryStore);
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.label {
-  font-size: 0.9em;
-  color: #666;
-}
-.value {
-  font-size: 1.5em;
-  font-weight: bold;
 }
 </style>

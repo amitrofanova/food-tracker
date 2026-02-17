@@ -15,6 +15,6 @@ defineProps<Props>();
 <style scoped>
 .card {
   padding: 10px;
-  border: 1px solid blue;
+  border: 1px solid;
 }
 </style>
