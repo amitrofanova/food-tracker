@@ -7,7 +7,7 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/home'),
   },
   {
-    path: '/search',
+    path: '/search/:mealType',
     name: 'search',
     component: () => import('@/pages/search'),
     props: true,

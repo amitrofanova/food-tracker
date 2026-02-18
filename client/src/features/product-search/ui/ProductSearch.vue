@@ -1,39 +1,34 @@
 <script setup lang="ts">
+import { watch } from 'vue';
+import type { IProduct } from '@/entities/product';
 import { useProductSearch } from '../lib/useProductSearch';
-import ProductCard from '@/entities/product/ui/ProductCard.vue';
-import { AddToDiaryButton } from '@/features/add-to-diary';
-import { EntryRow, useDiaryStore } from '@/entities/diary-entry';
 
 const { searchQuery, results, loading, error, hasMore, loadMore } = useProductSearch();
-const diaryStore = useDiaryStore();
+
+const emit = defineEmits<{
+  (e: 'update:results', results: IProduct[]): void;
+}>();
+
+watch(
+  results,
+  (newResults) => {
+    emit('update:results', newResults);
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
   <div class="product-search">
     <input v-model="searchQuery" class="search-input" />
 
-    <div class="results">
-      <div v-for="product in results" :key="product.id" class="result-item">
-        <ProductCard :product="product" />
-        <AddToDiaryButton :product="product" />
-      </div>
-    </div>
-    <div v-if="loading" class="status">Загрузка...</div>
+    <div v-if="loading" class="status">Loading</div>
     <div v-else-if="error" class="status error">{{ error }}</div>
-    <div v-else-if="results.length === 0 && searchQuery" class="status">Ничего не найдено</div>
+    <div v-else-if="results.length === 0 && searchQuery" class="status">No results</div>
 
     <button v-if="results.length && hasMore && !loading" @click="loadMore" class="load-more">
-      Загрузить ещё
+      Load more
     </button>
-
-    <div class="diary-preview">
-      <EntryRow
-        v-for="entry in diaryStore.dailyEntries"
-        :key="entry.id"
-        :entry="entry"
-        @remove="diaryStore.removeEntry"
-      />
-    </div>
   </div>
 </template>
 
