@@ -10,10 +10,18 @@ const products = productStore.products;
 </script>
 
 <template>
-  <ProductSearch />
   <DateNavigation />
-  <DailySummary />
+  <div class="wrap">
+    <DailySummary />
+    <ProductSearch />
+  </div>
   <div v-for="product in products" :key="product.name">
     {{ product.name }}
   </div>
 </template>
+
+<style scoped>
+.wrap {
+  display: flex;
+}
+</style>
