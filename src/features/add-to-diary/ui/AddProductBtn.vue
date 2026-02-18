@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { IProduct } from '@/entities/product';
+import type { MealType } from '@/shared/config/meals';
 import { useAddToDiary } from '../lib/useAddToDiary';
 
-const props = defineProps<{ product: IProduct }>();
+const props = defineProps<{ product: IProduct; mealType: MealType }>();
 
 const { addEntry } = useAddToDiary();
 
@@ -11,7 +12,7 @@ const weight = ref<number | null>(null);
 
 const handleAdd = () => {
   if (weight.value && weight.value > 0) {
-    addEntry(props.product, weight.value);
+    addEntry(props.product, weight.value, props.mealType);
     weight.value = null;
   }
 };

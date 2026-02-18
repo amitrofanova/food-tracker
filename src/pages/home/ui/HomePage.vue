@@ -1,27 +1,59 @@
 <script setup lang="ts">
-import { useProductStore } from '@/entities/product';
-import { ProductSearch } from '@/features/product-search';
-import { DailySummary } from '@/widgets/daily-summary';
+import { computed } from 'vue';
 import { DateNavigation } from '@/widgets/date-navigation';
+import { DailySummary } from '@/widgets/daily-summary';
+import { MealBlock } from '@/widgets/meal-block';
+import ProductSearch from '@/features/product-search/ui/ProductSearch.vue';
+import { MEAL_TYPES } from '@/shared/config/meals';
 
-const productStore = useProductStore();
-
-const products = productStore.products;
+const isMobile = computed(() => window.innerWidth < 768);
 </script>
 
 <template>
-  <DateNavigation />
-  <div class="wrap">
+  <div class="diary-page">
+    <DateNavigation />
     <DailySummary />
-    <ProductSearch />
-  </div>
-  <div v-for="product in products" :key="product.name">
-    {{ product.name }}
+
+    <div class="meals-container">
+      <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
+    </div>
+
+    <div v-if="!isMobile" class="desktop-search">
+      <ProductSearch :embedded="true" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.wrap {
-  display: flex;
+.diary-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@media (max-width: 767px) {
+  .diary-page {
+    padding: 10px;
+  }
+  .desktop-search {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .diary-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .meals-container {
+    grid-column: 1;
+  }
+  .desktop-search {
+    grid-column: 2;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
 }
 </style>

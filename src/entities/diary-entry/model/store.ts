@@ -1,12 +1,39 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { IDiaryEntry } from './types';
+import type { MealType } from '@/shared/config/meals';
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
   const selectedDate = ref(new Date().toISOString().slice(0, 10));
 
   const dailyEntries = computed(() => entries.value.filter((e) => e.date === selectedDate.value));
+
+  const entriesByMeal = computed(() => {
+    const map: Record<MealType, IDiaryEntry[]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+    };
+    dailyEntries.value.forEach((entry) => {
+      map[entry.mealType].push(entry);
+    });
+    return map;
+  });
+
+  const mealTotals = computed(() => {
+    const totals: Record<MealType, number> = {
+      breakfast: 0,
+      lunch: 0,
+      dinner: 0,
+      snack: 0,
+    };
+    dailyEntries.value.forEach((entry) => {
+      totals[entry.mealType] += entry.calories;
+    });
+    return totals;
+  });
 
   const dailyTotals = computed(() => {
     const totals = { calories: 0, protein: 0, fat: 0, carbs: 0 };
@@ -39,6 +66,8 @@ export const useDiaryStore = defineStore('diary', () => {
   return {
     entries,
     selectedDate,
+    entriesByMeal,
+    mealTotals,
     dailyEntries,
     dailyTotals,
     addEntry,

@@ -3,6 +3,8 @@ import { useProductSearch } from '../lib/useProductSearch';
 import ProductCard from '@/entities/product/ui/ProductCard.vue';
 import { AddToDiaryButton } from '@/features/add-to-diary';
 import { EntryRow, useDiaryStore } from '@/entities/diary-entry';
+import AddProductBtn from '@/features/add-to-diary/ui/AddProductBtn.vue';
+import AddToDiaryForm from '@/features/add-to-diary/ui/AddToDiaryForm.vue';
 
 const { searchQuery, results, loading, error, hasMore, loadMore } = useProductSearch();
 const diaryStore = useDiaryStore();
@@ -15,7 +17,7 @@ const diaryStore = useDiaryStore();
     <div class="results">
       <div v-for="product in results" :key="product.id" class="result-item">
         <ProductCard :product="product" />
-        <AddToDiaryButton :product="product" />
+        <AddToDiaryForm :product="product" />
       </div>
     </div>
     <div v-if="loading" class="status">Загрузка...</div>
