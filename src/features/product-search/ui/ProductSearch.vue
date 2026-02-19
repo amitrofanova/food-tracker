@@ -1,23 +1,32 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { useProductSearch } from '../lib/useProductSearch';
 import ProductCard from '@/entities/product/ui/ProductCard.vue';
-import { AddToDiaryButton } from '@/features/add-to-diary';
-import { EntryRow, useDiaryStore } from '@/entities/diary-entry';
-import AddProductBtn from '@/features/add-to-diary/ui/AddProductBtn.vue';
 import AddToDiaryForm from '@/features/add-to-diary/ui/AddToDiaryForm.vue';
+import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
+
+defineProps<{ mealType?: MealType }>();
 
 const { searchQuery, results, loading, error, hasMore, loadMore } = useProductSearch();
-const diaryStore = useDiaryStore();
+
+const isMobile = computed(() => window.innerWidth < 768);
+
+const selectedMeal = ref<MealType>('breakfast');
 </script>
 
 <template>
   <div class="product-search">
     <input v-model="searchQuery" class="search-input" />
+    <select v-if="!isMobile" v-model="selectedMeal" class="meal-select">
+      <option v-for="type in MEAL_TYPES" :key="type" :value="type">
+        {{ MEAL_LABELS[type] }}
+      </option>
+    </select>
 
     <div class="results">
       <div v-for="product in results" :key="product.id" class="result-item">
         <ProductCard :product="product" />
-        <AddToDiaryForm :product="product" />
+        <AddToDiaryForm :product="product" :mealType="selectedMeal" />
       </div>
     </div>
     <div v-if="loading" class="status">Загрузка...</div>
@@ -27,15 +36,6 @@ const diaryStore = useDiaryStore();
     <button v-if="results.length && hasMore && !loading" @click="loadMore" class="load-more">
       Загрузить ещё
     </button>
-
-    <div class="diary-preview">
-      <EntryRow
-        v-for="entry in diaryStore.dailyEntries"
-        :key="entry.id"
-        :entry="entry"
-        @remove="diaryStore.removeEntry"
-      />
-    </div>
   </div>
 </template>
 

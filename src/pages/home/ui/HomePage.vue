@@ -19,7 +19,7 @@ const isMobile = computed(() => window.innerWidth < 768);
     </div>
 
     <div v-if="!isMobile" class="desktop-search">
-      <ProductSearch :embedded="true" />
+      <ProductSearch />
     </div>
   </div>
 </template>

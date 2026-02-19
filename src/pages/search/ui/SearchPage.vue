@@ -1,7 +1,7 @@
 <template>
   <div class="search-page">
     <button @click="goBack" class="back-button">← Назад</button>
-    <ProductSearch :initialMealType="mealType" />
+    <ProductSearch :mealType="mealType" />
   </div>
 </template>
 

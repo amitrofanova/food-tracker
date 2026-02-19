@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { IProduct } from '@/entities/product';
+import type { MealType } from '@/shared/config/meals';
 import { useAddToDiary } from '../lib/useAddToDiary';
-import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
 
-const props = defineProps<{ product: IProduct }>();
+const props = defineProps<{ product: IProduct; mealType: MealType }>();
 const { addEntry } = useAddToDiary();
 
-const selectedMeal = ref<MealType>('breakfast');
 const weight = ref<number | null>(null);
 
 const handleAdd = () => {
   if (weight.value && weight.value > 0) {
-    addEntry(props.product, weight.value, selectedMeal.value);
+    addEntry(props.product, weight.value, props.mealType);
     weight.value = null;
     // TODO оставить выбранный приём или сбросить на завтрак
   }
@@ -21,11 +20,6 @@ const handleAdd = () => {
 
 <template>
   <div class="add-to-diary-form">
-    <select v-model="selectedMeal" class="meal-select">
-      <option v-for="type in MEAL_TYPES" :key="type" :value="type">
-        {{ MEAL_LABELS[type] }}
-      </option>
-    </select>
     <input
       type="number"
       v-model.number="weight"
@@ -33,7 +27,7 @@ const handleAdd = () => {
       min="1"
       class="weight-input"
     />
-    <button @click="handleAdd" :disabled="!weight" class="add-btn">Добавить</button>
+    <button @click="handleAdd" :disabled="!weight" class="add-btn">+</button>
   </div>
 </template>
 
