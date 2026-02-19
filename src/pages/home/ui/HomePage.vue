@@ -3,8 +3,8 @@ import { computed } from 'vue';
 import { DateNavigation } from '@/widgets/date-navigation';
 import { DailySummary } from '@/widgets/daily-summary';
 import { MealBlock } from '@/widgets/meal-block';
-import ProductSearch from '@/features/product-search/ui/ProductSearch.vue';
 import { MEAL_TYPES } from '@/shared/config/meals';
+import SearchResults from '@/widgets/search-results/ui/SearchResults.vue';
 
 const isMobile = computed(() => window.innerWidth < 768);
 </script>
@@ -19,7 +19,7 @@ const isMobile = computed(() => window.innerWidth < 768);
     </div>
 
     <div v-if="!isMobile" class="desktop-search">
-      <ProductSearch />
+      <SearchResults />
     </div>
   </div>
 </template>
