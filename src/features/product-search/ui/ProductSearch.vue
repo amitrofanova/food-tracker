@@ -12,8 +12,6 @@ const emit = defineEmits<{
 watch(
   results,
   (newResults) => {
-    console.log('newResults got');
-
     emit('update:results', newResults);
   },
   { immediate: true },

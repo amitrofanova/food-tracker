@@ -21,7 +21,6 @@ const isMobile = computed(() => window.innerWidth < 768);
       <h3>{{ MEAL_LABELS[mealType] }}</h3>
       <span>{{ mealTotals[mealType] }} ккал</span>
     </div>
-
     <div>
       <EntryRow
         v-for="entry in entriesByMeal[mealType]"
@@ -31,7 +30,6 @@ const isMobile = computed(() => window.innerWidth < 768);
       />
       <div v-if="entriesByMeal[mealType].length === 0">Нет записей</div>
     </div>
-
     <AddToMealBtn v-if="isMobile" :mealType="mealType" />
   </div>
 </template>

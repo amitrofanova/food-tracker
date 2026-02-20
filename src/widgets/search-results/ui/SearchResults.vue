@@ -1,22 +1,3 @@
-<template>
-  <div class="search-results">
-    <select v-if="!isMobile" v-model="selectedMeal" class="meal-select">
-      <option v-for="type in MEAL_TYPES" :key="type" :value="type">
-        {{ MEAL_LABELS[type] }}
-      </option>
-    </select>
-    <ProductSearch @update:results="handleResults" />
-
-    <!-- Результаты с формой добавления -->
-    <div v-if="products.length" class="results-list">
-      <div v-for="product in products" :key="product.id" class="result-item">
-        <ProductCard :product="product" />
-        <AddToDiaryForm :product="product" :mealType="isMobile ? mealType : selectedMeal" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import ProductSearch from '@/features/product-search/ui/ProductSearch.vue';
@@ -37,6 +18,23 @@ const handleResults = (newResults: IProduct[]) => {
   products.value = newResults;
 };
 </script>
+
+<template>
+  <div>
+    <select v-if="!isMobile" v-model="selectedMeal">
+      <option v-for="type in MEAL_TYPES" :key="type" :value="type">
+        {{ MEAL_LABELS[type] }}
+      </option>
+    </select>
+    <ProductSearch @update:results="handleResults" />
+    <div v-if="products.length">
+      <div v-for="product in products" :key="product.id" class="result-item">
+        <ProductCard :product="product" />
+        <AddToDiaryForm :product="product" :mealType="isMobile ? mealType : selectedMeal" />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .result-item {
