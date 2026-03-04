@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import ProductSearch from '@/features/product-search/ui/ProductSearch.vue';
 import AddToDiaryForm from '@/features/add-to-diary/ui/AddToDiaryForm.vue';
 import ProductCard from '@/entities/product/ui/ProductCard.vue';
 import type { IProduct } from '@/entities/product';
 import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
+
+const { isMobile, isDesktop } = useBreakpoints();
 
 withDefaults(defineProps<{ mealType?: MealType }>(), { mealType: 'breakfast' });
 
 const selectedMeal = ref<MealType>('breakfast');
 
 const products = ref<IProduct[]>([]);
-
-const isMobile = computed(() => window.innerWidth < 768);
 
 const handleResults = (newResults: IProduct[]) => {
   products.value = newResults;
@@ -21,7 +22,7 @@ const handleResults = (newResults: IProduct[]) => {
 
 <template>
   <div>
-    <select v-if="!isMobile" v-model="selectedMeal">
+    <select v-if="isDesktop" v-model="selectedMeal">
       <option v-for="type in MEAL_TYPES" :key="type" :value="type">
         {{ MEAL_LABELS[type] }}
       </option>

@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDiaryStore } from '@/entities/diary-entry';
 import EntryRow from '@/entities/diary-entry/ui/EntryRow.vue';
 import AddToMealBtn from '@/features/add-to-diary/ui/AddToMealBtn.vue';
 import { MEAL_LABELS, type MealType } from '@/shared/config/meals';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
+
+const { isMobile } = useBreakpoints();
 
 defineProps<{ mealType: MealType }>();
 
 const diaryStore = useDiaryStore();
 
 const { entriesByMeal, mealTotals } = storeToRefs(diaryStore);
-
-const isMobile = computed(() => window.innerWidth < 768);
 </script>
 
 <template>

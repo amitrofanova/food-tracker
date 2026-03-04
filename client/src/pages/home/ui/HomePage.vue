@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { DateNavigation } from '@/widgets/date-navigation';
 import { DailySummary } from '@/widgets/daily-summary';
 import { MealBlock } from '@/widgets/meal-block';
 import { MEAL_TYPES } from '@/shared/config/meals';
 import SearchResults from '@/widgets/search-results/ui/SearchResults.vue';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
 
-const isMobile = computed(() => window.innerWidth < 768);
+const { isDesktop } = useBreakpoints();
 </script>
 
 <template>
@@ -18,7 +18,7 @@ const isMobile = computed(() => window.innerWidth < 768);
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
 
-    <div v-if="!isMobile" class="desktop-search">
+    <div v-if="isDesktop" class="desktop-search">
       <SearchResults />
     </div>
   </div>
