@@ -1,11 +1,36 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { IDiaryEntry } from './types';
+import { diaryDb } from '@/shared/db/diaryDb';
 import type { MealType } from '@/shared/config/meals';
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
   const selectedDate = ref(new Date().toISOString().slice(0, 10));
+  const isLoading = ref(false);
+
+  async function loadEntries() {
+    isLoading.value = true;
+    try {
+      // TODO load last week
+      const allEntries = await diaryDb.entries.toArray();
+      entries.value = allEntries;
+    } catch (error) {
+      console.error('Failed to load entries:', error);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  loadEntries();
+
+  async function saveEntry(entry: IDiaryEntry) {
+    await diaryDb.entries.put(entry);
+  }
+
+  async function deleteEntry(id: string) {
+    await diaryDb.entries.delete(id);
+  }
 
   const dailyEntries = computed(() => entries.value.filter((e) => e.date === selectedDate.value));
 
@@ -36,27 +61,31 @@ export const useDiaryStore = defineStore('diary', () => {
   });
 
   const dailyTotals = computed(() => {
-    const totals = { calories: 0, protein: 0, fat: 0, carbs: 0 };
+    const totals = { calories: 0, proteins: 0, fats: 0, carbs: 0 };
     dailyEntries.value.forEach((e) => {
       totals.calories += e.calories;
-      totals.protein += e.protein;
-      totals.fat += e.fat;
+      totals.proteins += e.protein;
+      totals.fats += e.fat;
       totals.carbs += e.carbs;
     });
     return totals;
   });
 
-  function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
+  async function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
     const newEntry: IDiaryEntry = {
       ...entry,
       id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
     };
     entries.value.push(newEntry);
+    await saveEntry(newEntry);
   }
 
-  function removeEntry(id: string) {
+  async function removeEntry(id: string) {
     const index = entries.value.findIndex((e) => e.id === id);
-    if (index !== -1) entries.value.splice(index, 1);
+    if (index !== -1) {
+      entries.value.splice(index, 1);
+      await deleteEntry(id);
+    }
   }
 
   function setSelectedDate(date: string) {
@@ -66,10 +95,11 @@ export const useDiaryStore = defineStore('diary', () => {
   return {
     entries,
     selectedDate,
+    dailyEntries,
     entriesByMeal,
     mealTotals,
-    dailyEntries,
     dailyTotals,
+    isLoading,
     addEntry,
     removeEntry,
     setSelectedDate,
