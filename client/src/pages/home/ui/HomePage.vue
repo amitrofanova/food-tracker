@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { MEAL_TYPES } from '@/shared/config/meals';
 import { DateNavigation } from '@/widgets/date-navigation';
 import { DailySummary } from '@/widgets/daily-summary';
 import { MealBlock } from '@/widgets/meal-block';
-import { MEAL_TYPES } from '@/shared/config/meals';
-import SearchResults from '@/widgets/search-results/ui/SearchResults.vue';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { AddDiaryEntry } from '@/widgets/add-diary-entry';
 
 const { isDesktop } = useBreakpoints();
 </script>
@@ -13,14 +13,10 @@ const { isDesktop } = useBreakpoints();
   <div class="diary-page">
     <DateNavigation />
     <DailySummary />
-
     <div class="meals-container">
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
-
-    <div v-if="isDesktop" class="desktop-search">
-      <SearchResults />
-    </div>
+    <AddDiaryEntry v-if="isDesktop" />
   </div>
 </template>
 
@@ -34,9 +30,6 @@ const { isDesktop } = useBreakpoints();
 @media (max-width: 767px) {
   .diary-page {
     padding: 10px;
-  }
-  .desktop-search {
-    display: none;
   }
 }
 

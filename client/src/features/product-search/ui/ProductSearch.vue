@@ -1,31 +1,32 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-import type { IProduct } from '@/entities/product';
 import { useProductSearch } from '../lib/useProductSearch';
+import type { MealType } from '@/shared/config/meals';
+
+defineProps<{ mealType: MealType; weight: number }>();
 
 const { searchQuery, results, loading, error, hasMore, loadMore } = useProductSearch();
 
-const emit = defineEmits<{
-  (e: 'update:results', results: IProduct[]): void;
-}>();
-
-watch(
-  results,
-  (newResults) => {
-    emit('update:results', newResults);
-  },
-  { immediate: true },
-);
+const emit = defineEmits(['addEntry']);
 </script>
 
 <template>
   <div class="product-search">
-    <input v-model="searchQuery" class="search-input" />
-
+    <input v-model="searchQuery" placeholder="Искать продукт" class="search-input" />
+    <div v-if="results.length" class="results">
+      <div v-for="product in results" :key="product.id" class="result-item">
+        {{ product.name }}
+        <button
+          @click="emit('addEntry', product, weight, mealType)"
+          :disabled="!weight"
+          class="add-btn"
+        >
+          +
+        </button>
+      </div>
+    </div>
     <div v-if="loading" class="status">Loading</div>
     <div v-else-if="error" class="status error">{{ error }}</div>
     <div v-else-if="results.length === 0 && searchQuery" class="status">No results</div>
-
     <button v-if="results.length && hasMore && !loading" @click="loadMore" class="load-more">
       Load more
     </button>
@@ -35,8 +36,7 @@ watch(
 <style scoped>
 .product-search {
   max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 10px auto;
 }
 .search-input {
   width: 100%;
@@ -56,14 +56,7 @@ watch(
 .result-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
   padding: 8px 0;
-}
-.result-item > :first-child {
-  flex: 1;
-}
-.diary-preview {
-  margin-top: 40px;
-  padding-top: 20px;
 }
 </style>

@@ -17,11 +17,11 @@ const dailyGoal = 2000;
       </div>
       <div class="total-item">
         <span class="label">Белки</span>
-        <span class="value">{{ dailyTotals.protein }} г</span>
+        <span class="value">{{ dailyTotals.proteins }} г</span>
       </div>
       <div class="total-item">
         <span class="label">Жиры</span>
-        <span class="value">{{ dailyTotals.fat }} г</span>
+        <span class="value">{{ dailyTotals.fats }} г</span>
       </div>
       <div class="total-item">
         <span class="label">Углеводы</span>
