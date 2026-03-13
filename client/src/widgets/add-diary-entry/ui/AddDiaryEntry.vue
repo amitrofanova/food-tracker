@@ -4,6 +4,8 @@ import type { IProduct } from '@/entities/product/model/types';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
+import { AppModal } from '@/shared/ui/modal';
+import { CreateProductForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
 
 const diaryStore = useDiaryStore();
@@ -25,7 +27,9 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 
 const props = defineProps<{ mealType: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
+
 const weight = ref<number>();
+const showModal = ref(false);
 
 const { isDesktop } = useBreakpoints();
 </script>
@@ -39,7 +43,11 @@ const { isDesktop } = useBreakpoints();
         </option>
       </select>
       <input type="number" v-model.number="weight" placeholder="Вес (г)" min="1" />
+      <button @click="showModal = true" class="create-btn">Свой продукт</button>
     </div>
+    <AppModal v-model="showModal">
+      <CreateProductForm @created="showModal = false" />
+    </AppModal>
     <ProductSearch :weight="weight" :mealType="selectedMeal" @addEntry="addEntry" />
   </div>
 </template>
