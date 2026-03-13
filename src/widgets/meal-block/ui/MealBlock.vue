@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import { useDiaryStore } from '@/entities/diary-entry';
-import EntryRow from '@/entities/diary-entry/ui/EntryRow.vue';
-import AddToMealBtn from '@/features/add-to-diary/ui/AddToMealBtn.vue';
+import { EntryRow } from '@/entities/diary-entry';
 import { MEAL_LABELS, type MealType } from '@/shared/config/meals';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 const { isMobile } = useBreakpoints();
 
-defineProps<{ mealType: MealType }>();
+const props = defineProps<{ mealType: MealType }>();
 
 const diaryStore = useDiaryStore();
 
 const { entriesByMeal, mealTotals } = storeToRefs(diaryStore);
+
+const router = useRouter();
+const goToSearch = () => {
+  router.push(`/search/${props.mealType}`);
+};
 </script>
 
 <template>
@@ -30,7 +35,7 @@ const { entriesByMeal, mealTotals } = storeToRefs(diaryStore);
       />
       <div v-if="entriesByMeal[mealType].length === 0">Нет записей</div>
     </div>
-    <AddToMealBtn v-if="isMobile" :mealType="mealType" />
+    <button v-if="isMobile" class="add-button" @click="goToSearch">+</button>
   </div>
 </template>
 
