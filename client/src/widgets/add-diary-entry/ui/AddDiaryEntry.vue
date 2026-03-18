@@ -25,10 +25,9 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   });
 };
 
-const props = defineProps<{ mealType: MealType }>();
+const props = defineProps<{ mealType?: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
 
-const weight = ref<number>();
 const showModal = ref(false);
 
 const { isDesktop } = useBreakpoints();
@@ -36,29 +35,51 @@ const { isDesktop } = useBreakpoints();
 
 <template>
   <div>
-    <div class="controls">
-      <select v-if="isDesktop" v-model="selectedMeal" class="meal-select">
+    <div v-if="isDesktop" class="controls">
+      <select v-model="selectedMeal" class="meal-select">
         <option v-for="type in MEAL_TYPES" :key="type" :value="type">
           {{ MEAL_LABELS[type] }}
         </option>
       </select>
-      <input type="number" v-model.number="weight" placeholder="Вес (г)" min="1" />
-      <button @click="showModal = true" class="create-btn">Свой продукт</button>
+      <button @click="showModal = true" class="btn-create">+ Свой продукт</button>
     </div>
-    <AppModal v-model="showModal">
+    <AppModal v-model="showModal" :width="isDesktop ? 'auto' : '100vh'">
       <CreateProductForm @created="showModal = false" />
     </AppModal>
-    <ProductSearch :weight="weight" :mealType="selectedMeal" @addEntry="addEntry" />
+    <ProductSearch :mealType="selectedMeal" @addEntry="addEntry" />
+    <button v-if="!isDesktop" @click="showModal = true" class="btn-create">+</button>
   </div>
 </template>
 
 <style scoped>
 .controls {
   display: flex;
-  gap: 10px;
+  height: fit-content;
 }
-.create-btn {
+.btn-create {
   margin-left: auto;
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  background-color: rgb(var(--color-secondary));
+  color: #fff;
+  font-weight: bold;
+}
+@media (max-width: 767px) {
+  .btn-create {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    font-size: 28px;
+    line-height: 28px;
+  }
+}
+@media (min-width: 768px) {
+  .btn-create {
+    padding: 8px;
+  }
 }
 .meal-select {
   padding: 4px;
