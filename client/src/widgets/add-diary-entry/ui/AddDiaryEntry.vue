@@ -9,6 +9,10 @@ import { CreateProductForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
 
 const diaryStore = useDiaryStore();
+const { isMobile } = useBreakpoints();
+const props = defineProps<{ mealType?: MealType }>();
+const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
+const showModal = ref(false);
 
 const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   const factor = weight / 100;
@@ -24,18 +28,11 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
     carbs: Math.round(product.carbs * factor * 10) / 10,
   });
 };
-
-const props = defineProps<{ mealType?: MealType }>();
-const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
-
-const showModal = ref(false);
-
-const { isDesktop } = useBreakpoints();
 </script>
 
 <template>
   <div>
-    <div v-if="isDesktop" class="controls">
+    <div v-if="!isMobile" class="controls">
       <select v-model="selectedMeal" class="meal-select">
         <option v-for="type in MEAL_TYPES" :key="type" :value="type">
           {{ MEAL_LABELS[type] }}
@@ -43,18 +40,18 @@ const { isDesktop } = useBreakpoints();
       </select>
       <button @click="showModal = true" class="btn-create">+ Свой продукт</button>
     </div>
-    <AppModal v-model="showModal" :width="isDesktop ? 'auto' : '100vh'">
+    <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
       <CreateProductForm @created="showModal = false" />
     </AppModal>
     <ProductSearch :mealType="selectedMeal" @addEntry="addEntry" />
-    <button v-if="!isDesktop" @click="showModal = true" class="btn-create">+</button>
+    <button v-if="isMobile" @click="showModal = true" class="btn-create">+</button>
   </div>
 </template>
 
 <style scoped>
 .controls {
+  margin-bottom: 1rem;
   display: flex;
-  height: fit-content;
 }
 .btn-create {
   margin-left: auto;

@@ -22,31 +22,19 @@ const { isDesktop } = useBreakpoints();
 
 <style scoped>
 .diary-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-@media (max-width: 767px) {
-  .diary-page {
-    padding: 10px;
-  }
+  padding: 10px;
 }
 
 @media (min-width: 768px) {
   .diary-page {
+    max-width: 1200px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    padding: 2rem;
   }
   .meals-container {
-    grid-column: 1;
-  }
-  .desktop-search {
-    grid-column: 2;
-    position: sticky;
-    top: 20px;
-    height: fit-content;
   }
 }
 </style>

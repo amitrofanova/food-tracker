@@ -73,9 +73,9 @@ const weights = ref<Record<string, number>>({});
   gap: 12px;
 }
 .result-item {
-  padding: 8px;
+  padding: 8px 8px 8px 12px;
   border-radius: 8px;
-  background-color: rgb(232, 236, 247);
+  background-color: rgb(var(--color-primary));
 }
 .item-info,
 .item-header {
@@ -91,7 +91,7 @@ const weights = ref<Record<string, number>>({});
   gap: 10px;
 }
 .item-controls {
-  border: 1px solid rgb(var(--color-secondary, 0.7));
+  border: 1px solid rgba(var(--color-secondary), 0.7);
   border-radius: 4px;
 }
 .input-weight {
@@ -99,6 +99,7 @@ const weights = ref<Record<string, number>>({});
   width: 80px;
   border: none;
   border-radius: 4px 0 0 4px;
+  padding-left: 4px;
   outline: none;
 }
 .button-add {

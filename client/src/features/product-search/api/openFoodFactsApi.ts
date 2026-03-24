@@ -1,6 +1,6 @@
 import { http } from '@/shared/api/http';
 
-const API_BASE = '/cgi/search.pl';
+export const API_BASE = '/cgi/search.pl';
 
 export interface OpenFoodFactsResponse {
   products: any[];
@@ -13,8 +13,8 @@ export interface OpenFoodFactsResponse {
 export async function searchProducts(query: string, page = 1): Promise<OpenFoodFactsResponse> {
   const params = {
     search_terms: query.trim(),
-    // lang: 'ru',
-    lc: 'ru',
+    lang: 'ru',
+    // lc: 'ru',
     page,
     page_size: 10,
     json: 1,

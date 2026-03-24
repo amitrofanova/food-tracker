@@ -4,7 +4,6 @@ import { useSearchStore } from '../model/searchStore';
 import { searchProducts as searchApi } from '../api/openFoodFactsApi';
 import { mapOpenFoodFactsToProduct } from '../model/mappers';
 import type { OpenFoodFactsProduct } from '../model/mappers';
-import type { IProduct } from '@/entities/product';
 import { useDebounce } from '@/shared/lib/debounce';
 import { productDb } from '@/shared/db/productDb';
 
