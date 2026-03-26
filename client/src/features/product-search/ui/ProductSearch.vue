@@ -75,7 +75,7 @@ const weights = ref<Record<string, number>>({});
 .result-item {
   padding: 8px 8px 8px 12px;
   border-radius: 8px;
-  background-color: rgb(var(--color-primary));
+  background-color: rgba(var(--color-secondary), .2));
 }
 .item-info,
 .item-header {

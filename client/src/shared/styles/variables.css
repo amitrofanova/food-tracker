@@ -1,7 +1,5 @@
 :root {
-  --color-primary: 232, 236, 247; /* ##e8ecf7 */
+  --color-primary: 49, 65, 88; /* #314158 */
   --color-secondary: 125, 156, 196; /* #7D9CC4 */
-  --color-background: 243, 248, 255; /* #f3f8ff */
-  --color-text: 169, 169, 169; /* #A9A9A9 */
-  --color-error: 176, 0, 32; /*#b00020 */
+  --color-red: 176, 0, 32; /*#b00020 */
 }
