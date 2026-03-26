@@ -42,9 +42,8 @@ const onRemove = () => emit('remove', props.entry.id);
   background: none;
   border: none;
   cursor: pointer;
-  color: #999;
 }
 .remove-btn:hover {
-  color: #f00;
+  color: rgb(var(--color-red));
 }
 </style>

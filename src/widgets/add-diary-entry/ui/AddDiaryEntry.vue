@@ -7,6 +7,7 @@ import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
 import { AppModal } from '@/shared/ui/modal';
 import { CreateProductForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
+import { Icon } from '@/shared/ui/icon';
 
 const diaryStore = useDiaryStore();
 const { isMobile } = useBreakpoints();
@@ -33,18 +34,25 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 <template>
   <div>
     <div v-if="!isMobile" class="controls">
-      <select v-model="selectedMeal" class="meal-select">
-        <option v-for="type in MEAL_TYPES" :key="type" :value="type">
-          {{ MEAL_LABELS[type] }}
-        </option>
-      </select>
-      <button @click="showModal = true" class="btn-create">+ Свой продукт</button>
+      <div class="select-wrapper">
+        <select name="selectMeal" v-model="selectedMeal" class="meal-select">
+          <option v-for="type in MEAL_TYPES" :key="type" :value="type">
+            {{ MEAL_LABELS[type] }}
+          </option>
+        </select>
+        <Icon name="ArrowDown" color="white" class="select-icon" />
+      </div>
+      <button @click="showModal = true" class="btn-create">
+        <Icon name="PlusSymbol" /> Свой продукт
+      </button>
     </div>
     <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
       <CreateProductForm @created="showModal = false" />
     </AppModal>
     <ProductSearch :mealType="selectedMeal" @addEntry="addEntry" />
-    <button v-if="isMobile" @click="showModal = true" class="btn-create">+</button>
+    <button v-if="isMobile" @click="showModal = true" class="btn-create">
+      <Icon name="PlusSymbol" />
+    </button>
   </div>
 </template>
 
@@ -57,7 +65,7 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   margin-left: auto;
   appearance: none;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   background-color: rgb(var(--color-secondary));
   color: #fff;
   font-weight: bold;
@@ -75,10 +83,30 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 }
 @media (min-width: 768px) {
   .btn-create {
-    padding: 8px;
+    padding: 8px 10px 8px 6px;
   }
 }
+.select-wrapper {
+  position: relative;
+  display: flex;
+  border-radius: 6px;
+  background-color: rgb(var(--color-secondary));
+}
 .meal-select {
-  padding: 4px;
+  appearance: none;
+  padding: 4px 32px 4px 8px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: white;
+}
+.select-icon {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+option {
+  color: rgb(var(--color-primary));
 }
 </style>

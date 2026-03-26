@@ -13,10 +13,10 @@ const { isDesktop } = useBreakpoints();
   <div class="diary-page">
     <DateNavigation />
     <DailySummary />
+    <AddDiaryEntry v-if="isDesktop" />
     <div class="meals-container">
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
-    <AddDiaryEntry v-if="isDesktop" />
   </div>
 </template>
 
