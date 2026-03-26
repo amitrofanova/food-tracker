@@ -24,7 +24,7 @@ const onRemove = () => emit('remove', props.entry.id);
   gap: 12px;
   padding: 8px;
   border: 1px solid #eee;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 .name {
   flex: 2;

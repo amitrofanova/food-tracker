@@ -33,6 +33,8 @@ const sizeClass = computed(() => {
 .icon {
   display: inline-block;
   flex-shrink: 0;
+  width: 1em;
+  height: 1em;
   vertical-align: middle;
   fill: currentColor;
 }
