@@ -1,4 +1,5 @@
 @import '@/shared/styles/variables.css';
+@import '@/shared/styles/fonts';
 
 *,
 *::before,
@@ -11,6 +12,7 @@
 }
 
 body {
+  font-family: 'Gilroy-Regular', sans-serif;
   line-height: 1.5; /* Add accessible line-height */
   -webkit-font-smoothing: antialiased; /* Improve text rendering */
 }
