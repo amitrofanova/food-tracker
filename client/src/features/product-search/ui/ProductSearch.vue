@@ -60,7 +60,7 @@ const weights = ref<Record<string, number>>({});
 .input-search {
   width: 100%;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   margin-bottom: 20px;
 }
 .status {
@@ -74,8 +74,8 @@ const weights = ref<Record<string, number>>({});
 }
 .result-item {
   padding: 8px 8px 8px 12px;
-  border-radius: 8px;
-  background-color: rgba(var(--color-secondary), .2));
+  border-radius: var(--border-radius);
+  background-color: rgba(var(--color-secondary), 0.2);
 }
 .item-info,
 .item-header {
@@ -92,7 +92,7 @@ const weights = ref<Record<string, number>>({});
 }
 .item-controls {
   border: 1px solid rgba(var(--color-secondary), 0.7);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 .input-weight {
   appearance: none;

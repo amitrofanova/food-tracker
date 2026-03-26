@@ -65,10 +65,11 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   margin-left: auto;
   appearance: none;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   background-color: rgb(var(--color-secondary));
   color: #fff;
   font-weight: bold;
+  transition: opacity 0.2s ease-in-out 0.1s;
 }
 @media (max-width: 767px) {
   .btn-create {
@@ -85,12 +86,19 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   .btn-create {
     padding: 8px 10px 8px 6px;
   }
+  .btn-create:hover {
+    opacity: 0.9;
+  }
 }
 .select-wrapper {
   position: relative;
   display: flex;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   background-color: rgb(var(--color-secondary));
+  transition: opacity 0.2s ease-in-out 0.1s;
+}
+.select-wrapper:hover {
+  opacity: 0.9;
 }
 .meal-select {
   appearance: none;
@@ -98,7 +106,9 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   border: none;
   outline: none;
   background-color: transparent;
+  font-weight: bold;
   color: white;
+  z-index: 1;
 }
 .select-icon {
   position: absolute;

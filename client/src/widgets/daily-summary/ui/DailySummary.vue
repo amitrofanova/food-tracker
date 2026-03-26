@@ -35,7 +35,7 @@ const dailyGoal = 2000;
 .daily-summary {
   padding: 16px;
   background: #eee;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   margin-bottom: 20px;
 }
 .totals {
