@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useVirtualizer } from '@tanstack/vue-virtual';
 import type { MealType } from '@/shared/config/meals';
 import { useProductSearch } from '../lib/useProductSearch';
 
@@ -10,39 +10,82 @@ defineProps<{ mealType: MealType }>();
 const emit = defineEmits(['addEntry']);
 
 const weights = ref<Record<string, number>>({});
+
+const scrollContainerRef = ref<HTMLElement | null>(null);
+
+const virtualizer = useVirtualizer(
+  computed(() => ({
+    count: results.value.length,
+    getScrollElement: () => scrollContainerRef.value,
+    estimateSize: () => 80,
+    overscan: 5,
+  })),
+);
+
+const handleScroll = () => {
+  const container = scrollContainerRef.value;
+  if (!container) return;
+
+  const { scrollTop, scrollHeight, clientHeight } = container;
+  if (scrollTop + clientHeight >= scrollHeight - 200) {
+    if (hasMore.value && !loading.value) {
+      loadMore();
+    }
+  }
+};
 </script>
 
 <template>
-  <div>
+  <div class="wrap">
     <input v-model="searchQuery" type="search" placeholder="Искать продукт" class="input-search" />
-    <div v-if="results.length" class="results">
-      <div v-for="product in results" :key="product.id" class="result-item">
-        <div class="item-header">
-          <span>{{ product.name }}</span>
-        </div>
-        <div class="item-info">
-          <div class="macros">
-            <span>{{ product.calories }} ккал</span>
-            <span>Б: {{ product.protein }}</span>
-            <span>Ж: {{ product.fat }}</span>
-            <span>У: {{ product.carbs }}</span>
-          </div>
-          <div class="item-controls">
-            <input
-              type="number"
-              name="weight"
-              v-model.number="weights[product.id]"
-              placeholder="Вес (г)"
-              min="1"
-              class="input-weight"
-            />
-            <button
-              :disabled="!weights[product.id]"
-              class="button-add"
-              @click="emit('addEntry', product, weights[product.id], mealType)"
-            >
-              +
-            </button>
+    <div v-if="results.length" ref="scrollContainerRef" class="results" @scroll="handleScroll">
+      <div :style="{ height: `${virtualizer.getTotalSize()}px` }" class="virtual-list">
+        <div
+          v-for="virtualRow in virtualizer.getVirtualItems()"
+          :key="virtualRow.key"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            transform: `translateY(${virtualRow.start}px)`,
+          }"
+        >
+          <div class="result-item">
+            <div class="item-header">
+              <span>{{ results[virtualRow.index].name }}</span>
+            </div>
+            <div class="item-info">
+              <div class="macros">
+                <span>{{ results[virtualRow.index].calories }} ккал</span>
+                <span>Б: {{ results[virtualRow.index].protein }}</span>
+                <span>Ж: {{ results[virtualRow.index].fat }}</span>
+                <span>У: {{ results[virtualRow.index].carbs }}</span>
+              </div>
+              <div class="item-controls">
+                <input
+                  type="number"
+                  v-model.number="weights[results[virtualRow.index].id]"
+                  placeholder="Вес (г)"
+                  min="1"
+                  class="input-weight"
+                />
+                <button
+                  :disabled="!weights[results[virtualRow.index].id]"
+                  class="button-add"
+                  @click="
+                    emit(
+                      'addEntry',
+                      results[virtualRow.index],
+                      weights[results[virtualRow.index].id],
+                      mealType,
+                    )
+                  "
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -50,13 +93,15 @@ const weights = ref<Record<string, number>>({});
     <div v-if="loading" class="status">Loading</div>
     <div v-else-if="error" class="status error">{{ error }}</div>
     <div v-else-if="results.length === 0 && searchQuery" class="status">No results</div>
-    <button v-if="results.length && hasMore && !loading" @click="loadMore" class="load-more">
-      Load more
-    </button>
   </div>
 </template>
 
 <style scoped>
+.wrap {
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+}
 .input-search {
   width: 100%;
   padding: 10px;
@@ -68,9 +113,13 @@ const weights = ref<Record<string, number>>({});
   padding: 20px;
 }
 .results {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+.virtual-list {
+  position: relative;
+  width: 100%;
 }
 .result-item {
   padding: 8px 8px 8px 12px;

@@ -74,8 +74,8 @@ export function useProductSearch() {
   });
 
   const loadMore = async () => {
-    if (!hasMore.value || loading.value || searchQuery.value.trim().length <= MIN_QUERY_LENGTH)
-      return;
+    if (!hasMore.value || loading.value) return;
+    searchStore.setError(null);
 
     const nextPage = searchStore.currentPage + 1;
     searchStore.setLoading(true);

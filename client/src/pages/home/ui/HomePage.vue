@@ -11,10 +11,10 @@ const { isDesktop } = useBreakpoints();
 
 <template>
   <div class="diary-page">
-    <DateNavigation />
-    <DailySummary />
-    <AddDiaryEntry v-if="isDesktop" />
-    <div class="meals-container">
+    <AddDiaryEntry v-if="isDesktop" class="add-entry-wrap" />
+    <div>
+      <DateNavigation />
+      <DailySummary />
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
   </div>
@@ -24,7 +24,6 @@ const { isDesktop } = useBreakpoints();
 .diary-page {
   padding: 10px;
 }
-
 @media (min-width: 768px) {
   .diary-page {
     max-width: 1200px;
@@ -32,9 +31,10 @@ const { isDesktop } = useBreakpoints();
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    padding: 2rem;
+    padding: var(--padding);
   }
-  .meals-container {
+  .add-entry-wrap {
+    max-height: calc(100vh - 2 * var(--padding));
   }
 }
 </style>
