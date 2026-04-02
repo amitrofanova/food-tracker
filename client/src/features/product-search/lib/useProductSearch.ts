@@ -1,20 +1,26 @@
-// src/features/product-search/lib/useProductSearch.ts
-import { ref, computed } from 'vue';
-import { useInfiniteQuery } from '@tanstack/vue-query';
+import { useQuery, useInfiniteQuery, type InfiniteData } from '@tanstack/vue-query';
 import { productDb } from '@/shared/db/productDb';
-import { searchProducts as searchApi } from '../api/openFoodFactsApi';
-import { mapOpenFoodFactsToProduct } from '../model/mappers';
-import type { OpenFoodFactsProduct } from '../model/mappers';
 import { useDebounce } from '@/shared/lib/debounce';
+import type { IProduct } from '@/entities/product';
+import { searchProducts as searchApi } from '../api/openFoodFactsApi';
+import { mapOpenFoodFactsToProduct, type OpenFoodFactsProduct } from '../model/mappers';
 
-export function useProductSearch() {
-  const searchQuery = ref('');
+interface ApiProductsPage {
+  products: IProduct[];
+  nextPage: number | undefined;
+}
+
+type ApiProductsPages = InfiniteData<ApiProductsPage, number>;
+
+export const useProductSearch = () => {
+  const searchQuery = ref<string>('');
   const MIN_QUERY_LENGTH = 2;
+  const SUFFICIENT_LOCAL_RESULTS_LENGTH = 10;
+  const STALE_TIME = 300000; // 5 * 60 * 1000
 
-  const hasMinimumValidData = (product: OpenFoodFactsProduct): boolean => {
+  const isValid = (product: OpenFoodFactsProduct): boolean => {
     const name = product.product_name;
     const nutriments = product.nutriments;
-
     return !!(
       name &&
       nutriments &&
@@ -23,56 +29,56 @@ export function useProductSearch() {
     );
   };
 
-  // Реактивный queryKey через вычисляемое свойство
-  const queryKey = computed(() => ['product-search', searchQuery.value.trim()]);
+  const { data: localProducts } = useQuery<IProduct[]>({
+    queryKey: computed(() => ['local-products', searchQuery.value.trim()]),
+    queryFn: async () => {
+      const [custom, db] = await Promise.all([
+        productDb.getCustomProducts(searchQuery.value),
+        productDb.getProducts(searchQuery.value),
+      ]);
+      return [...custom, ...db];
+    },
+    enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
+    staleTime: Infinity,
+  });
 
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, error } =
-    useInfiniteQuery({
-      queryKey, // ← реактивный ключ
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
+    useInfiniteQuery<ApiProductsPage, Error, ApiProductsPages, [string, string], number>({
+      queryKey: computed(() => ['api-products', searchQuery.value.trim()]),
       queryFn: async ({ pageParam = 1 }) => {
-        // Локальные продукты загружаем ТОЛЬКО на первой странице
-        let localProducts: Product[] = [];
-        if (pageParam === 1 && searchQuery.value.trim().length > MIN_QUERY_LENGTH) {
-          const [customProducts, dbProducts] = await Promise.all([
-            productDb.getCustomProducts(searchQuery.value),
-            productDb.getProducts(searchQuery.value),
-          ]);
-          localProducts = [...customProducts, ...dbProducts];
+        if (pageParam === 1) {
+          const localCount = localProducts.value?.length ?? 0;
+          if (localCount >= SUFFICIENT_LOCAL_RESULTS_LENGTH) {
+            return { products: [], nextPage: undefined };
+          }
         }
 
-        // Запрос к API
         const apiResponse = await searchApi(searchQuery.value, pageParam);
+        const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
 
-        const apiProducts = apiResponse.products
-          .filter(hasMinimumValidData)
-          .map(mapOpenFoodFactsToProduct);
-
-        // Сохраняем в БД только новые продукты (избегаем дублирования)
         if (apiProducts.length > 0 && pageParam === 1) {
           await productDb.products.bulkPut(apiProducts);
         }
 
         return {
-          products: pageParam === 1 ? [...localProducts, ...apiProducts] : apiProducts,
+          products: apiProducts,
           nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
         };
       },
       getNextPageParam: (lastPage) => lastPage.nextPage,
-      initialPageParam: 1, // ← ОБЯЗАТЕЛЬНЫЙ ПАРАМЕТР
+      initialPageParam: 1,
       enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
-      staleTime: 5 * 60 * 1000,
-      // keepPreviousData: true, // опционально: сохранять предыдущие результаты при смене запроса
+      staleTime: STALE_TIME,
     });
 
-  const allProducts = computed(() => {
-    if (!data.value) return [];
-    return data.value.pages.flatMap((page) => page.products);
+  const allProducts = computed<IProduct[]>(() => {
+    const local = localProducts.value || [];
+    const apiPages = data.value?.pages.flatMap((page) => page.products) || [];
+    return [...local, ...apiPages];
   });
 
-  // Дебаунс для поискового запроса
   const debouncedSetQuery = useDebounce((q: string) => {
     searchQuery.value = q;
-    // TanStack Query автоматически перезапустит запрос при изменении queryKey
   }, 500);
 
   return {
@@ -85,4 +91,4 @@ export function useProductSearch() {
     hasMore: hasNextPage,
     loadMore: fetchNextPage,
   };
-}
+};

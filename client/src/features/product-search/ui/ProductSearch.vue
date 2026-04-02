@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useVirtualizer } from '@tanstack/vue-virtual';
+import type { IProduct } from '@/entities/product';
 import type { MealType } from '@/shared/config/meals';
 import { useProductSearch } from '../lib/useProductSearch';
 
 const props = defineProps<{ mealType: MealType }>();
-const emit = defineEmits(['addEntry']);
+const emit = defineEmits<{
+  (e: 'addEntry', product: IProduct, weight: number, mealType: MealType): void;
+}>();
 
 const {
   searchQuery,
@@ -53,8 +56,7 @@ watchEffect(() => {
       placeholder="Искать продукт"
       class="input-search"
     />
-
-    <div v-if="results.length || loading" ref="scrollContainerRef" class="results">
+    <div ref="scrollContainerRef" class="results">
       <div :style="{ height: `${totalSize.value}px`, position: 'relative', width: '100%' }">
         <div
           v-for="virtualRow in virtualRows"
@@ -68,10 +70,9 @@ watchEffect(() => {
             transform: `translateY(${virtualRow.start}px)`,
           }"
         >
-          <div v-if="virtualRow.index >= results.length" class="loader-item">
-            {{ hasMore ? 'Загрузка...' : 'Больше нет продуктов' }}
+          <div v-if="virtualRow.index >= results.length && hasMore" class="status" style="top: 0">
+            <div class="spinner"></div>
           </div>
-
           <div v-else class="result-item">
             <div class="item-header">
               {{ results[virtualRow.index].name }}
@@ -111,45 +112,34 @@ watchEffect(() => {
         </div>
       </div>
     </div>
-
-    <div v-if="loading && !isFetchingNextPage" class="status">Поиск...</div>
-    <div v-else-if="error" class="status error">{{ error }}</div>
-    <div v-else-if="results.length === 0 && searchQuery" class="status">Нет результатов</div>
-    <div v-else-if="!searchQuery && !results.length" class="status hint">
-      Введите запрос для поиска
+    <div
+      v-if="loading && !isFetchingNextPage"
+      class="status"
+      :style="{ top: `${totalSize + 70}px` }"
+    >
+      <div class="spinner"></div>
     </div>
+    <div v-else-if="error" class="status" :style="{ top: `${totalSize + 70}px` }">
+      {{ error }}
+    </div>
+    <div v-else-if="results.length === 0 && searchQuery" class="status">Нет результатов</div>
+    <div v-else-if="!results.length && !searchQuery" class="status">Введите запрос для поиска</div>
   </div>
 </template>
 
 <style scoped>
 .search-wrap {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-/* @media (max-width: 768px) {
-  .search-wrap {
-    height: calc(100vh - 2 * var(--padding));
-  }
-} */
 .input-search {
   width: 100%;
   padding: 10px;
   border-radius: var(--border-radius);
   margin-bottom: 20px;
   font-size: 16px;
-}
-.status {
-  text-align: center;
-  padding: 20px;
-  color: var(--color-text-secondary);
-}
-.status.error {
-  color: var(--color-error);
-}
-.status.hint {
-  color: var(--color-text-secondary);
-  font-style: italic;
 }
 .results {
   flex: 1;
@@ -158,12 +148,6 @@ watchEffect(() => {
   border-radius: var(--border-radius);
   scrollbar-width: none;
   background: rgba(var(--color-background), 0.5);
-}
-.loader-item {
-  padding: 16px;
-  text-align: center;
-  color: var(--color-text-secondary);
-  font-style: italic;
 }
 .result-item {
   padding: 8px 8px 8px 12px;
@@ -220,5 +204,28 @@ watchEffect(() => {
 .button-add:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+.status {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary);
+}
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
