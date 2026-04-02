@@ -1,19 +1,14 @@
-import { ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useSearchStore } from '../model/searchStore';
+// src/features/product-search/lib/useProductSearch.ts
+import { ref, computed } from 'vue';
+import { useInfiniteQuery } from '@tanstack/vue-query';
+import { productDb } from '@/shared/db/productDb';
 import { searchProducts as searchApi } from '../api/openFoodFactsApi';
 import { mapOpenFoodFactsToProduct } from '../model/mappers';
 import type { OpenFoodFactsProduct } from '../model/mappers';
 import { useDebounce } from '@/shared/lib/debounce';
-import { productDb } from '@/shared/db/productDb';
 
 export function useProductSearch() {
-  const searchStore = useSearchStore();
-
-  const { results, loading, error, hasMore } = storeToRefs(searchStore);
-
   const searchQuery = ref('');
-
   const MIN_QUERY_LENGTH = 2;
 
   const hasMinimumValidData = (product: OpenFoodFactsProduct): boolean => {
@@ -28,81 +23,66 @@ export function useProductSearch() {
     );
   };
 
-  const debouncedSearch = useDebounce(async (q: string) => {
-    if (q.trim().length <= MIN_QUERY_LENGTH) {
-      searchStore.setResults([]);
-      return;
-    }
+  // Реактивный queryKey через вычисляемое свойство
+  const queryKey = computed(() => ['product-search', searchQuery.value.trim()]);
 
-    searchStore.setLoading(true);
-    searchStore.setError(null);
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, error } =
+    useInfiniteQuery({
+      queryKey, // ← реактивный ключ
+      queryFn: async ({ pageParam = 1 }) => {
+        // Локальные продукты загружаем ТОЛЬКО на первой странице
+        let localProducts: Product[] = [];
+        if (pageParam === 1 && searchQuery.value.trim().length > MIN_QUERY_LENGTH) {
+          const [customProducts, dbProducts] = await Promise.all([
+            productDb.getCustomProducts(searchQuery.value),
+            productDb.getProducts(searchQuery.value),
+          ]);
+          localProducts = [...customProducts, ...dbProducts];
+        }
 
-    try {
-      const [customProducts, localProducts] = await Promise.all([
-        productDb.getCustomProducts(q),
-        productDb.getProducts(q),
-      ]);
+        // Запрос к API
+        const apiResponse = await searchApi(searchQuery.value, pageParam);
 
-      searchStore.setResults([...customProducts, ...localProducts]);
+        const apiProducts = apiResponse.products
+          .filter(hasMinimumValidData)
+          .map(mapOpenFoodFactsToProduct);
 
-      // TODO
-      // https://developers.google.com/safe-browsing/v4/caching?hl=ru
-      // https://platformv.sbertech.ru/docs/public/VDB/1.0.0/common/documents/tutorials/reranking-hybrid-search.html
-      // https://learn.microsoft.com/kk-kz/azure/search/hybrid-search-how-to-query#set-maxtextrecallsize-and-countandfacetmode-preview
-      const apiResponse = await searchApi(q, 1);
-      const apiProducts = apiResponse.products
-        .filter(hasMinimumValidData)
-        .map(mapOpenFoodFactsToProduct);
+        // Сохраняем в БД только новые продукты (избегаем дублирования)
+        if (apiProducts.length > 0 && pageParam === 1) {
+          await productDb.products.bulkPut(apiProducts);
+        }
 
-      if (apiProducts.length > 0) {
-        await productDb.products.bulkPut(apiProducts);
-      }
+        return {
+          products: pageParam === 1 ? [...localProducts, ...apiProducts] : apiProducts,
+          nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
+        };
+      },
+      getNextPageParam: (lastPage) => lastPage.nextPage,
+      initialPageParam: 1, // ← ОБЯЗАТЕЛЬНЫЙ ПАРАМЕТР
+      enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
+      staleTime: 5 * 60 * 1000,
+      // keepPreviousData: true, // опционально: сохранять предыдущие результаты при смене запроса
+    });
 
-      searchStore.appendResults(apiProducts);
-      searchStore.setHasMore(apiResponse.page < apiResponse.page_count);
-    } catch (err) {
-      console.error('Search error:', err);
-      searchStore.setError('Search error');
-    } finally {
-      searchStore.setLoading(false);
-    }
-  }, 1000);
-
-  watch(searchQuery, (newQuery) => {
-    searchStore.setQuery(newQuery);
-    debouncedSearch(newQuery);
+  const allProducts = computed(() => {
+    if (!data.value) return [];
+    return data.value.pages.flatMap((page) => page.products);
   });
 
-  const loadMore = async () => {
-    if (!hasMore.value || loading.value) return;
-    searchStore.setError(null);
-
-    const nextPage = searchStore.currentPage + 1;
-    searchStore.setLoading(true);
-
-    try {
-      const apiResponse = await searchApi(searchQuery.value, nextPage);
-      const apiProducts = apiResponse.products
-        .filter(hasMinimumValidData)
-        .map(mapOpenFoodFactsToProduct);
-
-      await productDb.products.bulkPut(apiProducts);
-      searchStore.appendResults(apiProducts);
-      searchStore.setCurrentPage(nextPage);
-      searchStore.setHasMore(apiResponse.page < apiResponse.page_count);
-    } catch (err) {
-      console.error('Load more error:', err);
-    } finally {
-      searchStore.setLoading(false);
-    }
-  };
+  // Дебаунс для поискового запроса
+  const debouncedSetQuery = useDebounce((q: string) => {
+    searchQuery.value = q;
+    // TanStack Query автоматически перезапустит запрос при изменении queryKey
+  }, 500);
 
   return {
     searchQuery,
-    results,
-    loading,
-    error,
-    hasMore,
-    loadMore,
+    setSearchQuery: debouncedSetQuery,
+    results: allProducts,
+    loading: isLoading,
+    isFetchingNextPage,
+    error: computed(() => error.value?.message || null),
+    hasMore: hasNextPage,
+    loadMore: fetchNextPage,
   };
 }

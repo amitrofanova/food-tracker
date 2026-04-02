@@ -13,14 +13,14 @@ export interface OpenFoodFactsResponse {
 export async function searchProducts(query: string, page = 1): Promise<OpenFoodFactsResponse> {
   const params = {
     search_terms: query.trim(),
-    lang: 'ru',
+    lang: 'en',
     // lc: 'ru',
     page,
     page_size: 10,
     json: 1,
     action: 'process',
     // sort_by: 'unique_scans_n',
-    fields: 'code,product_name,product_name_ru,generic_name,nutriments', //TODO
+    fields: 'code,product_name,generic_name,nutriments', //TODO
   };
 
   const { data } = await http.get(API_BASE, { params });

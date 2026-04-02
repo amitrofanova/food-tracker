@@ -11,7 +11,7 @@ const goBack = () => {
   router.back();
 };
 
-const dairyStore = useDiaryStore();
+const diaryStore = useDiaryStore();
 </script>
 
 <template>
@@ -20,7 +20,7 @@ const dairyStore = useDiaryStore();
       <button @click="goBack" class="btn-back"></button>
       <div class="info">
         <span class="meal">{{ mealType }}</span>
-        <span class="date">{{ dairyStore.selectedDate }}</span>
+        <span class="date">{{ diaryStore.selectedDate }}</span>
       </div>
     </div>
     <AddDiaryEntry :mealType="mealType" />
@@ -29,7 +29,10 @@ const dairyStore = useDiaryStore();
 
 <style scoped>
 .wrapper {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding-mobile) var(--padding-mobile) 0;
+  height: 100vh;
 }
 .header {
   margin-bottom: 1rem;

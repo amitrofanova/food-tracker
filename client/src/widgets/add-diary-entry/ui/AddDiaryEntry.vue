@@ -32,7 +32,7 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 </script>
 
 <template>
-  <div>
+  <div class="add-entry-wrap">
     <div v-if="!isMobile" class="controls">
       <div class="select-wrapper">
         <select name="selectMeal" v-model="selectedMeal" class="meal-select">
@@ -57,6 +57,12 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 </template>
 
 <style scoped>
+.add-entry-wrap {
+  height: calc(100vh - 2 * var(--padding));
+  display: flex;
+  flex-direction: column;
+  /* max-height: calc(100vh - 2 * var(--padding)); */
+}
 .controls {
   margin-bottom: 1rem;
   display: flex;
