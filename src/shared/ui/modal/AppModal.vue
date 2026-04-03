@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import Icon from '@/shared/ui/icon/IconBase.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -52,8 +52,8 @@ watch(
     <Transition appear :name="transitionName" @after-leave="emit('closed')">
       <div v-if="modelValue" class="modal-overlay" @click.self="handleOverlayClick">
         <div class="modal-container" :style="{ width, maxWidth }">
-          <button v-if="showCloseButton" class="modal-close" @click="close" aria-label="Закрыть">
-            <span>✕</span>
+          <button v-if="showCloseButton" class="btn-close" @click="close" aria-label="Закрыть">
+            <Icon name="Close" size="sm" />
           </button>
           <div class="modal-content">
             <slot />
@@ -92,47 +92,35 @@ watch(
     overflow-y: auto;
   }
 }
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.2s;
-}
-
-.modal-close:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
 .modal-content {
-  padding: 24px;
+  padding: var(--padding);
 }
-
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s ease;
 }
-
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
 }
-
 .modal-fade-enter-active .modal-container,
 .modal-fade-leave-active .modal-container {
   transition: transform 0.3s ease;
 }
-
 .modal-fade-enter-from .modal-container,
 .modal-fade-leave-to .modal-container {
   transform: scale(0.9);
+}
+.btn-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+.btn-close:hover {
+  opacity: 0.6;
 }
 </style>
