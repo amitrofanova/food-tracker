@@ -43,7 +43,7 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
         <Icon name="ArrowDown" color="white" class="select-icon" />
       </div>
       <button @click="showModal = true" class="btn-create">
-        <Icon name="PlusSymbol" /> Свой продукт
+        <Icon name="PlusSymbol" size="sm" /> Свой продукт
       </button>
     </div>
     <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '@/shared/ui/icon';
 import type { IDiaryEntry } from '../model/types';
 
 const props = defineProps<{ entry: IDiaryEntry }>();
@@ -13,7 +14,9 @@ const onRemove = () => emit('remove', props.entry.id);
     <span class="weight">{{ entry.weight }} г</span>
     <span class="calories">{{ entry.calories }} ккал</span>
     <span class="macros">Б:{{ entry.protein }} Ж:{{ entry.fat }} У:{{ entry.carbs }}</span>
-    <button @click="onRemove" class="remove-btn">✕</button>
+    <button @click="onRemove" class="remove-btn">
+      <Icon name="Close" size="sm" />
+    </button>
   </div>
 </template>
 
