@@ -1,6 +1,7 @@
 :root {
   --color-primary: 49, 65, 88; /* #314158 */
   --color-secondary: 125, 156, 196; /* #7D9CC4 */
+  --color-gray: 200, 200, 200; /* #C8C8C8 */
   --color-red: 176, 0, 32; /*#b00020 */
 
   --border-radius: 6px;

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { useDiaryStore } from '@/entities/diary-entry';
+import { useUserStore } from '@/entities/user/';
 import { storeToRefs } from 'pinia';
 
 const diaryStore = useDiaryStore();
 const { dailyTotals } = storeToRefs(diaryStore);
-const dailyGoal = 2000;
+
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
 </script>
 
 <template>
@@ -34,7 +38,7 @@ const dailyGoal = 2000;
 <style scoped>
 .daily-summary {
   padding: 16px;
-  background: #eee;
+  background-color: rgb(var(--color-gray));
   border-radius: var(--border-radius);
 }
 .totals {

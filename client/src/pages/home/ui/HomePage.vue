@@ -14,7 +14,7 @@ const { isDesktop } = useBreakpoints();
     <AddDiaryEntry v-if="isDesktop" />
     <div>
       <DateNavigation />
-      <DailySummary />
+      <DailySummary class="summary" />
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
   </div>
@@ -30,8 +30,11 @@ const { isDesktop } = useBreakpoints();
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 32px;
     padding: var(--padding) var(--padding) 0;
   }
+}
+.summary {
+  margin: 20px 0;
 }
 </style>

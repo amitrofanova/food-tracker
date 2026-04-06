@@ -16,7 +16,7 @@ export async function searchProducts(query: string, page = 1): Promise<OpenFoodF
     lang: 'en',
     // lc: 'ru',
     page,
-    page_size: 10,
+    page_size: 20,
     json: 1,
     action: 'process',
     // sort_by: 'unique_scans_n',
