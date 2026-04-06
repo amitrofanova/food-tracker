@@ -3,6 +3,7 @@ import { useVirtualizer } from '@tanstack/vue-virtual';
 import type { IProduct } from '@/entities/product';
 import type { MealType } from '@/shared/config/meals';
 import { useProductSearch } from '../lib/useProductSearch';
+import ProductSearchItem from './ProductSearchItem.vue';
 
 const props = defineProps<{ mealType: MealType }>();
 const emit = defineEmits<{
@@ -45,6 +46,10 @@ watchEffect(() => {
     loadMore();
   }
 });
+
+const handleWeightUpdate = (productId: string, weight: number | undefined) => {
+  weights.value[productId] = weight;
+};
 </script>
 
 <template>
@@ -73,42 +78,15 @@ watchEffect(() => {
           <div v-if="virtualRow.index >= results.length && hasMore" class="status" style="top: 0">
             <div class="spinner"></div>
           </div>
-          <div v-else class="result-item">
-            <div class="item-header">
-              {{ results[virtualRow.index].name }}
-            </div>
-            <div class="item-info">
-              <div class="macros">
-                <span>{{ results[virtualRow.index].calories }} ккал</span>
-                <span>Б: {{ results[virtualRow.index].protein }}</span>
-                <span>Ж: {{ results[virtualRow.index].fat }}</span>
-                <span>У: {{ results[virtualRow.index].carbs }}</span>
-              </div>
-              <div class="item-controls">
-                <input
-                  type="number"
-                  v-model.number="weights[results[virtualRow.index].id]"
-                  placeholder="Вес (г)"
-                  min="1"
-                  class="input-weight"
-                />
-                <button
-                  :disabled="!weights[results[virtualRow.index].id]"
-                  class="button-add"
-                  @click="
-                    emit(
-                      'addEntry',
-                      results[virtualRow.index],
-                      weights[results[virtualRow.index].id],
-                      mealType,
-                    )
-                  "
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
+          <ProductSearchItem
+            v-else
+            :key="results[virtualRow.index]?.id"
+            :product="results[virtualRow.index]"
+            :weight="weights[results[virtualRow.index].id]"
+            :meal-type="mealType"
+            @update:weight="(w) => handleWeightUpdate(results[virtualRow.index].id, w)"
+            @add-entry="(product, weight) => emit('addEntry', product, weight, mealType)"
+          />
         </div>
       </div>
     </div>
@@ -148,62 +126,6 @@ watchEffect(() => {
   border-radius: var(--border-radius);
   scrollbar-width: none;
   background: rgba(var(--color-background), 0.5);
-}
-.result-item {
-  padding: 8px 8px 8px 12px;
-  border-radius: var(--border-radius);
-  background-color: rgba(var(--color-secondary), 0.2);
-  margin: 4px 8px;
-}
-.item-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.item-header {
-  width: 100%;
-  text-overflow: ellipsis;
-  overflow-x: hidden;
-  white-space: nowrap;
-  font-weight: 700;
-  font-size: 16px;
-}
-.macros {
-  display: flex;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--color-text-secondary);
-}
-.item-controls {
-  display: flex;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-.input-weight {
-  appearance: none;
-  width: 80px;
-  border: none;
-  border-radius: 4px 0 0 4px;
-  padding: 8px 4px;
-  outline: none;
-  background: rgba(var(--color-background), 0.8);
-}
-.button-add {
-  appearance: none;
-  border: 0;
-  background-color: rgb(var(--color-secondary));
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  width: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.button-add:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
 }
 .status {
   position: absolute;
