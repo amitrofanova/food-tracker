@@ -1,4 +1,4 @@
-import { productDb } from '@/shared/db/productDb';
+import { db } from '@/shared/db';
 import type { IProduct } from '@/entities/product';
 
 export function useCreateProduct() {
@@ -8,7 +8,7 @@ export function useCreateProduct() {
     const newProduct = formData;
     console.log('newProduct', newProduct);
 
-    await productDb.putCustomProduct(newProduct);
+    await db.putCustomProduct(newProduct);
     return newProduct;
   };
 

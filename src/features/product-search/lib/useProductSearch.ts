@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery, type InfiniteData } from '@tanstack/vue-query';
-import { productDb } from '@/shared/db/productDb';
+import { db } from '@/shared/db';
 import { useDebounce } from '@/shared/lib/debounce';
 import type { IProduct } from '@/entities/product';
 import { searchProducts as searchApi } from '../api/openFoodFactsApi';
@@ -32,11 +32,11 @@ export const useProductSearch = () => {
   const { data: localProducts } = useQuery<IProduct[]>({
     queryKey: computed(() => ['local-products', searchQuery.value.trim()]),
     queryFn: async () => {
-      const [custom, db] = await Promise.all([
-        productDb.getCustomProducts(searchQuery.value),
-        productDb.getProducts(searchQuery.value),
+      const [custom, apiProducts] = await Promise.all([
+        db.getCustomProducts(searchQuery.value),
+        db.getProducts(searchQuery.value),
       ]);
-      return [...custom, ...db];
+      return [...custom, ...apiProducts];
     },
     enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
     staleTime: Infinity,
@@ -57,7 +57,7 @@ export const useProductSearch = () => {
         const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
 
         if (apiProducts.length > 0 && pageParam === 1) {
-          await productDb.products.bulkPut(apiProducts);
+          await db.products.bulkPut(apiProducts);
         }
 
         return {

@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
 import type { IUser } from './types';
-import { userDb } from '@/shared/db/userDb';
+import { db } from '@/shared/db';
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<IUser | null>(null);
 
   async function init() {
     const userName = 'Alena';
-    let loadedUser = await userDb.getUser(userName);
+    let loadedUser = await db.getUser(userName);
     if (!loadedUser) {
       loadedUser = { id: Date.now(), name: userName, calorieBudget: 2000 };
-      await userDb.saveUser(loadedUser);
+      await db.saveUser(loadedUser);
     }
     user.value = loadedUser;
   }
@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', () => {
   async function setCalorieBudget(budget: number) {
     if (!user.value) return;
     user.value.calorieBudget = budget;
-    await userDb.updateCalorieBudget(user.value.name, budget);
+    await db.updateCalorieBudget(user.value.name, budget);
   }
 
   init();
