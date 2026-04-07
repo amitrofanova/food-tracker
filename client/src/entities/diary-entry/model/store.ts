@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { IDiaryEntry } from './types';
-import { diaryDb } from '@/shared/db/diaryDb';
+import { db } from '@/shared/db';
 import type { MealType } from '@/shared/config/meals';
+import type { IDiaryEntry } from './types';
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
@@ -13,7 +12,7 @@ export const useDiaryStore = defineStore('diary', () => {
     isLoading.value = true;
     try {
       // TODO load last week
-      const allEntries = await diaryDb.entries.toArray();
+      const allEntries = await db.getAllEntries();
       entries.value = allEntries;
     } catch (error) {
       console.error('Failed to load entries:', error);
@@ -25,11 +24,11 @@ export const useDiaryStore = defineStore('diary', () => {
   loadEntries();
 
   async function saveEntry(entry: IDiaryEntry) {
-    await diaryDb.entries.put(entry);
+    await db.saveEntry(entry);
   }
 
   async function deleteEntry(id: string) {
-    await diaryDb.entries.delete(id);
+    await db.deleteEntry(id);
   }
 
   const dailyEntries = computed(() => entries.value.filter((e) => e.date === selectedDate.value));
