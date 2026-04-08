@@ -26,8 +26,12 @@ const onRemove = () => emit('remove', props.entry.id);
   align-items: center;
   gap: 12px;
   padding: 8px;
-  border: 1px solid #eee;
-  border-radius: var(--border-radius);
+}
+.entry-row:nth-child(even) {
+  background-color: #edf1f3;
+}
+.entry-row:nth-child(odd) {
+  background-color: #f9f9f9;
 }
 .name {
   flex: 2;

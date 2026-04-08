@@ -42,7 +42,11 @@ const goToSearch = () => {
 <style scoped>
 .wrap {
   border: 1px solid #eee;
+  border-bottom: 0;
   padding: 12px;
+}
+.wrap:last-child {
+  border-bottom: 1px solid #eee;
 }
 .header {
   display: flex;

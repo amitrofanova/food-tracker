@@ -51,4 +51,7 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
   flex-direction: column;
   align-items: center;
 }
+.label {
+  font-weight: 700;
+}
 </style>
