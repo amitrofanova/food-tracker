@@ -1,31 +1,29 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/entities/user/';  
 import { storeToRefs } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore)
-const calorieBudget = ref();
+const calorieBudget = ref(user.value?.calorieBudget);
 
 const emit = defineEmits<{
   (e: 'close'): void;
 }>();
 
-watch(user, (newUser) => {
-  if (newUser) {
-    calorieBudget.value = newUser.calorieBudget.toString();
-  }
-}, { immediate: true });
-
 const saveBudget = async () => {
-    await userStore.setCalorieBudget(calorieBudget.value);
+    await userStore.setCalorieBudget(Number(calorieBudget.value) || 0);
     emit('close');
 };
 </script>
 
 <template>
   <h1>Daily Food Calorie Budget</h1>
-  <input v-model="calorieBudget" type="number" placeholder="Enter your calorie budget" />
-  <button @click="saveBudget" class="btn-save">Save</button>
+  <form @submit.prevent="saveBudget" class="form">
+    <input v-model="calorieBudget" inputmode="numeric" pattern="[0-9]*" placeholder="Enter your calorie budget" />
+    <button type="submit" class="btn-save">Save</button>
+  </form>
+  <RouterLink to="/calorie-calculator" class="link">Calculate your calorie needs</RouterLink>
 </template>
 
 <style scoped>
@@ -33,6 +31,11 @@ h1 {
   margin-bottom: 16px;
   padding-right: 2rem;
   font-size: 24px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 input {
   width: 100%;
@@ -47,11 +50,10 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(var(--color-secondary), 0.2);
 }
 .btn-save {
-  margin-top: 12px;
-  margin-left: auto;
   appearance: none;
   border: none;
   border-radius: var(--border-radius);
+  padding: 10px 16px;
   background-color: rgb(var(--color-secondary));
   color: #fff;
   font-weight: bold;
@@ -69,5 +71,11 @@ input:focus {
     height: 36px;    font-size: 28px;
     line-height: 28px;
   }
+}
+.link {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+  color: rgb(--var(--color-primary))
 }
 </style

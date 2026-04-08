@@ -12,4 +12,9 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/search'),
     props: true,
   },
+  {
+    path: '/calorie-calculator',
+    name: 'calorie-calculator',
+    component: () => import('@/pages/calorie-calculator'),
+  },
 ];
