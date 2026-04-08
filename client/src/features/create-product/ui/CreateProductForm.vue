@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { AppButton } from '@/shared/ui/button';
 import { useCreateProduct } from '../lib/useCreateProduct';
 
 const { createProduct } = useCreateProduct();
@@ -82,7 +83,7 @@ const handleSubmit = async () => {
       required
       class="half-width"
     />
-    <button type="submit" :disabled="!isValid">Сохранить</button>
+    <AppButton type="submit" :disabled="!isValid">Сохранить</AppButton>
   </form>
 </template>
 

@@ -8,6 +8,7 @@ import { AppModal } from '@/shared/ui/modal';
 import { CreateProductForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
 import { Icon } from '@/shared/ui/icon';
+import { AppButton } from '@/shared/ui/button';
 
 const diaryStore = useDiaryStore();
 const { isMobile } = useBreakpoints();
@@ -42,9 +43,9 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
         </select>
         <Icon name="ArrowDown" color="white" class="select-icon" />
       </div>
-      <button @click="showModal = true" class="btn-create">
+      <AppButton @click="showModal = true" class="btn-create">
         <Icon name="PlusSymbol" size="sm" /> Свой продукт
-      </button>
+      </AppButton>
     </div>
     <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
       <CreateProductForm @created="showModal = false" />
@@ -61,7 +62,6 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   height: calc(100vh - var(--padding) - 112px);
   display: flex;
   flex-direction: column;
-  /* max-height: calc(100vh - 2 * var(--padding)); */
 }
 .controls {
   margin-bottom: 1rem;
@@ -69,13 +69,6 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 }
 .btn-create {
   margin-left: auto;
-  appearance: none;
-  border: none;
-  border-radius: var(--border-radius);
-  background-color: rgb(var(--color-secondary));
-  color: #fff;
-  font-weight: bold;
-  transition: opacity 0.2s ease-in-out 0.1s;
 }
 @media (max-width: 767px) {
   .btn-create {
@@ -86,14 +79,6 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
     height: 36px;
     font-size: 28px;
     line-height: 28px;
-  }
-}
-@media (min-width: 768px) {
-  .btn-create {
-    padding: 8px 10px 8px 6px;
-  }
-  .btn-create:hover {
-    opacity: 0.9;
   }
 }
 .select-wrapper {
@@ -108,11 +93,10 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
 }
 .meal-select {
   appearance: none;
-  padding: 4px 32px 4px 8px;
+  padding: 4px 36px 4px 8px;
   border: none;
   outline: none;
   background-color: transparent;
-  font-weight: bold;
   color: white;
   z-index: 1;
 }

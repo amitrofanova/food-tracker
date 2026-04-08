@@ -18,6 +18,10 @@ withDefaults(
 <style scoped>
 .btn {
   appearance: none;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
   border: none;
   border-radius: var(--border-radius);
   padding: 10px 16px;
@@ -27,7 +31,7 @@ withDefaults(
   transition: opacity 0.2s ease-in-out 0.1s;
 }
 .btn:hover {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 .btn:disabled {
   opacity: 0.7;
