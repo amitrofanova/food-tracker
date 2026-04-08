@@ -14,6 +14,7 @@ type ApiProductsPages = InfiniteData<ApiProductsPage, number>;
 
 export const useProductSearch = () => {
   const searchQuery = ref<string>('');
+  const dbError = ref<string | null>(null);
   const MIN_QUERY_LENGTH = 2;
   const SUFFICIENT_LOCAL_RESULTS_LENGTH = 10;
   const STALE_TIME = 300000; // 5 * 60 * 1000
@@ -32,11 +33,18 @@ export const useProductSearch = () => {
   const { data: localProducts } = useQuery<IProduct[]>({
     queryKey: computed(() => ['local-products', searchQuery.value.trim()]),
     queryFn: async () => {
-      const [custom, apiProducts] = await Promise.all([
-        db.getCustomProducts(searchQuery.value),
-        db.getProducts(searchQuery.value),
-      ]);
-      return [...custom, ...apiProducts];
+      try {
+        dbError.value = null;
+        const [custom, apiProducts] = await Promise.all([
+          db.getCustomProducts(searchQuery.value),
+          db.getProducts(searchQuery.value),
+        ]);
+        return [...custom, ...apiProducts];
+      } catch (err) {
+        dbError.value = err instanceof Error ? err.message : 'Failed to load local products';
+        console.error('Failed to load local products:', err);
+        return [];
+      }
     },
     enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
     staleTime: Infinity,
@@ -46,24 +54,31 @@ export const useProductSearch = () => {
     useInfiniteQuery<ApiProductsPage, Error, ApiProductsPages, [string, string], number>({
       queryKey: computed(() => ['api-products', searchQuery.value.trim()]),
       queryFn: async ({ pageParam = 1 }) => {
-        if (pageParam === 1) {
-          const localCount = localProducts.value?.length ?? 0;
-          if (localCount >= SUFFICIENT_LOCAL_RESULTS_LENGTH) {
-            return { products: [], nextPage: undefined };
+        try {
+          dbError.value = null;
+          if (pageParam === 1) {
+            const localCount = localProducts.value?.length ?? 0;
+            if (localCount >= SUFFICIENT_LOCAL_RESULTS_LENGTH) {
+              return { products: [], nextPage: undefined };
+            }
           }
+
+          const apiResponse = await searchApi(searchQuery.value, pageParam);
+          const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
+
+          if (apiProducts.length > 0 && pageParam === 1) {
+            await db.products.bulkPut(apiProducts);
+          }
+
+          return {
+            products: apiProducts,
+            nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
+          };
+        } catch (err) {
+          dbError.value = err instanceof Error ? err.message : 'Failed to search products';
+          console.error('Failed to search products:', err);
+          throw err;
         }
-
-        const apiResponse = await searchApi(searchQuery.value, pageParam);
-        const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
-
-        if (apiProducts.length > 0 && pageParam === 1) {
-          await db.products.bulkPut(apiProducts);
-        }
-
-        return {
-          products: apiProducts,
-          nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
-        };
       },
       getNextPageParam: (lastPage) => lastPage.nextPage,
       initialPageParam: 1,
@@ -87,7 +102,7 @@ export const useProductSearch = () => {
     results: allProducts,
     loading: isLoading,
     isFetchingNextPage,
-    error: computed(() => error.value?.message || null),
+    error: computed(() => error.value?.message || dbError.value || null),
     hasMore: hasNextPage,
     loadMore: fetchNextPage,
   };
