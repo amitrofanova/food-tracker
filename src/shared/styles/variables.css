@@ -5,6 +5,7 @@
   --color-red: 176, 0, 32; /*#b00020 */
 
   --border-radius: 6px;
+  --header-height: 112px;
   --padding: 2rem;
   --padding-mobile: 1rem;
 }

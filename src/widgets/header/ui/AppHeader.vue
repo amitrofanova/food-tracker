@@ -6,26 +6,27 @@ const showCalorieBudgetForm = ref(false);
 </script>
 
 <template>
-  <header class="app-header">
-    <RouterLink to="/" class="app-title"><h1>Food Tracker</h1></RouterLink>
+  <header class="header">
+    <RouterLink to="/" class="title"><h1>Food Tracker</h1></RouterLink>
     <CalorieBudgetBtn @click="showCalorieBudgetForm = true" />
-    <AppModal v-model="showCalorieBudgetForm" title="Set Calorie Budget">
+    <AppModal v-model="showCalorieBudgetForm">
       <CalorieBudgetForm @close="showCalorieBudgetForm = false" />
     </AppModal>
   </header>
 </template>
 
 <style scoped>
-.app-header {
-  height: 112px;
+.header {
+  height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--padding);
   background-color: rgb(var(--color-primary));
 }
-.app-title {
+.title {
   margin: 0;
+  line-height: normal;
   color: white;
   text-decoration: none;
 }
