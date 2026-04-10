@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
   defineProps<{
     color?: string;
   }>(),
@@ -7,10 +7,30 @@ withDefaults(
     color: 'rgb(var(--color-secondary))',
   },
 );
+
+const textColor = computed(() => {
+  let rgb: number[] | undefined;
+
+  if (props.color.startsWith('rgb(var(')) {
+    const varMatch = props.color.match(/var\((--[^)]+)\)/);
+    if (varMatch && varMatch[1]) {
+      const varName = varMatch[1];
+      const value = getComputedStyle(document.documentElement).getPropertyValue(varName);
+      rgb = value.split(',').map((s) => parseInt(s.trim()));
+    }
+  } else {
+    rgb = props.color.match(/\d+/g)?.map(Number);
+  }
+
+  if (!rgb || rgb.length < 3 || rgb.some((v) => isNaN(v))) return '#fff';
+  const [r, g, b] = rgb as [number, number, number];
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 185 ? '#000' : '#fff';
+});
 </script>
 
 <template>
-  <button class="btn" :style="{ backgroundColor: color }" @click="$emit('click')">
+  <button class="btn" :style="{ backgroundColor: color, color: textColor }" @click="$emit('click')">
     <slot />
   </button>
 </template>

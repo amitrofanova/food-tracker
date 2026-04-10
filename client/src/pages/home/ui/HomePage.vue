@@ -10,7 +10,7 @@ const { isDesktop } = useBreakpoints();
 </script>
 
 <template>
-  <div class="diary-page">
+  <div class="wrapper">
     <AddDiaryEntry v-if="isDesktop" />
     <div>
       <DateNavigation />
@@ -21,17 +21,11 @@ const { isDesktop } = useBreakpoints();
 </template>
 
 <style scoped>
-.diary-page {
-  padding: var(--padding-mobile) var(--padding-mobile) 0;
-}
 @media (min-width: 768px) {
-  .diary-page {
-    max-width: 1200px;
-    margin: 0 auto;
+  .wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 32px;
-    padding: var(--padding) var(--padding) 0;
   }
 }
 .summary {

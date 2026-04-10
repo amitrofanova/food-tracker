@@ -8,7 +8,7 @@ const { user } = storeToRefs(userStore);
 
 <template>
   <button class="calorie-budget-btn">
-    <span>Calorie Budget</span>
+    <span>Норма калорий</span>
     {{ user?.calorieBudget }} ккал
   </button>
 </template>

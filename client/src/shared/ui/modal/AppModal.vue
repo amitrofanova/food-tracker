@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import Icon from '@/shared/ui/icon/IconBase.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const props = withDefaults(
   defineProps<{
@@ -44,6 +47,15 @@ watch(
     }
   },
   { immediate: true },
+);
+
+watch(
+  () => route.fullPath,
+  () => {
+    if (props.modelValue) {
+      close();
+    }
+  },
 );
 </script>
 

@@ -19,12 +19,12 @@ const saveBudget = async () => {
 </script>
 
 <template>
-  <h1>Daily Food Calorie Budget</h1>
+  <h1>Суточная норма калорий</h1>
   <form @submit.prevent="saveBudget" class="form">
     <input v-model="calorieBudget" inputmode="numeric" pattern="[0-9]*" placeholder="Enter your calorie budget" />
-    <AppButton type="submit">Save</AppButton>
+    <AppButton type="submit">Сохранить</AppButton>
   </form>
-  <RouterLink to="/calorie-calculator" class="link">Calculate your calorie needs</RouterLink>
+  <RouterLink to="/calorie-calculator" class="link">Рассчитать норму калорий</RouterLink>
 </template>
 
 <style scoped>

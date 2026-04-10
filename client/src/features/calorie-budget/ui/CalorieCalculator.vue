@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { AppButton } from '@/shared/ui/button';
 import { useCalorieCalculator } from '../model/useCalorieCalculator';
+import { useUserStore } from '@/entities/user/';
+import { AppButton } from '@/shared/ui/button';
 
 const { form, errors, result, calculate, clearError } = useCalorieCalculator();
 
-const emit = defineEmits(['calculated']);
+const userStore = useUserStore();
 
-const passResult = () => {
-  calculate();
-  emit('calculated', result.value?.targetCalories || 0);
+const save = async () => {
+  await userStore.setCalorieBudget(result.value?.targetCalories || 0);
 };
 </script>
 
 <template>
   <div class="calorie-calc">
-    <form @submit.prevent="passResult" class="calorie-calc__form">
+    <form @submit.prevent="calculate" class="calorie-calc__form">
+      <h1>Рассчитайте суточную норму калорий</h1>
       <fieldset class="calorie-calc__group">
         <legend>Пол</legend>
         <label>
@@ -81,11 +82,10 @@ const passResult = () => {
           <input type="radio" name="goal" value="gain" v-model="form.goal" /> Набор массы
         </label>
       </fieldset>
-
       <AppButton type="submit">Рассчитать норму</AppButton>
     </form>
     <div v-if="result" class="calorie-calc__result">
-      <h3>Ваша суточная норма</h3>
+      <h2>Ваша суточная норма</h2>
       <p>
         Базовый обмен (BMR): <strong>{{ result.bmr }}</strong> ккал
       </p>
@@ -95,7 +95,6 @@ const passResult = () => {
       <p class="calorie-calc__target">
         🎯 Цель: <strong>{{ result.targetCalories }}</strong> ккал/день
       </p>
-
       <p>
         <template v-if="result.dailyDeficitOrSurplus < 0">
           📉 Дефицит: {{ Math.abs(result.dailyDeficitOrSurplus) }} ккал
@@ -105,24 +104,31 @@ const passResult = () => {
         </template>
         <template v-else> ⚖️ Без изменений </template>
       </p>
-
       <p
         v-if="result.targetCalories <= 1200 && form.gender === 'female'"
         class="calorie-calc__warning"
       >
         ⚠️ Обратите внимание: рацион ниже 1200 ккал не рекомендуется без наблюдения врача.
       </p>
+      <AppButton color="rgb(var(--color-primary))" @click="save">Сохранить</AppButton>
     </div>
   </div>
 </template>
 
 <style scoped>
 .calorie-calc {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .calorie-calc {
+    flex-direction: row;
+    gap: 3rem;
+  }
 }
 .calorie-calc__form {
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -143,11 +149,9 @@ const passResult = () => {
   min-height: 1.2em;
 }
 .calorie-calc__result {
-  margin-top: 20px;
-  padding: 16px;
-  background: #f7fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 .calorie-calc__target {
   font-size: 1.2em;
@@ -181,5 +185,9 @@ select {
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+}
+h1,
+h2 {
+  font-size: 24px;
 }
 </style>
