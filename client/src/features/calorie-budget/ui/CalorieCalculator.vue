@@ -2,10 +2,19 @@
 import { useCalorieCalculator } from '../model/useCalorieCalculator';
 import { useUserStore } from '@/entities/user/';
 import { AppButton } from '@/shared/ui/button';
+import { AppSelect } from '@/shared/ui/select';
 
 const { form, errors, result, calculate, clearError } = useCalorieCalculator();
 
 const userStore = useUserStore();
+
+const activityOptions = [
+  { value: 'sedentary', label: 'Сидячий (мало/нет тренировок)' },
+  { value: 'light', label: 'Лёгкая (1–3 раза/неделю)' },
+  { value: 'moderate', label: 'Средняя (3–5 раз/неделю)' },
+  { value: 'active', label: 'Высокая (6–7 раз/неделю)' },
+  { value: 'very_active', label: 'Очень высокая (физ. труд / 2x тренировки)' },
+];
 
 const save = async () => {
   await userStore.setCalorieBudget(result.value?.targetCalories || 0);
@@ -62,13 +71,12 @@ const save = async () => {
       </div>
       <div class="calorie-calc__field">
         <label for="activity">Уровень активности</label>
-        <select id="activity" v-model="form.activityLevel">
-          <option value="sedentary">Сидячий (мало/нет тренировок)</option>
-          <option value="light">Лёгкая (1–3 раза/неделю)</option>
-          <option value="moderate">Средняя (3–5 раз/неделю)</option>
-          <option value="active">Высокая (6–7 раз/неделю)</option>
-          <option value="very_active">Очень высокая (физ. труд / 2x тренировки)</option>
-        </select>
+        <AppSelect
+          id="activity"
+          name="activity"
+          :options="activityOptions"
+          v-model="form.activityLevel"
+        />
       </div>
       <fieldset class="calorie-calc__group">
         <legend>Цель</legend>
