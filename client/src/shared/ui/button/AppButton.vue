@@ -2,9 +2,11 @@
 const props = withDefaults(
   defineProps<{
     color?: string;
+    size?: 'sm' | 'md' | 'lg';
   }>(),
   {
     color: 'rgb(var(--color-secondary))',
+    size: 'md',
   },
 );
 
@@ -30,7 +32,11 @@ const textColor = computed(() => {
 </script>
 
 <template>
-  <button class="btn" :style="{ backgroundColor: color, color: textColor }" @click="$emit('click')">
+  <button
+    :class="`btn btn--${size}`"
+    :style="{ backgroundColor: color, color: textColor }"
+    @click="$emit('click')"
+  >
     <slot />
   </button>
 </template>
@@ -56,5 +62,16 @@ const textColor = computed(() => {
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+.btn--sm {
+  padding: 8px 12px;
+  font-size: 0.9em;
+}
+.btn--md {
+  padding: 10px 16px;
+}
+.btn--lg {
+  padding: 12px 20px;
+  font-size: 1.1em;
 }
 </style>

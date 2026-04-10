@@ -50,7 +50,7 @@ const handleChange = (event: Event) => {
 <style scoped>
 .select-wrapper {
   position: relative;
-  width: max-content;
+  max-width: max-content;
   display: flex;
   border-radius: var(--border-radius);
   background-color: rgb(var(--color-secondary));

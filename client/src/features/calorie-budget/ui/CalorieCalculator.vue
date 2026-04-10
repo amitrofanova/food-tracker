@@ -13,7 +13,7 @@ const activityOptions = [
   { value: 'light', label: 'Лёгкая (1–3 раза/неделю)' },
   { value: 'moderate', label: 'Средняя (3–5 раз/неделю)' },
   { value: 'active', label: 'Высокая (6–7 раз/неделю)' },
-  { value: 'very_active', label: 'Очень высокая (физ. труд / 2x тренировки)' },
+  { value: 'very_active', label: 'Очень высокая (физ. труд / 2x)' },
 ];
 
 const save = async () => {
@@ -139,7 +139,7 @@ const save = async () => {
   max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 .calorie-calc__inputs {
   display: grid;
@@ -159,7 +159,8 @@ const save = async () => {
 .calorie-calc__result {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 .calorie-calc__target {
   font-size: 1.2em;

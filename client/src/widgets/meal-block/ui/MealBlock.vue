@@ -5,6 +5,8 @@ import { useDiaryStore } from '@/entities/diary-entry';
 import { EntryRow } from '@/entities/diary-entry';
 import { MEAL_LABELS, type MealType } from '@/shared/config/meals';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { AppButton } from '@/shared/ui/button';
+import { Icon } from '@/shared/ui/icon';
 
 const { isMobile } = useBreakpoints();
 
@@ -35,7 +37,15 @@ const goToSearch = () => {
       />
       <div v-if="entriesByMeal[mealType].length === 0">Нет записей</div>
     </div>
-    <button v-if="isMobile" class="add-button" @click="goToSearch">+</button>
+    <AppButton
+      v-if="isMobile"
+      size="sm"
+      color="rgb(var(--color-primary))"
+      class="btn-add"
+      @click="goToSearch"
+    >
+      <Icon name="PlusSymbol" size="sm" />
+    </AppButton>
   </div>
 </template>
 
@@ -52,5 +62,9 @@ const goToSearch = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.btn-add {
+  margin-top: 0.5rem;
+  margin-left: auto;
 }
 </style>

@@ -18,6 +18,7 @@ const { user } = storeToRefs(userStore);
   display: flex;
   flex-direction: column;
   align-items: end;
+  text-align: end;
   background-color: transparent;
   color: #fff;
   border: none;

@@ -46,11 +46,15 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
   display: flex;
   gap: 16px;
   justify-content: space-around;
+  flex-wrap: wrap;
 }
 .total-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.total-item:first-of-type {
+  flex: 1 1 100%;
 }
 .label {
   font-weight: 700;
