@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { IProduct } from '@/entities/product/model/types';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
-import { AppModal } from '@/shared/ui/modal';
-import { CreateProductForm } from '@/features/create-product';
+import type { MealType } from '@/shared/config/meals';
+import { CreateProductForm, AddEntryForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
 import { Icon } from '@/shared/ui/icon';
+import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
+import { MealSelect } from '@/shared/ui/select';
 
 const diaryStore = useDiaryStore();
 const { isMobile } = useBreakpoints();
@@ -25,30 +25,46 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
     mealType,
     weight,
     calories: Math.round(product.calories * factor),
-    protein: Math.round(product.protein * factor * 10) / 10,
-    fat: Math.round(product.fat * factor * 10) / 10,
-    carbs: Math.round(product.carbs * factor * 10) / 10,
+    protein: Math.round(product.protein * factor),
+    fat: Math.round(product.fat * factor),
+    carbs: Math.round(product.carbs * factor),
   });
+};
+
+const createdProduct = ref<IProduct | null>(null);
+const enabledAddProductForm = ref(false);
+const handleCreated = (product: IProduct) => {
+  createdProduct.value = product;
+  enabledAddProductForm.value = true;
+};
+const addCreatedProduct = (weight: number, mealType: MealType) => {
+  if (createdProduct.value) {
+    addEntry(createdProduct.value, weight, mealType);
+    createdProduct.value = null;
+    enabledAddProductForm.value = false;
+    showModal.value = false;
+  }
 };
 </script>
 
 <template>
   <div class="add-entry-wrap">
     <div v-if="!isMobile" class="controls">
-      <div class="select-wrapper">
-        <select name="selectMeal" v-model="selectedMeal" class="meal-select">
-          <option v-for="type in MEAL_TYPES" :key="type" :value="type">
-            {{ MEAL_LABELS[type] }}
-          </option>
-        </select>
-        <Icon name="ArrowDown" color="white" class="select-icon" />
-      </div>
+      <MealSelect v-model="selectedMeal" />
       <AppButton @click="showModal = true" class="btn-create">
-        <Icon name="PlusSymbol" size="sm" /> Свой продукт
+        <Icon name="PlusSymbol" size="sm" />
+        <span class="">Свой продукт</span>
       </AppButton>
     </div>
     <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
-      <CreateProductForm @created="showModal = false" />
+      <div class="product-modal">
+        <CreateProductForm @created="handleCreated" />
+        <AddEntryForm
+          :disabled="!enabledAddProductForm"
+          :newProduct="createdProduct"
+          @add-entry="addCreatedProduct"
+        />
+      </div>
     </AppModal>
     <ProductSearch :mealType="selectedMeal" @addEntry="addEntry" />
     <button v-if="isMobile" @click="showModal = true" class="btn-create">
@@ -62,6 +78,7 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
   height: calc(100vh - var(--padding) - 112px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .controls {
   margin-bottom: 1rem;
@@ -81,32 +98,9 @@ const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
     line-height: 28px;
   }
 }
-.select-wrapper {
-  position: relative;
+.product-modal {
   display: flex;
-  border-radius: var(--border-radius);
-  background-color: rgb(var(--color-secondary));
-  transition: opacity 0.2s ease-in-out 0.1s;
-}
-.select-wrapper:hover {
-  opacity: 0.9;
-}
-.meal-select {
-  appearance: none;
-  padding: 4px 36px 4px 8px;
-  border: none;
-  outline: none;
-  background-color: transparent;
-  color: white;
-  z-index: 1;
-}
-.select-icon {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-}
-option {
-  color: rgb(var(--color-primary));
+  flex-direction: column;
+  gap: 2rem;
 }
 </style>

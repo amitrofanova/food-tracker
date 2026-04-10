@@ -99,7 +99,7 @@ onUnmounted(() => clearTimeout(resetTimeout));
   width: 80px;
   border: none;
   border-radius: 4px 0 0 4px;
-  padding: 8px 4px;
+  padding: 6px;
   outline: none;
   background: rgba(var(--color-background), 0.8);
 }
