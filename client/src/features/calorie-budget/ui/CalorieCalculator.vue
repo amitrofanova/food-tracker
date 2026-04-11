@@ -3,6 +3,7 @@ import { useCalorieCalculator } from '../model/useCalorieCalculator';
 import { useUserStore } from '@/entities/user/';
 import { AppButton } from '@/shared/ui/button';
 import { AppSelect } from '@/shared/ui/select';
+import { AppInput } from '@/shared/ui/input';
 
 const { form, errors, result, calculate, clearError } = useCalorieCalculator();
 
@@ -35,39 +36,30 @@ const save = async () => {
         </label>
       </fieldset>
       <div class="calorie-calc__inputs">
-        <div class="calorie-calc__field">
-          <label for="age">Возраст</label>
-          <input
-            id="age"
-            type="number"
-            placeholder="35"
-            v-model="form.age"
-            @input="clearError('age')"
-          />
-          <span v-if="errors.age" class="calorie-calc__error">{{ errors.age }}</span>
-        </div>
-        <div class="calorie-calc__field">
-          <label for="weight">Вес (кг)</label>
-          <input
-            id="weight"
-            type="number"
-            placeholder="70"
-            v-model="form.weight"
-            @input="clearError('weight')"
-          />
-          <span v-if="errors.weight" class="calorie-calc__error">{{ errors.weight }}</span>
-        </div>
-        <div class="calorie-calc__field">
-          <label for="height">Рост (см)</label>
-          <input
-            id="height"
-            type="number"
-            placeholder="175"
-            v-model="form.height"
-            @input="clearError('height')"
-          />
-          <span v-if="errors.height" class="calorie-calc__error">{{ errors.height }}</span>
-        </div>
+        <AppInput
+          label="Возраст"
+          type="number"
+          placeholder="35"
+          v-model="form.age"
+          :error="errors.age"
+          @input="clearError('age')"
+        />
+        <AppInput
+          label="Вес (кг)"
+          type="number"
+          placeholder="70"
+          v-model="form.weight"
+          :error="errors.weight"
+          @input="clearError('weight')"
+        />
+        <AppInput
+          label="Рост (см)"
+          type="number"
+          placeholder="175"
+          v-model="form.height"
+          :error="errors.height"
+          @input="clearError('height')"
+        />
       </div>
       <div class="calorie-calc__field">
         <label for="activity">Уровень активности</label>
@@ -151,11 +143,6 @@ const save = async () => {
   flex-direction: column;
   gap: 4px;
 }
-.calorie-calc__error {
-  color: rgb(var(--color-red));
-  font-size: 0.85em;
-  min-height: 1.2em;
-}
 .calorie-calc__result {
   display: flex;
   flex-direction: column;
@@ -186,14 +173,6 @@ label {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-}
-input[type='number'],
-select {
-  padding: 8px;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
 }
 h1,
 h2 {
