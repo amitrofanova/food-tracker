@@ -1,48 +1,84 @@
-# food-tracker
+# Food Tracker
 
-This template should help get you started developing with Vue 3 in Vite.
+Приложение для учёта питания и контроля суточной нормы калорий.
 
-## Recommended IDE Setup
+## Возможности
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Добавление приёмов пищи в дневник
+- Подсчёт калорий и БЖУ за день
+- Установка и обновление суточной нормы калорий
+- Калькулятор нормы калорий
+- Поиск продуктов
+- Хранение данных локально в браузере через IndexedDB (Dexie)
 
-## Recommended Browser Setup
+## Технологии
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- **Vue 3** (`<script setup>`, Composition API)
+- **TypeScript**
+- **Pinia** (управление состоянием)
+- **Dexie** (обёртка над IndexedDB)
+- **Vite**
+- **FSD (Feature-Sliced Design)**
 
-## Type Support for `.vue` Imports in TS
+## Структура проекта
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+```text
+src/
+  app/                # инициализация приложения, провайдеры, роутинг
+  pages/              # страницы
+  widgets/            # крупные UI-блоки страницы
+  features/           # пользовательские сценарии
+  entities/           # бизнес-сущности (user, diary-entry, product)
+  shared/             # переиспользуемая инфраструктура (ui, db, config, styles)
+```
 
-## Customize configuration
+## Быстрый старт
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### 1. Установка зависимостей
 
-## Project Setup
-
-```sh
+```bash
 yarn
 ```
 
-### Compile and Hot-Reload for Development
+### 2. Запуск в режиме разработки
 
-```sh
+```bash
 yarn dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### 3. Сборка проекта
 
-```sh
+```bash
 yarn build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### 4. Предпросмотр production-сборки
 
-```sh
-yarn lint
+```bash
+yarn preview
 ```
+
+## Хранение данных
+
+Приложение использует IndexedDB через Dexie.  
+Данные сохраняются локально в браузере и не отправляются на сервер.
+
+Если нужно сбросить локальные данные:
+
+1. Откройте DevTools браузера
+2. Перейдите в `Application` → `IndexedDB`
+3. Удалите базу приложения
+
+## Архитектурные принципы
+
+- Логика данных и доступа к БД — в `shared/db`
+- Бизнес-логика сущностей — в `entities/*/model`
+- UI-компоненты общего назначения — в `shared/ui`
+- Минимизация дублирования: общие компоненты (`AppInput`, `AppSelect`, `AppButton`) используются в фичах и виджетах
+
+## Возможные улучшения
+
+- Добавить unit/integration тесты для store и db-слоя
+- Добавить централизованные уведомления об ошибках
+- Добавить экспорт/импорт данных дневника
+- Добавить синхронизацию с backend
