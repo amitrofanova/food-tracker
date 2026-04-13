@@ -32,11 +32,7 @@ const textColor = computed(() => {
 </script>
 
 <template>
-  <button
-    :class="`btn btn--${size}`"
-    :style="{ backgroundColor: color, color: textColor }"
-    @click="$emit('click')"
-  >
+  <button :class="`btn btn--${size}`" :style="{ backgroundColor: color, color: textColor }">
     <slot />
   </button>
 </template>
