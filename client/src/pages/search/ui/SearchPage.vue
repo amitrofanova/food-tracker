@@ -31,7 +31,7 @@ const diaryStore = useDiaryStore();
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: var(--padding-mobile) var(--padding-mobile) 0;
+  padding: var(--padding-mobile) 0;
   height: 100vh;
 }
 .header {

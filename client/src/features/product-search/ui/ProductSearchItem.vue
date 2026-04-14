@@ -5,12 +5,12 @@ import { Icon } from '@/shared/ui/icon';
 
 const props = defineProps<{
   product: IProduct;
-  weight: number | undefined;
+  weight: number;
   mealType: MealType;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:weight', weight: number | undefined): void;
+  (e: 'update:weight', weight: number): void;
   (e: 'addEntry', product: IProduct, weight: number, mealType: MealType): void;
 }>();
 
@@ -18,7 +18,7 @@ const isAdded = ref(false);
 let resetTimeout: ReturnType<typeof setTimeout>;
 
 const handleAdd = () => {
-  if (!props.weight) return;
+  if (props.weight <= 0) return;
 
   isAdded.value = true;
   emit('addEntry', props.product, props.weight, props.mealType);
@@ -26,7 +26,7 @@ const handleAdd = () => {
   clearTimeout(resetTimeout);
   resetTimeout = setTimeout(() => {
     isAdded.value = false;
-    emit('update:weight', undefined);
+    emit('update:weight', 0);
   }, 1000);
 };
 
@@ -47,9 +47,7 @@ onUnmounted(() => clearTimeout(resetTimeout));
         <input
           type="number"
           :value="weight"
-          @input="
-            (e) => emit('update:weight', Number((e.target as HTMLInputElement).value) || undefined)
-          "
+          @input="(e) => $emit('update:weight', Number((e.target as HTMLInputElement).value))"
           placeholder="Вес (г)"
           min="1"
           class="input-weight"

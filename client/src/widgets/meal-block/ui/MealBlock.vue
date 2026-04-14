@@ -56,6 +56,7 @@ const goToSearch = () => {
   padding: 12px;
 }
 .wrap:last-child {
+  margin-bottom: 50px;
   border-bottom: 1px solid #eee;
 }
 .header {

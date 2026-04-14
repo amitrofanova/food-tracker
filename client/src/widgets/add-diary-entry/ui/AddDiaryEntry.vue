@@ -75,7 +75,7 @@ const addCreatedProduct = (weight: number, mealType: MealType) => {
 
 <style scoped>
 .add-entry-wrap {
-  height: calc(100vh - var(--padding) - 112px);
+  height: calc(100vh - var(--padding) - var(--header-height));
   display: flex;
   flex-direction: column;
   overflow: hidden;

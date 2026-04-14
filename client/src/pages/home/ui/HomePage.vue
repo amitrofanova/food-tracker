@@ -21,9 +21,6 @@ const { isDesktop } = useBreakpoints();
 </template>
 
 <style scoped>
-.wrapper {
-  padding-bottom: 50px;
-}
 @media (min-width: 768px) {
   .wrapper {
     display: grid;

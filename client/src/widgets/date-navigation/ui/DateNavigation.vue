@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { storeToRefs } from 'pinia';
 import { Icon } from '@/shared/ui/icon';

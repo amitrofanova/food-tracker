@@ -5,7 +5,7 @@ import type { IProduct } from './types';
 export const useProductStore = defineStore('product', {
   state: () => ({
     products: LOCAL_FOODS,
-    searchResults: [] as IProduct[],
+    searchResults: [] as Omit<IProduct, 'id'>[],
   }),
   actions: {
     search(query: string) {

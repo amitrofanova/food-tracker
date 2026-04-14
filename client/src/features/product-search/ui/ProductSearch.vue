@@ -5,8 +5,8 @@ import type { MealType } from '@/shared/config/meals';
 import { useProductSearch } from '../lib/useProductSearch';
 import ProductSearchItem from './ProductSearchItem.vue';
 
-const props = defineProps<{ mealType: MealType }>();
-const emit = defineEmits<{
+defineProps<{ mealType: MealType }>();
+defineEmits<{
   (e: 'addEntry', product: IProduct, weight: number, mealType: MealType): void;
 }>();
 
@@ -47,7 +47,7 @@ watchEffect(() => {
   }
 });
 
-const handleWeightUpdate = (productId: string, weight: number | undefined) => {
+const handleWeightUpdate = (productId: string, weight = 0) => {
   weights.value[productId] = weight;
 };
 </script>
@@ -62,10 +62,10 @@ const handleWeightUpdate = (productId: string, weight: number | undefined) => {
       class="input-search"
     />
     <div ref="scrollContainerRef" class="results">
-      <div :style="{ height: `${totalSize.value}px`, position: 'relative', width: '100%' }">
+      <div>
         <div
           v-for="virtualRow in virtualRows"
-          :key="virtualRow.key"
+          :key="results[virtualRow.index]?.id"
           :style="{
             position: 'absolute',
             top: 0,
@@ -81,11 +81,11 @@ const handleWeightUpdate = (productId: string, weight: number | undefined) => {
           <ProductSearchItem
             v-else
             :key="results[virtualRow.index]?.id"
-            :product="results[virtualRow.index]"
-            :weight="weights[results[virtualRow.index].id]"
+            :product="results[virtualRow.index] as IProduct"
+            :weight="weights[results[virtualRow.index]!.id] || 0"
             :meal-type="mealType"
-            @update:weight="(w) => handleWeightUpdate(results[virtualRow.index].id, w)"
-            @add-entry="(product, weight) => emit('addEntry', product, weight, mealType)"
+            @update:weight="(w) => handleWeightUpdate(results[virtualRow.index]!.id, w)"
+            @add-entry="(product, weight) => $emit('addEntry', product, weight, mealType)"
           />
         </div>
       </div>
