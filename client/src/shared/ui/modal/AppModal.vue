@@ -62,7 +62,7 @@ watch(
 <template>
   <Teleport to="body">
     <Transition appear :name="transitionName" @after-leave="emit('closed')">
-      <div v-if="modelValue" class="modal-overlay" @click.self="handleOverlayClick">
+      <div v-if="modelValue" class="modal-overlay" @mousedown.self="handleOverlayClick">
         <div class="modal-container" :style="{ width, maxWidth }">
           <button v-if="showCloseButton" class="btn-close" @click="close" aria-label="Закрыть">
             <Icon name="Close" size="sm" />
