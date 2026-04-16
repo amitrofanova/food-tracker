@@ -57,42 +57,61 @@ const handleSubmit = async () => {
 
 <template>
   <div>
-    <h3>Свой продукт</h3>
-    <form @submit.prevent="handleSubmit" class="form">
-      <input v-model="form.name" placeholder="Название" required class="full-width" />
+    <h3 id="create-product-title">Свой продукт</h3>
+    <form aria-labelledby="create-product-title" class="form" @submit.prevent="handleSubmit">
+      <input
+        id="product-name"
+        v-model="form.name"
+        name="name"
+        placeholder="Название"
+        required
+        aria-required="true"
+        class="full-width"
+      />
       <input
         v-model.number="form.calories"
+        name="calories"
         type="number"
         min="1"
         placeholder="Калории (на 100г)"
         required
+        aria-required="true"
         class="half-width"
       />
       <input
         v-model.number="form.protein"
+        name="protein"
         type="number"
+        min="0"
         step="0.1"
         placeholder="Белки"
         required
+        aria-required="true"
         class="half-width"
       />
       <input
         v-model.number="form.fat"
+        name="fat"
         type="number"
+        min="0"
         step="0.1"
         placeholder="Жиры"
         required
+        aria-required="true"
         class="half-width"
       />
       <input
         v-model.number="form.carbs"
+        name="carbs"
         type="number"
+        min="0"
         step="0.1"
         placeholder="Углеводы"
         required
+        aria-required="true"
         class="half-width"
       />
-      <AppButton type="submit" :disabled="!isValid">Сохранить</AppButton>
+      <AppButton type="submit" :disabled="!isValid" :aria-disabled="!isValid">Сохранить</AppButton>
     </form>
   </div>
 </template>
@@ -121,5 +140,17 @@ input {
   .half-width {
     grid-column: 1fr;
   }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

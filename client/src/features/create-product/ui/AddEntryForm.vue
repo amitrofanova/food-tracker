@@ -11,8 +11,8 @@ defineProps<{
 
 const emit = defineEmits<{ 'add-entry': [weight: number, mealType: MealType] }>();
 
-const form = reactive({
-  meal: 'breakfast' as MealType,
+const form = reactive<{ meal: MealType }>({
+  meal: 'breakfast',
 });
 
 const addEntry = (weight: number) => {

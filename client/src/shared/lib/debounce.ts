@@ -1,11 +1,19 @@
-// TODO
-export function useDebounce<T extends (...args: any[]) => any>(fn: T, delay: number): T {
-  let timeout: number | null = null;
+type DebouncedFunction<T extends (this: unknown, ...args: unknown[]) => unknown> = (
+  this: ThisParameterType<T>,
+  ...args: Parameters<T>
+) => void;
 
-  return ((...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout);
-    timeout = window.setTimeout(() => {
-      fn(...args);
+export function useDebounce<T extends (this: unknown, ...args: unknown[]) => unknown>(
+  callback: T,
+  delay: number,
+): DebouncedFunction<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    if (timeout !== undefined) clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      callback.apply(this, args);
     }, delay);
-  }) as T;
+  };
 }
