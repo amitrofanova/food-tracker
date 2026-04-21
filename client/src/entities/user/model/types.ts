@@ -1,5 +1,5 @@
 export interface IUser {
-  id: string;
-  name: string;
-  calorieBudget: number;
+  id: number;
+  email: string;
+  calorieBudget?: number;
 }

@@ -1,43 +1,59 @@
 import { defineStore } from 'pinia';
-import { db } from '@/shared/db';
+import { registerUser, loginUser, getCurrentUser } from '@/shared/api/auth';
 import type { IUser } from './types';
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
 
+  // Restore session from token on app load
   async function init() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
     try {
-      error.value = null;
-      const userName = 'Alena';
-      let loadedUser = await db.getUser(userName);
-      if (!loadedUser) {
-        loadedUser = { id: Date.now().toString(), name: userName, calorieBudget: 2000 };
-        await db.saveUser(loadedUser);
-      }
-      user.value = loadedUser;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to initialize user';
-      console.error('User initialization error:', err);
+      const { data } = await getCurrentUser();
+      const calorieBudget = Number(localStorage.getItem('calorieBudget')) || undefined;
+      user.value = { ...data, calorieBudget };
+    } catch {
+      localStorage.removeItem('token');
     }
   }
 
-  async function setCalorieBudget(budget: number) {
+  async function login(email: string, password: string) {
     try {
       error.value = null;
-      if (!user.value) {
-        throw new Error('User not initialized');
-      }
-      user.value.calorieBudget = budget;
-      await db.updateCalorieBudget(user.value.id, budget);
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update calorie budget';
-      console.error('Calorie budget update error:', err);
-      throw err;
+      const { data } = await loginUser({ email, password });
+      localStorage.setItem('token', data.token);
+      const calorieBudget = Number(localStorage.getItem('calorieBudget')) || undefined;
+      user.value = { ...data.user, calorieBudget };
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      error.value = axiosErr.response?.data?.error || 'Login failed';
     }
+  }
+
+  async function register(email: string, password: string) {
+    try {
+      error.value = null;
+      await registerUser({ email, password });
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      error.value = axiosErr.response?.data?.error || 'Registration failed';
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    user.value = null;
+  }
+
+  async function setCalorieBudget(budget: number) {
+    if (!user.value) return;
+    user.value = { ...user.value, calorieBudget: budget };
+    localStorage.setItem('calorieBudget', String(budget));
   }
 
   init();
 
-  return { user, error, setCalorieBudget };
+  return { user, error, login, register, logout, setCalorieBudget };
 });

@@ -22,9 +22,8 @@ function assertNonNegativeNumber(value: unknown, field: string): asserts value i
 }
 
 function validateUser(user: IUser): void {
-  assertNonEmptyString(user.id, 'User id');
-  assertNonEmptyString(user.name, 'User name');
-  assertPositiveNumber(user.calorieBudget, 'Calorie budget');
+  assertNonNegativeNumber(user.id, 'User id');
+  assertNonEmptyString(user.email, 'User email');
 }
 
 function validateProduct(product: IProduct): void {
