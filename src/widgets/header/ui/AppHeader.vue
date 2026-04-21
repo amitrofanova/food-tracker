@@ -1,14 +1,26 @@
 <script setup lang="ts">
+import LoginForm from '@/entities/user/ui/LoginForm.vue';
+import RegisterForm from '@/entities/user/ui/RegisterForm.vue';
 import { CalorieBudgetBtn, CalorieBudgetForm } from '@/features/calorie-budget';
 import { AppModal } from '@/shared/ui/modal';
 
+const showLoginForm = ref(false);
+const showRegisterForm = ref(false);
 const showCalorieBudgetForm = ref(false);
 </script>
 
 <template>
   <header class="header">
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
+    <button @click="showLoginForm = true">Login</button>
+    <button @click="showRegisterForm = true">Register</button>
     <CalorieBudgetBtn @click="showCalorieBudgetForm = true" />
+    <AppModal v-model="showLoginForm">
+      <LoginForm @close="showLoginForm = false" />
+    </AppModal>
+    <AppModal v-model="showRegisterForm">
+      <RegisterForm @close="showRegisterForm = false" />
+    </AppModal>
     <AppModal v-model="showCalorieBudgetForm">
       <CalorieBudgetForm @close="showCalorieBudgetForm = false" />
     </AppModal>

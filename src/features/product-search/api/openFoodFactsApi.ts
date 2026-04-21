@@ -1,4 +1,4 @@
-import { http } from '@/shared/api/http';
+import { openfoodfactsHttp } from '@/shared/api/http';
 
 export const API_BASE = '/cgi/search.pl';
 
@@ -23,6 +23,6 @@ export async function searchProducts(query: string, page = 1): Promise<OpenFoodF
     fields: 'code,product_name,generic_name,nutriments', //TODO
   };
 
-  const { data } = await http.get(API_BASE, { params });
+  const { data } = await openfoodfactsHttp.get(API_BASE, { params });
   return data;
 }

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { db } from '@/shared/db';
 import type { MealType } from '@/shared/config/meals';
 import type { IDiaryEntry } from './types';
+import { fetchDiaryEntries, saveDiaryEntry, deleteDiaryEntry } from '@/shared/api/diary';
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
@@ -9,13 +9,11 @@ export const useDiaryStore = defineStore('diary', () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  async function loadEntries() {
+  async function loadEntries(date?: string) {
     isLoading.value = true;
     error.value = null;
     try {
-      // TODO load last week
-      const allEntries = await db.getAllEntries();
-      entries.value = allEntries;
+      entries.value = await fetchDiaryEntries(date || selectedDate.value);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load entries';
       console.error('Failed to load entries:', err);
@@ -24,12 +22,11 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  loadEntries();
-
-  async function saveEntry(entry: IDiaryEntry) {
+  async function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
     try {
       error.value = null;
-      await db.saveEntry(entry);
+      await saveDiaryEntry(entry);
+      await loadEntries(entry.date);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to save entry';
       console.error('Failed to save entry:', err);
@@ -37,10 +34,11 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  async function deleteEntry(id: string) {
+  async function removeEntry(id: string) {
     try {
       error.value = null;
-      await db.deleteEntry(id);
+      await deleteDiaryEntry(id);
+      await loadEntries();
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete entry';
       console.error('Failed to delete entry:', err);
@@ -58,9 +56,25 @@ export const useDiaryStore = defineStore('diary', () => {
       snack: [],
     };
     dailyEntries.value.forEach((entry) => {
-      map[entry.mealType].push(entry);
+      map[entry.mealType]?.push(entry);
     });
     return map;
+  });
+
+  const dailyTotals = computed(() => {
+    const totals = {
+      calories: 0,
+      proteins: 0,
+      fats: 0,
+      carbs: 0,
+    };
+    dailyEntries.value.forEach((entry) => {
+      totals.calories += entry.calories || 0;
+      totals.proteins += entry.protein || 0;
+      totals.fats += entry.fat || 0;
+      totals.carbs += entry.carbs || 0;
+    });
+    return totals;
   });
 
   const mealTotals = computed(() => {
@@ -71,68 +85,30 @@ export const useDiaryStore = defineStore('diary', () => {
       snack: 0,
     };
     dailyEntries.value.forEach((entry) => {
-      totals[entry.mealType] += entry.calories;
-    });
-    return totals;
-  });
-
-  const dailyTotals = computed(() => {
-    const totals = { calories: 0, proteins: 0, fats: 0, carbs: 0 };
-    dailyEntries.value.forEach((e) => {
-      totals.calories += e.calories;
-      totals.proteins += e.protein;
-      totals.fats += e.fat;
-      totals.carbs += e.carbs;
-    });
-    return totals;
-  });
-
-  async function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
-    try {
-      error.value = null;
-      const newEntry: IDiaryEntry = {
-        ...entry,
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-      };
-      entries.value.push(newEntry);
-      await saveEntry(newEntry);
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to add entry';
-      console.error('Failed to add entry:', err);
-      throw err;
-    }
-  }
-
-  async function removeEntry(id: string) {
-    try {
-      error.value = null;
-      const index = entries.value.findIndex((e) => e.id === id);
-      if (index !== -1) {
-        entries.value.splice(index, 1);
-        await deleteEntry(id);
+      if (entry.mealType && typeof entry.calories === 'number') {
+        totals[entry.mealType] += entry.calories;
       }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to remove entry';
-      console.error('Failed to remove entry:', err);
-      throw err;
-    }
-  }
+    });
+    return totals;
+  });
 
-  function setSelectedDate(date: string) {
-    selectedDate.value = date;
-  }
+  loadEntries();
 
   return {
     entries,
     selectedDate,
-    dailyEntries,
-    entriesByMeal,
-    mealTotals,
-    dailyTotals,
     isLoading,
     error,
+    loadEntries,
     addEntry,
     removeEntry,
-    setSelectedDate,
+    setSelectedDate(date: string) {
+      selectedDate.value = date;
+      loadEntries(date);
+    },
+    dailyEntries,
+    entriesByMeal,
+    dailyTotals,
+    mealTotals,
   };
 });
