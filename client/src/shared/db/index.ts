@@ -173,19 +173,7 @@ export class CalorieTrackerDB extends Dexie {
       assertNonEmptyString(name, 'User name');
       const user = await this.users.where('name').equals(name).first();
       if (user) {
-        let userId = user.id;
-        if (typeof userId !== 'string') {
-          userId = userId == null ? Date.now().toString() : String(userId);
-        }
-
-        if (!userId.trim()) {
-          userId = Date.now().toString();
-        }
-
-        if (user.id !== userId) {
-          user.id = userId;
-          await this.users.put(user);
-        }
+        // id is always a number per IUser type
       }
       return user;
     } catch (error) {
