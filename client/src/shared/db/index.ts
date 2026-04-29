@@ -171,11 +171,7 @@ export class CalorieTrackerDB extends Dexie {
   async getUser(name: string): Promise<IUser | undefined> {
     try {
       assertNonEmptyString(name, 'User name');
-      const user = await this.users.where('name').equals(name).first();
-      if (user) {
-        // id is always a number per IUser type
-      }
-      return user;
+      return await this.users.where('name').equals(name).first();
     } catch (error) {
       console.error('Failed to get user:', error);
       throw new Error(
