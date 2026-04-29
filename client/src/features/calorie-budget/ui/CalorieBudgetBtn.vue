@@ -29,6 +29,6 @@ const { user } = storeToRefs(userStore);
   transition: background-color 0.2s;
 }
 .calorie-budget-btn:hover {
-  background-color: rgb(var(--color-secondary), 0.9);
+  opacity: 0.8;
 }
 </style>

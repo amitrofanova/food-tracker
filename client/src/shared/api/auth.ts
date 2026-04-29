@@ -11,3 +11,7 @@ export async function loginUser(payload: { email: string; password: string }) {
 export async function getCurrentUser() {
   return http.get('/auth/me');
 }
+
+export async function updateCurrentUser(payload: { calorieBudget?: number }) {
+  return http.patch('/auth/me', payload);
+}

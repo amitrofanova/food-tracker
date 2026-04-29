@@ -7,6 +7,7 @@ const route = useRoute();
 const props = withDefaults(
   defineProps<{
     modelValue: boolean;
+    title?: string;
     closeOnClickOutside?: boolean;
     showCloseButton?: boolean;
     width?: string;
@@ -68,6 +69,7 @@ watch(
             <Icon name="Close" size="sm" />
           </button>
           <div class="modal-content">
+            <h2 v-if="title" class="header">{{ title }}</h2>
             <slot />
           </div>
         </div>
@@ -105,7 +107,7 @@ watch(
   }
 }
 .modal-content {
-  padding: var(--padding);
+  padding: 2rem;
 }
 .modal-fade-enter-active,
 .modal-fade-leave-active {
@@ -122,6 +124,9 @@ watch(
 .modal-fade-enter-from .modal-container,
 .modal-fade-leave-to .modal-container {
   transform: scale(0.9);
+}
+.header {
+  margin-bottom: 1rem;
 }
 .btn-close {
   position: absolute;
