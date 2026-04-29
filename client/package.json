@@ -18,7 +18,7 @@
     "@tanstack/vue-query": "^5.96.1",
     "@tanstack/vue-virtual": "^3.13.23",
     "@vueuse/core": "^14.2.1",
-    "axios": "^1.13.5",
+    "axios": "^1.15.2",
     "dexie": "^4.3.0",
     "pinia": "^3.0.4",
     "unplugin-auto-import": "^21.0.0",
