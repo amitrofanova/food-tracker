@@ -92,7 +92,9 @@ export const useDiaryStore = defineStore('diary', () => {
     return totals;
   });
 
-  loadEntries();
+  function clearEntries() {
+    entries.value = [];
+  }
 
   return {
     entries,
@@ -102,6 +104,7 @@ export const useDiaryStore = defineStore('diary', () => {
     loadEntries,
     addEntry,
     removeEntry,
+    clearEntries,
     setSelectedDate(date: string) {
       selectedDate.value = date;
       loadEntries(date);
