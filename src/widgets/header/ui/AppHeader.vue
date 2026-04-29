@@ -1,26 +1,31 @@
 <script setup lang="ts">
-import LoginForm from '@/entities/user/ui/LoginForm.vue';
-import RegisterForm from '@/entities/user/ui/RegisterForm.vue';
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/entities/user';
 import { CalorieBudgetBtn, CalorieBudgetForm } from '@/features/calorie-budget';
 import { AppModal } from '@/shared/ui/modal';
+import { AppButton } from '@/shared/ui/button';
+import { UserAuthModal, UserMenu } from '@/entities/user';
 
-const showLoginForm = ref(false);
-const showRegisterForm = ref(false);
+const userStore = useUserStore();
+const { isLoggedIn } = storeToRefs(userStore);
+
+const showAuthModal = ref(false);
 const showCalorieBudgetForm = ref(false);
 </script>
 
 <template>
   <header class="header">
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
-    <button @click="showLoginForm = true">Login</button>
-    <button @click="showRegisterForm = true">Register</button>
-    <CalorieBudgetBtn @click="showCalorieBudgetForm = true" />
-    <AppModal v-model="showLoginForm">
-      <LoginForm @close="showLoginForm = false" />
-    </AppModal>
-    <AppModal v-model="showRegisterForm">
-      <RegisterForm @close="showRegisterForm = false" />
-    </AppModal>
+    <div class="controls">
+      <template v-if="isLoggedIn">
+        <CalorieBudgetBtn @click="showCalorieBudgetForm = true" />
+        <UserMenu />
+      </template>
+      <AppButton v-else @click="showAuthModal = true" size="sm" color="transparent">
+        Войти
+      </AppButton>
+    </div>
+    <UserAuthModal v-model="showAuthModal"></UserAuthModal>
     <AppModal v-model="showCalorieBudgetForm">
       <CalorieBudgetForm @close="showCalorieBudgetForm = false" />
     </AppModal>
@@ -43,6 +48,11 @@ const showCalorieBudgetForm = ref(false);
   font-size: 24px;
   font-weight: 700;
   text-decoration: none;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 @media (min-width: 768px) {
   .header {

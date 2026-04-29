@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { registerUser, loginUser, getCurrentUser } from '@/shared/api/auth';
+import { registerUser, loginUser, getCurrentUser, updateCurrentUser } from '@/shared/api/auth';
 import type { IUser } from './types';
 
 export const useUserStore = defineStore('user', () => {
@@ -12,8 +12,7 @@ export const useUserStore = defineStore('user', () => {
     if (!token) return;
     try {
       const { data } = await getCurrentUser();
-      const calorieBudget = Number(localStorage.getItem('calorieBudget')) || undefined;
-      user.value = { ...data, calorieBudget };
+      user.value = data;
     } catch {
       localStorage.removeItem('token');
     }
@@ -24,8 +23,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = null;
       const { data } = await loginUser({ email, password });
       localStorage.setItem('token', data.token);
-      const calorieBudget = Number(localStorage.getItem('calorieBudget')) || undefined;
-      user.value = { ...data.user, calorieBudget };
+      user.value = data.user;
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
       error.value = axiosErr.response?.data?.error || 'Login failed';
@@ -36,6 +34,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       error.value = null;
       await registerUser({ email, password });
+      await login(email, password);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
       error.value = axiosErr.response?.data?.error || 'Registration failed';
@@ -49,11 +48,13 @@ export const useUserStore = defineStore('user', () => {
 
   async function setCalorieBudget(budget: number) {
     if (!user.value) return;
-    user.value = { ...user.value, calorieBudget: budget };
-    localStorage.setItem('calorieBudget', String(budget));
+    const { data } = await updateCurrentUser({ calorieBudget: budget });
+    user.value = data;
   }
+
+  const isLoggedIn = computed(() => user.value !== null);
 
   init();
 
-  return { user, error, login, register, logout, setCalorieBudget };
+  return { user, error, isLoggedIn, login, register, logout, setCalorieBudget };
 });
