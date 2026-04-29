@@ -1,7 +1,7 @@
-type DebouncedFunction<T extends (...args: any[]) => any> = (
-  ...args: Parameters<T>
-) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DebouncedFunction<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useDebounce<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
@@ -12,7 +12,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
     if (timeout !== undefined) clearTimeout(timeout);
 
     timeout = setTimeout(() => {
-      callback.apply(null, args);
+      callback(...args);
     }, delay);
   } as DebouncedFunction<T>;
 }
