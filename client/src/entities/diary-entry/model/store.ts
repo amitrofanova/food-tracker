@@ -2,6 +2,9 @@ import { defineStore } from 'pinia';
 import type { MealType } from '@/shared/config/meals';
 import type { IDiaryEntry } from './types';
 import { fetchDiaryEntries, saveDiaryEntry, deleteDiaryEntry } from '@/shared/api/diary';
+import { db } from '@/shared/db';
+
+const isAuthenticated = () => !!localStorage.getItem('token');
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
@@ -13,7 +16,13 @@ export const useDiaryStore = defineStore('diary', () => {
     isLoading.value = true;
     error.value = null;
     try {
-      entries.value = await fetchDiaryEntries(date || selectedDate.value);
+      if (isAuthenticated()) {
+        entries.value = await fetchDiaryEntries(date || selectedDate.value);
+      } else {
+        const all = await db.getAllEntries();
+        const target = date || selectedDate.value;
+        entries.value = all.filter((e) => e.date === target);
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load entries';
       console.error('Failed to load entries:', err);
@@ -25,8 +34,14 @@ export const useDiaryStore = defineStore('diary', () => {
   async function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
     try {
       error.value = null;
-      await saveDiaryEntry(entry);
-      await loadEntries(entry.date);
+      if (isAuthenticated()) {
+        await saveDiaryEntry(entry);
+        await loadEntries(entry.date);
+      } else {
+        const localEntry: IDiaryEntry = { ...entry, id: crypto.randomUUID() };
+        await db.saveEntry(localEntry);
+        entries.value = [...entries.value, localEntry];
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to save entry';
       console.error('Failed to save entry:', err);
@@ -37,8 +52,13 @@ export const useDiaryStore = defineStore('diary', () => {
   async function removeEntry(id: string) {
     try {
       error.value = null;
-      await deleteDiaryEntry(id);
-      await loadEntries();
+      if (isAuthenticated()) {
+        await deleteDiaryEntry(id);
+        await loadEntries();
+      } else {
+        await db.deleteEntry(id);
+        entries.value = entries.value.filter((e) => e.id !== id);
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete entry';
       console.error('Failed to delete entry:', err);

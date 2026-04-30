@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import { registerUser, loginUser, getCurrentUser, updateCurrentUser } from '@/shared/api/auth';
+import { db } from '@/shared/db';
 import type { IUser } from './types';
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
+  const hasPendingSync = ref(false);
 
   // Restore session from token on app load
   async function init() {
@@ -24,6 +26,10 @@ export const useUserStore = defineStore('user', () => {
       const { data } = await loginUser({ email, password });
       localStorage.setItem('token', data.token);
       user.value = data.user;
+      const localEntries = await db.getAllEntries();
+      if (localEntries.length > 0) {
+        hasPendingSync.value = true;
+      }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
       error.value = axiosErr.response?.data?.error || 'Login failed';
@@ -44,6 +50,7 @@ export const useUserStore = defineStore('user', () => {
   function logout() {
     localStorage.removeItem('token');
     user.value = null;
+    hasPendingSync.value = false;
   }
 
   async function setCalorieBudget(budget: number) {
@@ -56,5 +63,5 @@ export const useUserStore = defineStore('user', () => {
 
   init();
 
-  return { user, error, isLoggedIn, login, register, logout, setCalorieBudget };
+  return { user, error, isLoggedIn, hasPendingSync, login, register, logout, setCalorieBudget };
 });
