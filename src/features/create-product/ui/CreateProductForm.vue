@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppButton } from '@/shared/ui/button';
-import type { IProduct } from '@/entities/product/model/types';
+import type { IProduct } from '@/entities/product';
 import { useCreateProduct } from '../lib/useCreateProduct';
 
 const { createProduct } = useCreateProduct();

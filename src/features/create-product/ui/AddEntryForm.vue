@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { MealSelect } from '@/shared/ui/select';
 import type { MealType } from '@/shared/config/meals';
-import type { IProduct } from '@/entities/product/model/types';
-import AddEntryControls from '@/entities/diary-entry/ui/AddEntryControls.vue';
+import type { IProduct } from '@/entities/product';
+import { AddEntryControls } from '@/entities/diary-entry';
 
 defineProps<{
   disabled: boolean;

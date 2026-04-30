@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from '@/entities/user/model/store';
+import { useUserStore } from '@/entities/user';
 import { AppButton } from '@/shared/ui/button';
 
 const userStore = useUserStore();

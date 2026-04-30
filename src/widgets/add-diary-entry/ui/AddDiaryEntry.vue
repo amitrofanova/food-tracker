@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product/model/types';
+import type { IProduct } from '@/entities/product';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import type { MealType } from '@/shared/config/meals';
