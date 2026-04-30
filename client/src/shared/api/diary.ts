@@ -1,5 +1,5 @@
 import { http } from './http';
-import type { IDiaryEntry } from '@/entities/diary-entry/model/types';
+import type { IDiaryEntry } from '@/entities/diary-entry';
 
 export async function fetchDiaryEntries(date?: string): Promise<IDiaryEntry[]> {
   const params = date ? { date } : {};

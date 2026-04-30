@@ -1,4 +1,4 @@
-import type { IProduct } from '@/entities/product/model/types';
+import type { IProduct } from '@/entities/product';
 
 export interface OpenFoodFactsProduct {
   code: string;
