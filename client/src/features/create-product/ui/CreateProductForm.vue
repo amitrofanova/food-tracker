@@ -9,27 +9,40 @@ const emit = defineEmits<{
   created: [product: IProduct];
 }>();
 
-const form = reactive({
+interface ProductForm {
+  name: string;
+  calories: number | null;
+  protein: number | null;
+  fat: number | null;
+  carbs: number | null;
+}
+
+interface ValidatedProductForm {
+  name: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+}
+
+function isValidProductForm(f: ProductForm): f is ValidatedProductForm {
+  return (
+    f.name.trim().length > 0 &&
+    typeof f.calories === 'number' &&
+    f.calories > 0 &&
+    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === 'number' && v >= 0)
+  );
+}
+
+const form = reactive<ProductForm>({
   name: '',
-  calories: null as number | null,
-  protein: null as number | null,
-  fat: null as number | null,
-  carbs: null as number | null,
+  calories: null,
+  protein: null,
+  fat: null,
+  carbs: null,
 });
 
-const isValid = computed(() => {
-  return (
-    form.name &&
-    form.calories &&
-    form.calories > 0 &&
-    form.protein &&
-    form.protein >= 0 &&
-    form.fat &&
-    form.fat >= 0 &&
-    form.carbs &&
-    form.carbs >= 0
-  );
-});
+const isValid = computed(() => isValidProductForm(form));
 
 const resetForm = () => {
   form.name = '';
@@ -40,14 +53,15 @@ const resetForm = () => {
 };
 
 const handleSubmit = async () => {
-  if (!isValid.value) return;
-  const newProduct = {
-    id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+  if (!isValidProductForm(form)) return;
+
+  const newProduct: IProduct = {
+    id: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     name: form.name,
-    calories: form.calories!,
-    protein: form.protein!,
-    fat: form.fat!,
-    carbs: form.carbs!,
+    calories: form.calories,
+    protein: form.protein,
+    fat: form.fat,
+    carbs: form.carbs,
   };
   await createProduct(newProduct);
   resetForm();
@@ -140,17 +154,5 @@ input {
   .half-width {
     grid-column: 1fr;
   }
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 </style>
