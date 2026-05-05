@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Icon from '@/shared/ui/icon/IconBase.vue';
 import { useRoute } from 'vue-router';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 const route = useRoute();
 
@@ -17,11 +18,13 @@ const props = withDefaults(
   {
     closeOnClickOutside: true,
     showCloseButton: true,
-    width: 'auto',
     maxWidth: '100vw',
     transitionName: 'modal-fade',
   },
 );
+
+const { isMobile } = useBreakpoints();
+const adaptedWidth = computed(() => props.width || (isMobile.value ? '100%' : 'auto'));
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
@@ -64,7 +67,7 @@ watch(
   <Teleport to="body">
     <Transition appear :name="transitionName" @after-leave="emit('closed')">
       <div v-if="modelValue" class="modal-overlay" @mousedown.self="handleOverlayClick">
-        <div class="modal-container" :style="{ width, maxWidth }">
+        <div class="modal-container" :style="{ width: adaptedWidth, maxWidth }">
           <button v-if="showCloseButton" class="btn-close" @click="close" aria-label="Закрыть">
             <Icon name="Close" size="sm" />
           </button>
