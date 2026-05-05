@@ -17,18 +17,7 @@ const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
 const showModal = ref(false);
 
 const addEntry = (product: IProduct, weight: number, mealType: MealType) => {
-  const factor = weight / 100;
-  diaryStore.addEntry({
-    date: diaryStore.selectedDate,
-    productId: product.id,
-    productName: product.name,
-    mealType,
-    weight,
-    calories: Math.round(product.calories * factor),
-    protein: Math.round(product.protein * factor),
-    fat: Math.round(product.fat * factor),
-    carbs: Math.round(product.carbs * factor),
-  });
+  diaryStore.addEntry(product, weight, mealType);
 };
 
 const createdProduct = ref<IProduct | null>(null);

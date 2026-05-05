@@ -3,6 +3,7 @@ import type { MealType } from '@/shared/config/meals';
 import type { IDiaryEntry } from './types';
 import { fetchDiaryEntries, saveDiaryEntry, deleteDiaryEntry } from '@/shared/api/diary';
 import { db } from '@/shared/db';
+import type { IProduct } from '@/entities/product';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -31,14 +32,37 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  async function addEntry(entry: Omit<IDiaryEntry, 'id'>) {
+  async function addEntry(product: IProduct, weight: number, mealType: MealType) {
+    const date = selectedDate.value;
     try {
       error.value = null;
       if (isAuthenticated()) {
-        await saveDiaryEntry(entry);
-        await loadEntries(entry.date);
+        await saveDiaryEntry({
+          date,
+          productId: product.id,
+          productName: product.name,
+          mealType,
+          weight,
+          calories: product.calories,
+          protein: product.protein,
+          fat: product.fat,
+          carbs: product.carbs,
+        });
+        await loadEntries(date);
       } else {
-        const localEntry: IDiaryEntry = { ...entry, id: crypto.randomUUID() };
+        const factor = weight / 100;
+        const localEntry: IDiaryEntry = {
+          id: crypto.randomUUID(),
+          date,
+          productId: product.id,
+          productName: product.name,
+          mealType,
+          weight,
+          calories: Math.round(product.calories * factor),
+          protein: Math.round(product.protein * factor),
+          fat: Math.round(product.fat * factor),
+          carbs: Math.round(product.carbs * factor),
+        };
         await db.saveEntry(localEntry);
         entries.value = [...entries.value, localEntry];
       }
