@@ -21,15 +21,15 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
       </div>
       <div class="total-item">
         <span class="label">Белки</span>
-        <span class="value">{{ Math.round(dailyTotals.proteins) }} г</span>
+        <span class="value">{{ dailyTotals.proteins }} г</span>
       </div>
       <div class="total-item">
         <span class="label">Жиры</span>
-        <span class="value">{{ Math.round(dailyTotals.fats) }} г</span>
+        <span class="value">{{ dailyTotals.fats }} г</span>
       </div>
       <div class="total-item">
         <span class="label">Углеводы</span>
-        <span class="value">{{ Math.round(dailyTotals.carbs) }} г</span>
+        <span class="value">{{ dailyTotals.carbs }} г</span>
       </div>
     </div>
   </div>

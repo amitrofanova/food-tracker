@@ -118,7 +118,12 @@ export const useDiaryStore = defineStore('diary', () => {
       totals.fats += entry.fat || 0;
       totals.carbs += entry.carbs || 0;
     });
-    return totals;
+    return {
+      calories: Math.round(totals.calories),
+      proteins: Math.round(totals.proteins),
+      fats: Math.round(totals.fats),
+      carbs: Math.round(totals.carbs),
+    };
   });
 
   const mealTotals = computed(() => {
