@@ -46,3 +46,7 @@ h5,
 h6 {
   overflow-wrap: break-word; /* Avoid text overflows */
 }
+
+ul {
+  padding: 0;
+}

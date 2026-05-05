@@ -128,6 +128,29 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
+  async getAllCustomProducts(): Promise<IProduct[]> {
+    try {
+      return await this.customProducts.toArray();
+    } catch (error) {
+      console.error('Failed to load custom products:', error);
+      throw new Error(
+        `Failed to load custom products: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async deleteCustomProduct(id: string): Promise<void> {
+    try {
+      assertNonEmptyString(id, 'Product id');
+      await this.customProducts.delete(id);
+    } catch (error) {
+      console.error('Failed to delete custom product:', error);
+      throw new Error(
+        `Failed to delete custom product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
   async putProduct(product: IProduct): Promise<void> {
     try {
       validateProduct(product);

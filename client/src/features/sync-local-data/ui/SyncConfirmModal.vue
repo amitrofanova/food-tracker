@@ -4,6 +4,7 @@ import { AppButton } from '@/shared/ui/button';
 import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { saveDiaryEntry } from '@/shared/api/diary';
+import { upsertProduct } from '@/shared/api/products';
 import { db } from '@/shared/db';
 
 const userStore = useUserStore();
@@ -26,6 +27,11 @@ watch(
 async function confirmSync() {
   isSyncing.value = true;
   try {
+    const customProducts = await db.getAllCustomProducts();
+    for (const product of customProducts) {
+      await upsertProduct(product);
+    }
+
     const entries = await db.getAllEntries();
     for (const entry of entries) {
       const { id, ...rest } = entry;
