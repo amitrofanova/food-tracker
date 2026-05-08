@@ -34,6 +34,7 @@ watch(
       <p class="">{{ userStore.user?.email }}</p>
       <ul>
         <li class="list-item"><RouterLink to="/my-products">Мои продукты</RouterLink></li>
+        <li class="list-item"><RouterLink to="/recipes">Мои рецепты</RouterLink></li>
         <li class="list-item">
           <RouterLink to="/calorie-calculator" class="link">Рассчитать норму калорий</RouterLink>
         </li>

@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config/meals';
 import { Icon } from '@/shared/ui/icon';
 
 const props = defineProps<{
   product: IProduct;
   weight: number;
-  mealType: MealType;
 }>();
 
 const emit = defineEmits<{
   (e: 'update:weight', weight: number): void;
-  (e: 'addEntry', product: IProduct, weight: number, mealType: MealType): void;
+  (e: 'select', product: IProduct, weight: number): void;
 }>();
 
 const isAdded = ref(false);
@@ -21,7 +19,7 @@ const handleAdd = () => {
   if (props.weight <= 0) return;
 
   isAdded.value = true;
-  emit('addEntry', props.product, props.weight, props.mealType);
+  emit('select', props.product, props.weight);
 
   clearTimeout(resetTimeout);
   resetTimeout = setTimeout(() => {

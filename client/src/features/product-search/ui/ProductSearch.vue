@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { useVirtualizer } from '@tanstack/vue-virtual';
 import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config/meals';
 import { useProductSearch } from '../lib/useProductSearch';
 import ProductSearchItem from './ProductSearchItem.vue';
 
-defineProps<{ mealType: MealType }>();
-defineEmits<{
-  (e: 'addEntry', product: IProduct, weight: number, mealType: MealType): void;
+const emit = defineEmits<{
+  (e: 'select', product: IProduct, weight: number): void;
 }>();
 
 const {
@@ -83,9 +81,8 @@ const handleWeightUpdate = (productId: string, weight = 0) => {
             :key="results[virtualRow.index]?.id"
             :product="results[virtualRow.index] as IProduct"
             :weight="weights[results[virtualRow.index]!.id] || 0"
-            :meal-type="mealType"
             @update:weight="(w) => handleWeightUpdate(results[virtualRow.index]!.id, w)"
-            @add-entry="(product, weight) => $emit('addEntry', product, weight, mealType)"
+            @select="(product, weight) => emit('select', product, weight)"
           />
         </div>
       </div>

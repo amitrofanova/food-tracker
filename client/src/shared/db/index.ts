@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 import type { IDiaryEntry } from '@/entities/diary-entry';
 import type { IProduct } from '@/entities/product';
+import type { IRecipe } from '@/entities/recipe';
 import type { IUser } from '@/entities/user';
 
 function assertNonEmptyString(value: unknown, field: string): asserts value is string {
@@ -53,6 +54,7 @@ export class CalorieTrackerDB extends Dexie {
   products!: Table<IProduct, string>;
   customProducts!: Table<IProduct, string>;
   users!: Table<IUser, string>;
+  recipes!: Table<IRecipe, string>;
 
   constructor() {
     super('CalorieTrackerDB');
@@ -64,6 +66,13 @@ export class CalorieTrackerDB extends Dexie {
       customProducts: 'id, name',
       users: 'id, name',
       entries: 'id, date, mealType, productId',
+    });
+    this.version(3).stores({
+      products: 'id, name',
+      customProducts: 'id, name',
+      users: 'id, name',
+      entries: 'id, date, mealType, productId',
+      recipes: 'id, name',
     });
   }
 
@@ -215,6 +224,43 @@ export class CalorieTrackerDB extends Dexie {
       console.error('Failed to update calorie budget:', error);
       throw new Error(
         `Failed to update calorie budget: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  // Recipes
+  async getAllRecipes(): Promise<IRecipe[]> {
+    try {
+      return await this.recipes.toArray();
+    } catch (error) {
+      console.error('Failed to load recipes:', error);
+      throw new Error(
+        `Failed to load recipes: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async putRecipe(recipe: IRecipe): Promise<void> {
+    try {
+      assertNonEmptyString(recipe.id, 'Recipe id');
+      assertNonEmptyString(recipe.name, 'Recipe name');
+      await this.recipes.put(recipe);
+    } catch (error) {
+      console.error('Failed to save recipe:', error);
+      throw new Error(
+        `Failed to save recipe: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async deleteRecipe(id: string): Promise<void> {
+    try {
+      assertNonEmptyString(id, 'Recipe id');
+      await this.recipes.delete(id);
+    } catch (error) {
+      console.error('Failed to delete recipe:', error);
+      throw new Error(
+        `Failed to delete recipe: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }

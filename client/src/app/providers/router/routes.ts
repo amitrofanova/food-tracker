@@ -22,4 +22,9 @@ export const routes: RouteRecordRaw[] = [
     name: 'my-products',
     component: () => import('@/pages/my-products'),
   },
+  {
+    path: '/recipes',
+    name: 'recipes',
+    component: () => import('@/pages/recipes'),
+  },
 ];
