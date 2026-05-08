@@ -5,11 +5,22 @@ defineProps<{
   disabled: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'add-entry', weight: number): void;
 }>();
 
 const weight = ref<number>();
+const isAdded = ref(false);
+
+const handleAdd = () => {
+  if (!weight.value || weight.value <= 0) return;
+  isAdded.value = true;
+  emit('add-entry', weight.value);
+  setTimeout(() => {
+    isAdded.value = false;
+    weight.value = undefined;
+  }, 1000);
+};
 </script>
 
 <template>
@@ -18,17 +29,13 @@ const weight = ref<number>();
       type="number"
       name="product-weight"
       v-model="weight"
-      :disabled="disabled"
+      :disabled="disabled || isAdded"
       placeholder="Вес (г)"
       min="1"
       class="input-weight"
     />
-    <button
-      :disabled="!weight || disabled"
-      class="button-add"
-      @click="$emit('add-entry', weight as number)"
-    >
-      <Icon name="PlusSymbol" size="sm" />
+    <button :disabled="!weight || disabled || isAdded" class="button-add" @click="handleAdd">
+      <Icon :name="isAdded ? 'Checkmark' : 'PlusSymbol'" size="sm" />
     </button>
   </div>
 </template>

@@ -110,6 +110,8 @@ watch(
   }
 }
 .modal-content {
+  max-height: 90vh;
+  /* overflow-y: scroll; */
   padding: 2rem;
 }
 .modal-fade-enter-active,

@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
+import type { IRecipe } from '@/entities/recipe';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import type { MealType } from '@/shared/config/meals';
 import { CreateProductForm, AddEntryForm } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
-import { RecipesPanel } from '@/widgets/recipes-panel';
+import { RecipeForm } from '@/widgets/recipe-form';
+import { useRecipes } from '@/features/create-recipe';
 import { Icon } from '@/shared/ui/icon';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { MealSelect } from '@/shared/ui/select';
 
 const diaryStore = useDiaryStore();
+const { save } = useRecipes();
 const { isMobile } = useBreakpoints();
 const props = defineProps<{ mealType?: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
@@ -36,19 +39,24 @@ const addCreatedProduct = (weight: number, mealType: MealType) => {
 const onProductSelect = (product: IProduct, weight: number) => {
   diaryStore.addEntry(product, weight, selectedMeal.value);
 };
+
+const onSaved = async (recipe: IRecipe) => {
+  await save(recipe);
+  showRecipesModal.value = false;
+};
 </script>
 
 <template>
   <div class="add-entry-wrap">
     <div v-if="!isMobile" class="controls">
-      <MealSelect v-model="selectedMeal" />
+      <MealSelect v-model="selectedMeal" class="meal-select" />
       <AppButton class="btn-recipes" @click="showRecipesModal = true">
-        <Icon name="Book" size="sm" />
-        Рецепты
+        <Icon name="PlusSymbol" size="sm" />
+        Рецепт
       </AppButton>
       <AppButton @click="showModal = true" class="btn-create">
         <Icon name="PlusSymbol" size="sm" />
-        <span>Свой продукт</span>
+        <span>Продукт</span>
       </AppButton>
     </div>
     <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
@@ -61,8 +69,13 @@ const onProductSelect = (product: IProduct, weight: number) => {
         />
       </div>
     </AppModal>
-    <AppModal v-model="showRecipesModal" :width="'600px'">
-      <RecipesPanel :mealType="selectedMeal" />
+    <AppModal
+      v-model="showRecipesModal"
+      :width="'1000px'"
+      title="Создать рецепт"
+      style="overflow: hidden"
+    >
+      <RecipeForm @saved="onSaved" style="overflow: hidden; height: 700px" />
     </AppModal>
     <ProductSearch @select="onProductSelect" />
     <RouterLink v-if="isMobile" to="/recipes" class="btn-recipes-mobile">
@@ -84,9 +97,10 @@ const onProductSelect = (product: IProduct, weight: number) => {
 .controls {
   margin-bottom: 1rem;
   display: flex;
+  justify-content: end;
 }
-.btn-create {
-  margin-left: auto;
+.meal-select {
+  margin-right: auto;
 }
 @media (max-width: 767px) {
   .btn-create {
@@ -102,7 +116,6 @@ const onProductSelect = (product: IProduct, weight: number) => {
 .btn-recipes {
   margin-right: 0.5rem;
 }
-
 .btn-recipes-mobile {
   position: fixed;
   bottom: 1rem;
@@ -117,7 +130,6 @@ const onProductSelect = (product: IProduct, weight: number) => {
   justify-content: center;
   text-decoration: none;
 }
-
 .product-modal {
   display: flex;
   flex-direction: column;

@@ -5,10 +5,13 @@ import { ProductSearch } from '@/features/product-search';
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
 
+const props = defineProps<{ initialRecipe?: IRecipe }>();
 const emit = defineEmits<{ saved: [recipe: IRecipe] }>();
 
-const recipeName = ref('');
-const ingredients = ref<IRecipeIngredient[]>([]);
+const recipeName = ref(props.initialRecipe?.name ?? '');
+const ingredients = ref<IRecipeIngredient[]>(
+  props.initialRecipe?.ingredients.map((i) => ({ ...i })) ?? [],
+);
 
 const totalWeight = computed(() => ingredients.value.reduce((s, i) => s + i.weight, 0));
 
@@ -49,7 +52,7 @@ const isValid = computed(() => recipeName.value.trim().length > 0 && ingredients
 const handleSave = () => {
   if (!isValid.value) return;
   const recipe: IRecipe = {
-    id: `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    id: props.initialRecipe?.id ?? `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     name: recipeName.value.trim(),
     ingredients: ingredients.value.map((i) => ({ ...i })),
     totalWeight: totalWeight.value,
@@ -63,60 +66,83 @@ const handleSave = () => {
 
 <template>
   <div class="recipe-form">
-    <input
-      v-model="recipeName"
-      class="input"
-      placeholder="Название рецепта"
-      aria-label="Название рецепта"
-    />
-
-    <div class="search-wrap">
-      <ProductSearch status-below @select="addIngredient" />
+    <div class="left-column">
+      <div>
+        <input
+          v-model="recipeName"
+          name="recipeName"
+          class="input item-1"
+          placeholder="Название рецепта"
+          aria-label="Название рецепта"
+        />
+      </div>
+      <div class="search-wrap item-2">
+        <ProductSearch @select="addIngredient" />
+      </div>
     </div>
 
-    <ul v-if="ingredients.length > 0" class="ingredient-list">
-      <li v-for="ing in ingredients" :key="ing.productId" class="ingredient-item">
-        <span class="ing-name">{{ ing.productName }}</span>
-        <span class="ing-weight">{{ ing.weight }}&thinsp;г</span>
-        <button
-          class="btn-remove"
-          aria-label="Удалить ингредиент"
-          @click="removeIngredient(ing.productId)"
+    <div class="right-column">
+      <ul v-if="ingredients.length > 0" class="ingredient-list">
+        <li v-for="ing in ingredients" :key="ing.productId" class="ingredient-item">
+          <span class="ingredient-name">{{ ing.productName }}</span>
+          <span class="ingredient-weight">{{ ing.weight }}&thinsp;г</span>
+          <button
+            class="btn-remove"
+            aria-label="Удалить ингредиент"
+            @click="removeIngredient(ing.productId)"
+          >
+            <Icon name="Close" size="sm" />
+          </button>
+        </li>
+      </ul>
+      <div v-if="ingredients.length > 0" class="totals">
+        <span
+          >На 100г: <strong>{{ per100g.calories }} ккал</strong></span
         >
-          <Icon name="Close" size="sm" />
-        </button>
-      </li>
-    </ul>
+        <span
+          >Б&thinsp;{{ per100g.protein }} · Ж&thinsp;{{ per100g.fat }} · У&thinsp;{{
+            per100g.carbs
+          }}</span
+        >
+        <span class="total-weight">Итого: {{ totalWeight }}&thinsp;г</span>
+      </div>
 
-    <div v-if="ingredients.length > 0" class="totals">
-      <span
-        >На 100г: <strong>{{ per100g.calories }} ккал</strong></span
+      <AppButton :disabled="!isValid" class="btn-save" @click="handleSave"
+        >Сохранить рецепт</AppButton
       >
-      <span
-        >Б&thinsp;{{ per100g.protein }} · Ж&thinsp;{{ per100g.fat }} · У&thinsp;{{
-          per100g.carbs
-        }}</span
-      >
-      <span class="total-weight">Итого: {{ totalWeight }}&thinsp;г</span>
     </div>
-
-    <AppButton :disabled="!isValid" @click="handleSave">Сохранить рецепт</AppButton>
   </div>
 </template>
 
 <style scoped>
 .recipe-form {
   display: flex;
-  flex-direction: column;
   gap: 1rem;
 }
-
+@media (max-width: 767px) {
+  .recipe-form {
+    flex-direction: column;
+  }
+}
+.left-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.right-column {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
 .search-wrap {
-  height: 300px;
+  flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
-
 .input {
   appearance: none;
   border: 1px solid rgba(var(--color-secondary), 0.7);
@@ -128,11 +154,9 @@ const handleSave = () => {
   font-size: 1rem;
   background: rgba(var(--color-background), 0.8);
 }
-
 .input:focus {
   border-color: rgb(var(--color-secondary));
 }
-
 .ingredient-list {
   list-style: none;
   margin: 0;
@@ -141,19 +165,16 @@ const handleSave = () => {
   border-radius: var(--border-radius);
   overflow: hidden;
 }
-
 .ingredient-item {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
 }
-
 .ingredient-item:nth-child(even) {
   background-color: rgba(var(--color-secondary), 0.08);
 }
-
-.ing-name {
+.ingredient-name {
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -161,13 +182,11 @@ const handleSave = () => {
   text-overflow: ellipsis;
   font-size: 0.9rem;
 }
-
-.ing-weight {
+.ingredient-weight {
   color: rgba(var(--color-primary), 0.55);
   font-size: 0.85rem;
   flex-shrink: 0;
 }
-
 .btn-remove {
   background: none;
   border: none;
@@ -179,12 +198,11 @@ const handleSave = () => {
   border-radius: 4px;
   flex-shrink: 0;
 }
-
 .btn-remove:hover {
   background-color: rgba(var(--color-red), 0.1);
 }
-
 .totals {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -195,7 +213,6 @@ const handleSave = () => {
   flex-wrap: wrap;
   gap: 4px;
 }
-
 .total-weight {
   color: rgba(var(--color-primary), 0.5);
 }
