@@ -30,23 +30,52 @@ export const useProductSearch = () => {
     );
   };
 
-  const { data: localProducts } = useQuery<IProduct[]>({
-    queryKey: computed(() => ['local-products', searchQuery.value.trim()]),
+  const isEnabled = computed(() => searchQuery.value.trim().length >= MIN_QUERY_LENGTH);
+
+  const { data: customProductsData } = useQuery<IProduct[]>({
+    queryKey: computed(() => ['custom-products', searchQuery.value.trim()]),
     queryFn: async () => {
       try {
         dbError.value = null;
-        const [custom, apiProducts] = await Promise.all([
-          db.getCustomProducts(searchQuery.value),
-          db.getProducts(searchQuery.value),
-        ]);
-        return [...custom, ...apiProducts];
+        return await db.getCustomProducts(searchQuery.value);
+      } catch (err) {
+        dbError.value = err instanceof Error ? err.message : 'Failed to load custom products';
+        console.error('Failed to load custom products:', err);
+        return [];
+      }
+    },
+    enabled: isEnabled,
+    staleTime: Infinity,
+  });
+
+  const { data: recipesData } = useQuery<IProduct[]>({
+    queryKey: computed(() => ['recipes-search', searchQuery.value.trim()]),
+    queryFn: async () => {
+      try {
+        const q = searchQuery.value.trim().toLowerCase();
+        const all = await db.getAllRecipes();
+        return all.filter((r) => r.name.toLowerCase().includes(q)) as IProduct[];
+      } catch (err) {
+        console.error('Failed to load recipes for search:', err);
+        return [];
+      }
+    },
+    enabled: isEnabled,
+    staleTime: Infinity,
+  });
+
+  const { data: cachedProductsData } = useQuery<IProduct[]>({
+    queryKey: computed(() => ['cached-products', searchQuery.value.trim()]),
+    queryFn: async () => {
+      try {
+        return await db.getProducts(searchQuery.value);
       } catch (err) {
         dbError.value = err instanceof Error ? err.message : 'Failed to load local products';
         console.error('Failed to load local products:', err);
         return [];
       }
     },
-    enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
+    enabled: isEnabled,
     staleTime: Infinity,
   });
 
@@ -57,7 +86,8 @@ export const useProductSearch = () => {
         try {
           dbError.value = null;
           if (pageParam === 1) {
-            const localCount = localProducts.value?.length ?? 0;
+            const localCount =
+              (customProductsData.value?.length ?? 0) + (cachedProductsData.value?.length ?? 0);
             if (localCount >= SUFFICIENT_LOCAL_RESULTS_LENGTH) {
               return { products: [], nextPage: undefined };
             }
@@ -82,14 +112,16 @@ export const useProductSearch = () => {
       },
       getNextPageParam: (lastPage) => lastPage.nextPage,
       initialPageParam: 1,
-      enabled: computed(() => searchQuery.value.trim().length > MIN_QUERY_LENGTH),
+      enabled: isEnabled,
       staleTime: STALE_TIME,
     });
 
   const allProducts = computed<IProduct[]>(() => {
-    const local = localProducts.value || [];
+    const custom = customProductsData.value || [];
+    const recipes = recipesData.value || [];
+    const cached = cachedProductsData.value || [];
     const apiPages = data.value?.pages.flatMap((page) => page.products) || [];
-    return [...local, ...apiPages];
+    return [...custom, ...recipes, ...cached, ...apiPages];
   });
 
   const debouncedSetQuery = useDebounce((q: string) => {

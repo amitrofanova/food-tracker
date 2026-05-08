@@ -56,7 +56,7 @@ const handleWeightUpdate = (productId: string, weight = 0) => {
       :value="searchQuery"
       @input="(e) => setSearchQuery((e.target as HTMLInputElement).value)"
       type="search"
-      placeholder="Искать продукт"
+      placeholder="Искать продукт или рецепт"
       class="input-search"
     />
     <div ref="scrollContainerRef" class="results">

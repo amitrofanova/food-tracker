@@ -7,6 +7,14 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
   const hasPendingSync = ref(false);
+  const syncVersion = ref(0);
+
+  async function checkLocalData() {
+    const localEntries = await db.getAllEntries();
+    if (localEntries.length > 0) {
+      hasPendingSync.value = true;
+    }
+  }
 
   // Restore session from token on app load
   async function init() {
@@ -15,6 +23,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const { data } = await getCurrentUser();
       user.value = data;
+      await checkLocalData();
     } catch {
       localStorage.removeItem('token');
     }
@@ -59,9 +68,24 @@ export const useUserStore = defineStore('user', () => {
     user.value = data;
   }
 
+  function notifySynced() {
+    syncVersion.value++;
+  }
+
   const isLoggedIn = computed(() => user.value !== null);
 
   init();
 
-  return { user, error, isLoggedIn, hasPendingSync, login, register, logout, setCalorieBudget };
+  return {
+    user,
+    error,
+    isLoggedIn,
+    hasPendingSync,
+    syncVersion,
+    notifySynced,
+    login,
+    register,
+    logout,
+    setCalorieBudget,
+  };
 });

@@ -1,14 +1,17 @@
 <script setup lang="ts">
+import { useQueryClient } from '@tanstack/vue-query';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { saveDiaryEntry } from '@/shared/api/diary';
-import { upsertProduct } from '@/shared/api/products';
+import { upsertCustomProduct } from '@/shared/api/customProducts';
+import { upsertRecipe } from '@/shared/api/recipes';
 import { db } from '@/shared/db';
 
 const userStore = useUserStore();
 const diaryStore = useDiaryStore();
+const queryClient = useQueryClient();
 
 const pendingCount = ref(0);
 const isSyncing = ref(false);
@@ -29,7 +32,12 @@ async function confirmSync() {
   try {
     const customProducts = await db.getAllCustomProducts();
     for (const product of customProducts) {
-      await upsertProduct(product);
+      await upsertCustomProduct(product);
+    }
+
+    const recipes = await db.getAllRecipes();
+    for (const recipe of recipes) {
+      await upsertRecipe(recipe);
     }
 
     const entries = await db.getAllEntries();
@@ -39,6 +47,9 @@ async function confirmSync() {
     }
     await db.entries.clear();
     userStore.hasPendingSync = false;
+    userStore.notifySynced();
+    queryClient.invalidateQueries({ queryKey: ['custom-products'] });
+    queryClient.invalidateQueries({ queryKey: ['recipes-search'] });
     await diaryStore.loadEntries();
   } finally {
     isSyncing.value = false;
