@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 // Local backend instance
-// In production (fullstack) VITE_API_BASE_URL is empty → relative URLs, same origin.
+// In production (fullstack) VITE_API_BASE_URL is empty → relative /api URLs, same origin.
 // In development it points to http://localhost:3001 (set in client/.env).
 export const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  baseURL: (import.meta.env.VITE_API_BASE_URL ?? '') + '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
