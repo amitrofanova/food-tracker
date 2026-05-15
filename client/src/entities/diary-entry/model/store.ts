@@ -138,7 +138,9 @@ export const useDiaryStore = defineStore('diary', () => {
         totals[entry.mealType] += entry.calories;
       }
     });
-    return totals;
+    return Object.fromEntries(
+      Object.entries(totals).map(([k, v]) => [k, Math.round(v)]),
+    ) as Record<MealType, number>;
   });
 
   function clearEntries() {
