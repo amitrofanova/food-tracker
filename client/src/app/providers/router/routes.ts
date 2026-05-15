@@ -27,4 +27,10 @@ export const routes: RouteRecordRaw[] = [
     name: 'recipes',
     component: () => import('@/pages/recipes'),
   },
+  {
+    path: '/recipes/:id',
+    name: 'recipe-detail',
+    component: () => import('@/pages/recipe-detail'),
+    props: true,
+  },
 ];

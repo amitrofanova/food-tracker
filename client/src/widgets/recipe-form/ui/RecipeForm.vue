@@ -4,9 +4,13 @@ import type { IRecipe, IRecipeIngredient } from '@/entities/recipe';
 import { ProductSearch } from '@/features/product-search';
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
+import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
 
 const props = defineProps<{ initialRecipe?: IRecipe }>();
-const emit = defineEmits<{ saved: [recipe: IRecipe] }>();
+const emit = defineEmits<{ saved: [recipe: IRecipe]; cancel: [] }>();
+
+const { isMobile, isDesktop } = useBreakpoints();
 
 const recipeName = ref(props.initialRecipe?.name ?? '');
 const ingredients = ref<IRecipeIngredient[]>(
@@ -76,7 +80,7 @@ const handleSave = () => {
           aria-label="Название рецепта"
         />
       </div>
-      <div class="search-wrap item-2">
+      <div v-if="isDesktop" class="search-wrap">
         <ProductSearch @select="addIngredient" />
       </div>
     </div>
@@ -107,10 +111,23 @@ const handleSave = () => {
         <span class="total-weight">Итого: {{ totalWeight }}&thinsp;г</span>
       </div>
 
-      <AppButton :disabled="!isValid" class="btn-save" @click="handleSave"
+      <AppButton v-if="isDesktop" :disabled="!isValid" class="btn-save" @click="handleSave"
         >Сохранить рецепт</AppButton
       >
     </div>
+
+    <div v-if="isMobile" class="search-wrap">
+      <ProductSearch @select="addIngredient" />
+    </div>
+    <MobileBottomControls
+      v-if="isMobile"
+      :buttons="[
+        { label: 'Сохранить', event: 'save', disabled: !isValid },
+        { label: 'Отмена', event: 'cancel' },
+      ]"
+      @save="handleSave"
+      @cancel="emit('cancel')"
+    />
   </div>
 </template>
 
@@ -121,21 +138,22 @@ const handleSave = () => {
 }
 @media (max-width: 767px) {
   .recipe-form {
+    flex: 1;
+    overflow: hidden;
     flex-direction: column;
   }
 }
 .left-column {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex-grow: 0;
 }
 .right-column {
   margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex: 1;
 }
 .search-wrap {
   flex: 1;
@@ -202,7 +220,6 @@ const handleSave = () => {
   background-color: rgba(var(--color-red), 0.1);
 }
 .totals {
-  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -215,5 +232,14 @@ const handleSave = () => {
 }
 .total-weight {
   color: rgba(var(--color-primary), 0.5);
+}
+@media (min-width: 768px) {
+  .totals {
+    margin-top: auto;
+  }
+  .left-column,
+  .right-column {
+    flex: 1;
+  }
 }
 </style>
