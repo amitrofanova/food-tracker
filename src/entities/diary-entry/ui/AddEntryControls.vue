@@ -51,7 +51,7 @@ const handleAdd = () => {
   width: 80px;
   border: none;
   border-radius: 4px 0 0 4px;
-  padding: 6px;
+  padding: 2px 6px;
   outline: none;
   background: rgba(var(--color-background), 0.8);
 }

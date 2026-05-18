@@ -105,6 +105,10 @@ const onSaved = async (recipe: IRecipe) => {
         <RecipeForm
           :initial-recipe="editingRecipe"
           @saved="onSaved"
+          @added="
+            showForm = false;
+            editingRecipe = undefined;
+          "
           style="overflow: hidden; height: 700px"
         />
       </AppModal>

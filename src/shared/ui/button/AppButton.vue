@@ -6,7 +6,7 @@ const props = withDefaults(
   }>(),
   {
     color: 'rgb(var(--color-secondary))',
-    size: 'md',
+    size: 'sm',
   },
 );
 

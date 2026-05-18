@@ -19,14 +19,13 @@ const {
   isFetchingNextPage,
 } = useProductSearch();
 
-const weights = ref<Record<string, number>>({});
 const scrollContainerRef = ref<HTMLElement | null>(null);
 
 const virtualizer = useVirtualizer(
   computed(() => ({
     count: hasMore.value ? results.value.length + 1 : results.value.length,
     getScrollElement: () => scrollContainerRef.value,
-    estimateSize: () => 90,
+    estimateSize: () => 80,
     overscan: 5,
   })),
 );
@@ -44,10 +43,6 @@ watchEffect(() => {
     loadMore();
   }
 });
-
-const handleWeightUpdate = (productId: string, weight = 0) => {
-  weights.value[productId] = weight;
-};
 
 defineExpose({ clearSearch: () => setSearchQuery('') });
 </script>
@@ -82,8 +77,6 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
             v-else
             :key="results[virtualRow.index]?.id"
             :product="results[virtualRow.index] as IProduct"
-            :weight="weights[results[virtualRow.index]!.id] || 0"
-            @update:weight="(w) => handleWeightUpdate(results[virtualRow.index]!.id, w)"
             @select="(product, weight) => emit('select', product, weight)"
           />
         </div>
@@ -105,6 +98,11 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
 </template>
 
 <style scoped>
+@media (max-width: 767px) {
+  .search-wrap {
+    margin-bottom: 97px; /* FIXME */
+  }
+}
 .search-wrap {
   position: relative;
   flex: 1;

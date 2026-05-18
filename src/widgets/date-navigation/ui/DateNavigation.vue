@@ -39,6 +39,5 @@ const nextDay = () => {
   align-items: center;
   gap: 16px;
   justify-content: center;
-  padding: 8px;
 }
 </style>
