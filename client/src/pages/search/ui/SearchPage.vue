@@ -31,8 +31,20 @@ const diaryStore = useDiaryStore();
 .wrapper {
   display: flex;
   flex-direction: column;
-  /* padding: var(--padding-mobile) 0; */
-  height: 100vh;
+  height: calc(100vh - var(--header-height) - var(--padding));
+  overflow: hidden;
+}
+@media (max-width: 767px) {
+  .wrapper {
+    height: calc(100vh - var(--header-height) - calc(var(--padding-mobile) * 3));
+  }
+}
+/* AddDiaryEntry uses a self-contained calc() height designed for the home page.
+   Here it must fill the remaining flex space after the back-button header. */
+:deep(.add-entry-wrap) {
+  flex: 1 !important;
+  height: auto !important;
+  min-height: 0;
 }
 .header {
   margin-bottom: 1rem;

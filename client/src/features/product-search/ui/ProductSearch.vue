@@ -57,10 +57,10 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
       class="input-search"
     />
     <div ref="scrollContainerRef" class="results">
-      <div>
+      <div :style="{ position: 'relative', height: `${totalSize}px`, marginBottom: '50px' }">
         <div
           v-for="virtualRow in virtualRows"
-          :key="results[virtualRow.index]?.id"
+          :key="virtualRow.index"
           :style="{
             position: 'absolute',
             top: 0,
@@ -70,42 +70,47 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
             transform: `translateY(${virtualRow.start}px)`,
           }"
         >
-          <div v-if="virtualRow.index >= results.length && hasMore" class="status" style="top: 0">
+          <div
+            v-if="virtualRow.index >= results.length && hasMore"
+            class="status"
+            style="position: static; transform: none"
+          >
             <div class="spinner"></div>
           </div>
           <ProductSearchItem
             v-else
-            :key="results[virtualRow.index]?.id"
             :product="results[virtualRow.index] as IProduct"
             @select="(product, weight) => emit('select', product, weight)"
           />
         </div>
       </div>
+      <div
+        v-if="loading && !isFetchingNextPage"
+        class="status"
+        :style="{ position: 'absolute', top: `${totalSize}px` }"
+      >
+        <div class="spinner"></div>
+      </div>
+      <div
+        v-else-if="error && !isFetchingNextPage"
+        class="status"
+        :style="{ position: 'absolute', top: `${totalSize}px` }"
+      >
+        {{ error }}
+      </div>
+      <div v-else-if="results.length === 0 && searchQuery" class="status">Нет результатов</div>
+      <div v-else-if="!results.length && !searchQuery" class="status">
+        Введите запрос для поиска
+      </div>
     </div>
-    <div
-      v-if="loading && !isFetchingNextPage"
-      class="status"
-      :style="{ top: `${totalSize + 70}px` }"
-    >
-      <div class="spinner"></div>
-    </div>
-    <div v-else-if="error" class="status" :style="{ top: `${totalSize + 70}px` }">
-      {{ error }}
-    </div>
-    <div v-else-if="results.length === 0 && searchQuery" class="status">Нет результатов</div>
-    <div v-else-if="!results.length && !searchQuery" class="status">Введите запрос для поиска</div>
   </div>
 </template>
 
 <style scoped>
-@media (max-width: 767px) {
-  .search-wrap {
-    margin-bottom: 97px; /* FIXME */
-  }
-}
 .search-wrap {
   position: relative;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -118,15 +123,21 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
 }
 .results {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   position: relative;
   border-radius: var(--border-radius);
   scrollbar-width: none;
   background: rgba(var(--color-background), 0.5);
 }
+@media (max-width: 767px) {
+  .results {
+    padding-bottom: 100px;
+  }
+}
 .status {
   position: absolute;
-  top: 50px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
