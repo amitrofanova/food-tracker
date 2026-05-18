@@ -45,7 +45,6 @@ const onProductSelect = (product: IProduct, weight: number) => {
 
 const onSaved = async (recipe: IRecipe) => {
   await save(recipe);
-  // showRecipesModal.value = false;
 };
 </script>
 
@@ -91,6 +90,7 @@ const onSaved = async (recipe: IRecipe) => {
         v-for="entry in entriesByMeal[selectedMeal]"
         :key="entry.id"
         :entry="entry"
+        :compact="isMobile"
         @remove="diaryStore.removeEntry"
       />
     </div>
@@ -157,6 +157,8 @@ const onSaved = async (recipe: IRecipe) => {
 }
 .meal-entries {
   overflow-y: auto;
-  padding-bottom: 1rem;
+}
+.entry-row:last-child {
+  margin-bottom: 1rem;
 }
 </style>

@@ -108,7 +108,7 @@ watch(
       </div>
     </div>
 
-    <div class="right-column">
+    <div v-if="isDesktop" class="right-column">
       <ul v-if="ingredients.length > 0" class="ingredient-list">
         <li v-for="ing in ingredients" :key="ing.productId" class="ingredient-item">
           <span class="ingredient-name">{{ ing.productName }}</span>

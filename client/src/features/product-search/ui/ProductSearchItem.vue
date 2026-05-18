@@ -1,34 +1,18 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
-import { Icon } from '@/shared/ui/icon';
+import { AddEntryControls } from '@/entities/diary-entry';
 
 const props = defineProps<{
   product: IProduct;
-  weight: number;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:weight', weight: number): void;
   (e: 'select', product: IProduct, weight: number): void;
 }>();
 
-const isAdded = ref(false);
-let resetTimeout: ReturnType<typeof setTimeout>;
-
-const handleAdd = () => {
-  if (props.weight <= 0) return;
-
-  isAdded.value = true;
-  emit('select', props.product, props.weight);
-
-  clearTimeout(resetTimeout);
-  resetTimeout = setTimeout(() => {
-    isAdded.value = false;
-    emit('update:weight', 0);
-  }, 1000);
+const handleAddEntry = (weight: number) => {
+  emit('select', props.product, weight);
 };
-
-onUnmounted(() => clearTimeout(resetTimeout));
 </script>
 
 <template>
@@ -41,19 +25,7 @@ onUnmounted(() => clearTimeout(resetTimeout));
         <span>Ж: {{ product.fat }}</span>
         <span>У: {{ product.carbs }}</span>
       </div>
-      <div class="item-controls">
-        <input
-          type="number"
-          :value="weight"
-          @input="(e) => $emit('update:weight', Number((e.target as HTMLInputElement).value))"
-          placeholder="Вес (г)"
-          min="1"
-          class="input-weight"
-        />
-        <button :disabled="!weight || isAdded" class="button-add" @click="handleAdd">
-          <Icon :name="isAdded ? 'Checkmark' : 'PlusSymbol'" size="sm" />
-        </button>
-      </div>
+      <AddEntryControls :disabled="false" @add-entry="handleAddEntry" />
     </div>
   </div>
 </template>
@@ -63,7 +35,7 @@ onUnmounted(() => clearTimeout(resetTimeout));
   padding: 8px 8px 8px 12px;
   border-radius: var(--border-radius);
   background-color: rgba(var(--color-secondary), 0.2);
-  margin: 4px 8px;
+  /* margin: 4px 8px; */
 }
 .item-info {
   display: flex;
@@ -83,37 +55,5 @@ onUnmounted(() => clearTimeout(resetTimeout));
   gap: 10px;
   font-size: 14px;
   color: var(--color-text-secondary);
-}
-.item-controls {
-  display: flex;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-.input-weight {
-  appearance: none;
-  width: 80px;
-  border: none;
-  border-radius: 4px 0 0 4px;
-  padding: 6px;
-  outline: none;
-  background: rgba(var(--color-background), 0.8);
-}
-.button-add {
-  appearance: none;
-  border: 0;
-  background-color: rgb(var(--color-secondary));
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  width: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-}
-.button-add:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
 }
 </style>
