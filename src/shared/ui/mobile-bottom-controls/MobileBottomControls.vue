@@ -15,16 +15,18 @@ const emit = defineEmits<{ [key: string]: [] }>();
 
 <template>
   <div class="bottom-bar">
-    <button
-      v-for="btn in buttons"
-      :key="btn.event"
-      class="btn"
-      :style="{ backgroundColor: btn.color ?? 'rgb(var(--color-secondary))' }"
-      :disabled="btn.disabled"
-      @click="emit(btn.event)"
-    >
-      {{ btn.label }}
-    </button>
+    <slot>
+      <button
+        v-for="btn in buttons"
+        :key="btn.event"
+        class="btn"
+        :style="{ backgroundColor: btn.color ?? 'rgb(var(--color-secondary))' }"
+        :disabled="btn.disabled"
+        @click="emit(btn.event)"
+      >
+        {{ btn.label }}
+      </button>
+    </slot>
   </div>
 </template>
 

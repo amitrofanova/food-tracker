@@ -2,16 +2,22 @@
 import type { IProduct } from '@/entities/product';
 import type { IRecipe, IRecipeIngredient } from '@/entities/recipe';
 import { ProductSearch } from '@/features/product-search';
+import { AddEntryForm } from '@/features/create-product';
+import { useDiaryStore } from '@/entities/diary-entry';
+import type { MealType } from '@/shared/config/meals';
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
 
-const props = defineProps<{ initialRecipe?: IRecipe }>();
-const emit = defineEmits<{ saved: [recipe: IRecipe]; cancel: [] }>();
+const props = defineProps<{ initialRecipe?: IRecipe; defaultMeal?: MealType }>();
+const emit = defineEmits<{ saved: [recipe: IRecipe]; added: [] }>();
 
 const { isMobile, isDesktop } = useBreakpoints();
+const diaryStore = useDiaryStore();
 
+const savedRecipe = ref<IRecipe | null>(null);
+const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null);
 const recipeName = ref(props.initialRecipe?.name ?? '');
 const ingredients = ref<IRecipeIngredient[]>(
   props.initialRecipe?.ingredients.map((i) => ({ ...i })) ?? [],
@@ -45,6 +51,7 @@ const addIngredient = (product: IProduct, weight: number) => {
   };
   if (idx >= 0) ingredients.value[idx] = ing;
   else ingredients.value.push(ing);
+  productSearchRef.value?.clearSearch();
 };
 
 const removeIngredient = (productId: string) => {
@@ -63,9 +70,25 @@ const handleSave = () => {
     ...per100g.value,
   };
   emit('saved', recipe);
+  savedRecipe.value = recipe;
+};
+
+const handleAddEntry = (weight: number, meal: MealType) => {
+  if (!savedRecipe.value) return;
+  diaryStore.addEntry(savedRecipe.value, weight, meal);
+  emit('added');
+  savedRecipe.value = null;
   recipeName.value = '';
   ingredients.value = [];
 };
+
+watch(
+  [recipeName, ingredients],
+  () => {
+    savedRecipe.value = null;
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -81,7 +104,7 @@ const handleSave = () => {
         />
       </div>
       <div v-if="isDesktop" class="search-wrap">
-        <ProductSearch @select="addIngredient" />
+        <ProductSearch ref="productSearchRef" @select="addIngredient" />
       </div>
     </div>
 
@@ -114,20 +137,33 @@ const handleSave = () => {
       <AppButton v-if="isDesktop" :disabled="!isValid" class="btn-save" @click="handleSave"
         >Сохранить рецепт</AppButton
       >
+      <AddEntryForm
+        v-if="isDesktop"
+        :disabled="!savedRecipe"
+        :new-product="savedRecipe"
+        :default-meal="props.defaultMeal"
+        @add-entry="handleAddEntry"
+      />
     </div>
 
     <div v-if="isMobile" class="search-wrap">
-      <ProductSearch @select="addIngredient" />
+      <ProductSearch ref="productSearchRef" @select="addIngredient" />
     </div>
     <MobileBottomControls
       v-if="isMobile"
-      :buttons="[
-        { label: 'Сохранить', event: 'save', disabled: !isValid },
-        { label: 'Отмена', event: 'cancel' },
-      ]"
+      :buttons="[{ label: 'Сохранить', event: 'save', disabled: !isValid }]"
       @save="handleSave"
-      @cancel="emit('cancel')"
-    />
+    >
+      <template v-if="savedRecipe">
+        <AddEntryForm
+          :hide-title="true"
+          :disabled="false"
+          :new-product="savedRecipe"
+          :default-meal="props.defaultMeal"
+          @add-entry="handleAddEntry"
+        />
+      </template>
+    </MobileBottomControls>
   </div>
 </template>
 

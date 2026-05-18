@@ -50,8 +50,10 @@ const deleteRecipe = async (id: string) => {
 
 const onSaved = async (recipe: IRecipe) => {
   await save(recipe);
-  showForm.value = false;
-  editingRecipe.value = undefined;
+  if (editingRecipe.value) {
+    showForm.value = false;
+    editingRecipe.value = undefined;
+  }
 };
 </script>
 
@@ -192,8 +194,9 @@ const onSaved = async (recipe: IRecipe) => {
       >
         <RecipeForm
           :initial-recipe="editingRecipe"
+          :default-meal="selectedMeal"
           @saved="onSaved"
-          @cancel="
+          @added="
             showForm = false;
             editingRecipe = undefined;
           "
