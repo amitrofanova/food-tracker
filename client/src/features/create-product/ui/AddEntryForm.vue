@@ -4,15 +4,17 @@ import type { MealType } from '@/shared/config/meals';
 import type { IProduct } from '@/entities/product';
 import { AddEntryControls } from '@/entities/diary-entry';
 
-defineProps<{
+const props = defineProps<{
   disabled: boolean;
   newProduct: IProduct | null;
+  hideTitle?: boolean;
+  defaultMeal?: MealType;
 }>();
 
 const emit = defineEmits<{ 'add-entry': [weight: number, mealType: MealType] }>();
 
 const form = reactive<{ meal: MealType }>({
-  meal: 'breakfast',
+  meal: props.defaultMeal ?? 'breakfast',
 });
 
 const addEntry = (weight: number) => {
@@ -22,8 +24,8 @@ const addEntry = (weight: number) => {
 
 <template>
   <div>
-    <h3>Добавить к приёму пищи</h3>
-    <form @submit.prevent class="form">
+    <h3 v-if="!hideTitle">Добавить к приёму пищи</h3>
+    <form @submit.prevent class="form" :class="{ 'no-margin': hideTitle }">
       <MealSelect v-model="form.meal" :disabled="disabled" />
       <AddEntryControls :disabled="disabled" @add-entry="addEntry" />
     </form>
@@ -35,5 +37,8 @@ const addEntry = (weight: number) => {
   display: flex;
   gap: 1rem;
   margin-top: 0.6rem;
+}
+.no-margin {
+  margin-top: 0;
 }
 </style>

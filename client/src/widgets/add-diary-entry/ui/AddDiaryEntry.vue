@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
 import type { IRecipe } from '@/entities/recipe';
-import { useDiaryStore } from '@/entities/diary-entry';
+import { useDiaryStore, EntryRow } from '@/entities/diary-entry';
+import { storeToRefs } from 'pinia';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import type { MealType } from '@/shared/config/meals';
 import { CreateProductForm, AddEntryForm } from '@/features/create-product';
@@ -12,13 +13,15 @@ import { Icon } from '@/shared/ui/icon';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { MealSelect } from '@/shared/ui/select';
+import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
 
 const diaryStore = useDiaryStore();
+const { entriesByMeal } = storeToRefs(diaryStore);
 const { save } = useRecipes();
 const { isMobile } = useBreakpoints();
 const props = defineProps<{ mealType?: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
-const showModal = ref(false);
+const productModal = ref(false);
 const showRecipesModal = ref(false);
 
 const createdProduct = ref<IProduct | null>(null);
@@ -32,7 +35,7 @@ const addCreatedProduct = (weight: number, mealType: MealType) => {
     diaryStore.addEntry(createdProduct.value, weight, mealType);
     createdProduct.value = null;
     enabledAddProductForm.value = false;
-    showModal.value = false;
+    productModal.value = false;
   }
 };
 
@@ -42,7 +45,7 @@ const onProductSelect = (product: IProduct, weight: number) => {
 
 const onSaved = async (recipe: IRecipe) => {
   await save(recipe);
-  showRecipesModal.value = false;
+  // showRecipesModal.value = false;
 };
 </script>
 
@@ -54,17 +57,18 @@ const onSaved = async (recipe: IRecipe) => {
         <Icon name="PlusSymbol" size="sm" />
         Рецепт
       </AppButton>
-      <AppButton @click="showModal = true" class="btn-create">
+      <AppButton @click="productModal = true" class="btn-create">
         <Icon name="PlusSymbol" size="sm" />
         <span>Продукт</span>
       </AppButton>
     </div>
-    <AppModal v-model="showModal" :width="isMobile ? '100vh' : 'auto'">
+    <AppModal v-model="productModal" :width="isMobile ? '100vh' : 'auto'">
       <div class="product-modal">
         <CreateProductForm @created="handleCreated" />
         <AddEntryForm
           :disabled="!enabledAddProductForm"
           :newProduct="createdProduct"
+          :default-meal="selectedMeal"
           @add-entry="addCreatedProduct"
         />
       </div>
@@ -75,15 +79,31 @@ const onSaved = async (recipe: IRecipe) => {
       title="Создать рецепт"
       style="overflow: hidden"
     >
-      <RecipeForm @saved="onSaved" style="overflow: hidden; height: 700px" />
+      <RecipeForm
+        @saved="onSaved"
+        @added="showRecipesModal = false"
+        :default-meal="selectedMeal"
+        style="overflow: hidden; height: 700px"
+      />
     </AppModal>
+    <div v-if="isMobile" class="meal-entries">
+      <EntryRow
+        v-for="entry in entriesByMeal[selectedMeal]"
+        :key="entry.id"
+        :entry="entry"
+        @remove="diaryStore.removeEntry"
+      />
+    </div>
     <ProductSearch @select="onProductSelect" />
-    <RouterLink v-if="isMobile" to="/recipes" class="btn-recipes-mobile">
-      <Icon name="Book" />
-    </RouterLink>
-    <button v-if="isMobile" @click="showModal = true" class="btn-create">
-      <Icon name="PlusSymbol" />
-    </button>
+    <MobileBottomControls
+      v-if="isMobile"
+      :buttons="[
+        { label: 'Новый продукт', event: 'new-product' },
+        { label: 'Новый рецепт', event: 'new-recipe' },
+      ]"
+      @new-product="productModal = true"
+      @new-recipe="showRecipesModal = true"
+    />
   </div>
 </template>
 
@@ -134,5 +154,9 @@ const onSaved = async (recipe: IRecipe) => {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+.meal-entries {
+  overflow-y: auto;
+  padding-bottom: 1rem;
 }
 </style>

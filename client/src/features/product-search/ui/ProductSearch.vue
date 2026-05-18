@@ -48,6 +48,8 @@ watchEffect(() => {
 const handleWeightUpdate = (productId: string, weight = 0) => {
   weights.value[productId] = weight;
 };
+
+defineExpose({ clearSearch: () => setSearchQuery('') });
 </script>
 
 <template>

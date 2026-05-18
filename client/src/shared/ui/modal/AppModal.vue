@@ -99,6 +99,11 @@ watch(
   height: 100vh;
   background: white;
 }
+.modal-content {
+  max-height: 90vh;
+  /* overflow-y: scroll; */
+  padding: var(--padding-mobile);
+}
 @media (min-width: 768px) {
   .modal-container {
     width: auto;
@@ -108,11 +113,9 @@ watch(
     position: relative;
     overflow-y: auto;
   }
-}
-.modal-content {
-  max-height: 90vh;
-  /* overflow-y: scroll; */
-  padding: 2rem;
+  .modal-content {
+    padding: var(--padding);
+  }
 }
 .modal-fade-enter-active,
 .modal-fade-leave-active {
