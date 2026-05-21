@@ -6,7 +6,7 @@ const props = withDefaults(
   }>(),
   {
     color: 'rgb(var(--color-secondary))',
-    size: 'sm',
+    size: 'md',
   },
 );
 
@@ -59,7 +59,7 @@ const textColor = computed(() => {
   align-items: center;
   border: none;
   border-radius: var(--border-radius);
-  padding: 10px 16px;
+  padding: 0 16px;
   color: #fff;
   font-weight: 500;
   cursor: pointer;
@@ -73,14 +73,17 @@ const textColor = computed(() => {
   cursor: not-allowed;
 }
 .btn_sm {
-  padding: 8px 12px;
+  height: 30px;
+  padding: 0 12px;
   font-size: 0.9em;
 }
 .btn_md {
-  padding: 10px 16px;
+  height: 40px;
+  padding: 0 16px;
 }
 .btn_lg {
-  padding: 12px 20px;
+  height: 50px;
+  padding: 0 20px;
   font-size: 1.1em;
 }
 </style>
