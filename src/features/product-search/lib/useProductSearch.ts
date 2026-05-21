@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, type InfiniteData } from '@tanstack/vue-query';
+import { useQuery, useInfiniteQuery, useQueryClient, type InfiniteData } from '@tanstack/vue-query';
 import { db } from '@/shared/db';
 import { useDebounce } from '@/shared/lib/debounce';
 import type { IProduct } from '@/entities/product';
@@ -13,6 +13,7 @@ interface ApiProductsPage {
 type ApiProductsPages = InfiniteData<ApiProductsPage, number>;
 
 export const useProductSearch = () => {
+  const queryClient = useQueryClient();
   const searchQuery = ref<string>('');
   const dbError = ref<string | null>(null);
   const MIN_QUERY_LENGTH = 2;
@@ -23,6 +24,7 @@ export const useProductSearch = () => {
     const name = product.product_name;
     const nutriments = product.nutriments;
     return !!(
+      product.code &&
       name &&
       nutriments &&
       (nutriments['energy-kcal_100g'] || nutriments['energy_100g']) &&
@@ -97,7 +99,14 @@ export const useProductSearch = () => {
           const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
 
           if (apiProducts.length > 0 && pageParam === 1) {
-            await db.products.bulkPut(apiProducts);
+            try {
+              await db.products.bulkPut(apiProducts);
+              queryClient.invalidateQueries({
+                queryKey: ['cached-products', searchQuery.value.trim()],
+              });
+            } catch (err) {
+              console.error('Failed to cache products in IndexedDB:', err);
+            }
           }
 
           return {
