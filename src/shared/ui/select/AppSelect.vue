@@ -12,10 +12,12 @@ withDefaults(
     modelValue: string;
     placeholder?: string;
     disabled?: boolean;
+    size?: 'sm' | 'md' | 'lg';
   }>(),
   {
     placeholder: '',
     disabled: false,
+    size: 'md',
   },
 );
 
@@ -31,12 +33,13 @@ const handleChange = (event: Event) => {
 </script>
 
 <template>
-  <div class="select-wrapper" :style="{ opacity: disabled ? 0.7 : 1 }">
+  <div class="select-wrapper" :class="{ 'select-wrapper_disabled': disabled }">
     <select
       v-bind="$attrs"
       :value="modelValue"
       :disabled="disabled"
-      class="app-select"
+      class="select"
+      :class="`select_${size}`"
       @change="handleChange"
     >
       <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
@@ -44,7 +47,7 @@ const handleChange = (event: Event) => {
         {{ option.label }}
       </option>
     </select>
-    <Icon name="ArrowDown" color="white" class="select-icon" />
+    <Icon name="ArrowDown" color="white" class="icon" />
   </div>
 </template>
 
@@ -60,9 +63,16 @@ const handleChange = (event: Event) => {
 .select-wrapper:hover {
   opacity: 0.9;
 }
-.app-select {
+.select-wrapper_disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.select-wrapper_disabled:hover {
+  opacity: 0.7;
+}
+.select {
   appearance: none;
-  padding: 10px 38px 10px 16px;
+  padding-right: 38px;
   border: none;
   outline: none;
   background-color: transparent;
@@ -70,13 +80,27 @@ const handleChange = (event: Event) => {
   z-index: 1;
   cursor: pointer;
 }
-.app-select:hover {
+.select:hover {
   opacity: 0.9;
 }
-.app-select:disabled {
+.select:disabled {
   cursor: not-allowed;
 }
-.select-icon {
+.select_sm {
+  height: 30px;
+  padding: 0 38px 0 12px;
+  font-size: 0.9em;
+}
+.select_md {
+  height: 40px;
+  padding: 0 38px 0 16px;
+}
+.select_lg {
+  height: 50px;
+  padding: 0 38px 0 20px;
+  font-size: 1.1em;
+}
+.icon {
   position: absolute;
   top: 50%;
   right: 8px;
