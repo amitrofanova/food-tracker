@@ -25,7 +25,7 @@ const save = async () => {
 <template>
   <div class="calorie-calc">
     <form @submit.prevent="calculate" class="calorie-calc__form">
-      <h1 class="calorie-calc__header">Рассчитайте суточную норму калорий</h1>
+      <!-- <h1 class="calorie-calc__header">Рассчитайте суточную норму калорий</h1> -->
       <fieldset class="calorie-calc__group">
         <legend>Пол</legend>
         <label>

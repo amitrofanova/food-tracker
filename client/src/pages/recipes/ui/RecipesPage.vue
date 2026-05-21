@@ -58,168 +58,160 @@ const onSaved = async (recipe: IRecipe) => {
 </script>
 
 <template>
-  <div class="page">
-    <PageHeader back-label="Назад" />
+  <PageHeader title="Мои рецепты" />
 
-    <template v-if="!isMobile">
-      <div class="panel-header">
-        <MealSelect v-model="selectedMeal" />
-        <AppButton class="btn-new" @click="showForm = true">
-          <Icon name="PlusSymbol" size="sm" />
-          Новый рецепт
-        </AppButton>
-      </div>
+  <template v-if="!isMobile">
+    <div class="panel-header">
+      <MealSelect v-model="selectedMeal" />
+      <AppButton class="btn-new" @click="showForm = true">
+        <Icon name="PlusSymbol" size="sm" />
+        Новый рецепт
+      </AppButton>
+    </div>
 
-      <p v-if="isLoading" class="empty">Загрузка…</p>
-      <p v-else-if="recipes.length === 0" class="empty">Нет сохранённых рецептов</p>
+    <p v-if="isLoading" class="empty">Загрузка…</p>
+    <p v-else-if="recipes.length === 0" class="empty">Нет сохранённых рецептов</p>
 
-      <ul v-else class="recipe-list">
-        <li
-          v-for="recipe in recipes"
-          :key="recipe.id"
-          class="recipe-item"
-          @click="openDetail(recipe)"
-        >
-          <div class="recipe-info">
-            <span class="recipe-name">{{ recipe.name }}</span>
-            <span class="recipe-meta">
-              {{ recipe.calories }} ккал/100г &middot; Б&thinsp;{{ recipe.protein }} · Ж&thinsp;{{
-                recipe.fat
-              }}
-              · У&thinsp;{{ recipe.carbs }}
-            </span>
-            <span class="recipe-weight-hint">Рецепт: {{ recipe.totalWeight }}&thinsp;г</span>
-          </div>
-          <div class="recipe-controls" @click.stop>
-            <AddEntryControls :disabled="false" @add-entry="(w) => addToDiary(recipe, w)" />
-          </div>
-        </li>
-      </ul>
-
-      <AppModal
-        v-model="showForm"
-        :title="formTitle"
-        width="1000px"
-        @closed="editingRecipe = undefined"
+    <ul v-else class="recipe-list">
+      <li
+        v-for="recipe in recipes"
+        :key="recipe.id"
+        class="recipe-item"
+        @click="openDetail(recipe)"
       >
-        <RecipeForm
-          :initial-recipe="editingRecipe"
-          @saved="onSaved"
-          @added="
-            showForm = false;
-            editingRecipe = undefined;
-          "
-          style="overflow: hidden; height: 700px"
-        />
-      </AppModal>
+        <div class="recipe-info">
+          <span class="recipe-name">{{ recipe.name }}</span>
+          <span class="recipe-meta">
+            {{ recipe.calories }} ккал/100г &middot; Б&thinsp;{{ recipe.protein }} · Ж&thinsp;{{
+              recipe.fat
+            }}
+            · У&thinsp;{{ recipe.carbs }}
+          </span>
+          <span class="recipe-weight-hint">Рецепт: {{ recipe.totalWeight }}&thinsp;г</span>
+        </div>
+        <div class="recipe-controls" @click.stop>
+          <AddEntryControls :disabled="false" @add-entry="(w) => addToDiary(recipe, w)" />
+        </div>
+      </li>
+    </ul>
 
-      <AppModal
-        :model-value="!!viewedRecipe"
-        :title="viewedRecipe?.name"
-        @update:model-value="viewedRecipe = undefined"
+    <AppModal
+      v-model="showForm"
+      :title="formTitle"
+      width="1000px"
+      @closed="editingRecipe = undefined"
+    >
+      <RecipeForm
+        :initial-recipe="editingRecipe"
+        @saved="onSaved"
+        @added="
+          showForm = false;
+          editingRecipe = undefined;
+        "
+        style="overflow: hidden; height: 700px"
+      />
+    </AppModal>
+
+    <AppModal
+      :model-value="!!viewedRecipe"
+      :title="viewedRecipe?.name"
+      @update:model-value="viewedRecipe = undefined"
+    >
+      <template v-if="viewedRecipe">
+        <div class="detail-body">
+          <div class="detail-meta">
+            <span>{{ viewedRecipe.calories }} ккал/100г</span>
+            <span
+              >Б&thinsp;{{ viewedRecipe.protein }} · Ж&thinsp;{{ viewedRecipe.fat }} · У&thinsp;{{
+                viewedRecipe.carbs
+              }}</span
+            >
+            <span class="detail-weight">Рецепт: {{ viewedRecipe.totalWeight }}&thinsp;г</span>
+          </div>
+          <ul class="ingredient-list">
+            <li
+              v-for="ing in viewedRecipe.ingredients"
+              :key="ing.productId"
+              class="ingredient-item"
+            >
+              <span class="ingredient-name">{{ ing.productName }}</span>
+              <span class="ingredient-weight">{{ ing.weight }}&thinsp;г</span>
+            </li>
+          </ul>
+          <div class="detail-actions">
+            <button class="btn-edit" @click="edit(viewedRecipe)">
+              <Icon name="Pencil" size="sm" />
+              Редактировать
+            </button>
+            <button class="btn-delete" @click="deleteRecipe(viewedRecipe.id)">
+              <Icon name="Trash" size="sm" />
+              Удалить
+            </button>
+          </div>
+        </div>
+      </template>
+    </AppModal>
+  </template>
+
+  <!-- Mobile -->
+  <template v-else>
+    <div class="panel-header">
+      <MealSelect v-model="selectedMeal" />
+      <AppButton class="btn-new" @click="showForm = true">
+        <Icon name="PlusSymbol" size="sm" />
+        Новый рецепт
+      </AppButton>
+    </div>
+
+    <p v-if="isLoading" class="empty">Загрузка…</p>
+    <p v-else-if="recipes.length === 0" class="empty">Нет сохранённых рецептов</p>
+
+    <ul v-else class="recipe-list">
+      <li
+        v-for="recipe in recipes"
+        :key="recipe.id"
+        class="recipe-item"
+        @click="openDetail(recipe)"
       >
-        <template v-if="viewedRecipe">
-          <div class="detail-body">
-            <div class="detail-meta">
-              <span>{{ viewedRecipe.calories }} ккал/100г</span>
-              <span
-                >Б&thinsp;{{ viewedRecipe.protein }} · Ж&thinsp;{{ viewedRecipe.fat }} · У&thinsp;{{
-                  viewedRecipe.carbs
-                }}</span
-              >
-              <span class="detail-weight">Рецепт: {{ viewedRecipe.totalWeight }}&thinsp;г</span>
-            </div>
-            <ul class="ingredient-list">
-              <li
-                v-for="ing in viewedRecipe.ingredients"
-                :key="ing.productId"
-                class="ingredient-item"
-              >
-                <span class="ingredient-name">{{ ing.productName }}</span>
-                <span class="ingredient-weight">{{ ing.weight }}&thinsp;г</span>
-              </li>
-            </ul>
-            <div class="detail-actions">
-              <button class="btn-edit" @click="edit(viewedRecipe)">
-                <Icon name="Pencil" size="sm" />
-                Редактировать
-              </button>
-              <button class="btn-delete" @click="deleteRecipe(viewedRecipe.id)">
-                <Icon name="Trash" size="sm" />
-                Удалить
-              </button>
-            </div>
-          </div>
-        </template>
-      </AppModal>
-    </template>
+        <div class="recipe-info">
+          <span class="recipe-name">{{ recipe.name }}</span>
+          <span class="recipe-meta">
+            {{ recipe.calories }} ккал/100г &middot; Б&thinsp;{{ recipe.protein }} · Ж&thinsp;{{
+              recipe.fat
+            }}
+            · У&thinsp;{{ recipe.carbs }}
+          </span>
+          <span class="recipe-weight-hint">Рецепт: {{ recipe.totalWeight }}&thinsp;г</span>
+        </div>
+        <div class="recipe-controls" @click.stop>
+          <AddEntryControls :disabled="false" @add-entry="(w) => addToDiary(recipe, w)" />
+        </div>
+      </li>
+    </ul>
 
-    <!-- Mobile -->
-    <template v-else>
-      <div class="panel-header">
-        <MealSelect v-model="selectedMeal" />
-        <AppButton class="btn-new" @click="showForm = true">
-          <Icon name="PlusSymbol" size="sm" />
-          Новый рецепт
-        </AppButton>
-      </div>
-
-      <p v-if="isLoading" class="empty">Загрузка…</p>
-      <p v-else-if="recipes.length === 0" class="empty">Нет сохранённых рецептов</p>
-
-      <ul v-else class="recipe-list">
-        <li
-          v-for="recipe in recipes"
-          :key="recipe.id"
-          class="recipe-item"
-          @click="openDetail(recipe)"
-        >
-          <div class="recipe-info">
-            <span class="recipe-name">{{ recipe.name }}</span>
-            <span class="recipe-meta">
-              {{ recipe.calories }} ккал/100г &middot; Б&thinsp;{{ recipe.protein }} · Ж&thinsp;{{
-                recipe.fat
-              }}
-              · У&thinsp;{{ recipe.carbs }}
-            </span>
-            <span class="recipe-weight-hint">Рецепт: {{ recipe.totalWeight }}&thinsp;г</span>
-          </div>
-          <div class="recipe-controls" @click.stop>
-            <AddEntryControls :disabled="false" @add-entry="(w) => addToDiary(recipe, w)" />
-          </div>
-        </li>
-      </ul>
-
-      <AppModal
-        v-model="showForm"
-        :title="formTitle"
-        width="1000px"
-        @closed="editingRecipe = undefined"
-      >
-        <RecipeForm
-          :initial-recipe="editingRecipe"
-          :default-meal="selectedMeal"
-          @saved="onSaved"
-          @added="
-            showForm = false;
-            editingRecipe = undefined;
-          "
-          style="overflow: hidden; height: 700px"
-        />
-      </AppModal>
-    </template>
-  </div>
+    <AppModal
+      v-model="showForm"
+      :title="formTitle"
+      width="1000px"
+      @closed="editingRecipe = undefined"
+    >
+      <RecipeForm
+        :initial-recipe="editingRecipe"
+        :default-meal="selectedMeal"
+        @saved="onSaved"
+        @added="
+          showForm = false;
+          editingRecipe = undefined;
+        "
+        style="overflow: hidden; height: 700px"
+      />
+    </AppModal>
+  </template>
 </template>
 
 <style scoped>
-.page {
-  /* padding: var(--padding-mobile); */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .panel-header {
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;

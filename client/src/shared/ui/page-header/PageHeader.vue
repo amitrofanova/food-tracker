@@ -1,32 +1,41 @@
 <script setup lang="ts">
 import { Icon } from '@/shared/ui/icon';
 import { useRouter } from 'vue-router';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 defineProps<{
+  title?: string;
   backLabel?: string;
 }>();
 
 const router = useRouter();
+
+const { isMobile } = useBreakpoints();
 </script>
 
 <template>
   <div class="page-header">
-    <button class="btn-back" @click="router.back()">
+    <button v-if="isMobile" class="btn-back" @click="router.back()">
       <Icon name="ArrowLeft" />
-      {{ backLabel ?? 'Назад' }}
+      {{ backLabel }}
     </button>
-    <slot />
+    <h1 v-if="title" class="title">{{ title }}</h1>
+    <slot v-else />
   </div>
 </template>
 
 <style scoped>
 .page-header {
+  margin-bottom: 1rem;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.25rem;
 }
-
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
 .btn-back {
   appearance: none;
   border: none;

@@ -1,28 +1,22 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
 import type { MealType } from '@/shared/config/meals';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { AddDiaryEntry } from '@/widgets/add-diary-entry';
+import { PageHeader } from '@/shared/ui/page-header';
 
 defineProps<{ mealType: MealType }>();
-const router = useRouter();
-
-const goBack = () => {
-  router.back();
-};
 
 const diaryStore = useDiaryStore();
 </script>
 
 <template>
   <div class="wrapper">
-    <div class="header">
-      <button @click="goBack" class="btn-back"></button>
+    <PageHeader>
       <div class="info">
         <span class="meal">{{ mealType }}</span>
         <span class="date">{{ diaryStore.selectedDate }}</span>
       </div>
-    </div>
+    </PageHeader>
     <AddDiaryEntry :mealType="mealType" />
   </div>
 </template>
@@ -46,28 +40,11 @@ const diaryStore = useDiaryStore();
   height: auto !important;
   min-height: 0;
 }
-.header {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-}
-.btn-back {
-  position: relative;
-  appearance: none;
-  border: none;
-  background-color: transparent;
-}
-.btn-back::before {
-  display: block;
-  width: 24px;
-  height: 24px;
-  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg data-name='Layer 2'%3E%3Cpath d='M13.83 19a1 1 0 0 1-.78-.37l-4.83-6a1 1 0 0 1 0-1.27l5-6a1 1 0 0 1 1.54 1.28L10.29 12l4.32 5.36a1 1 0 0 1-.78 1.64' data-name='arrow-ios-back'/%3E%3C/g%3E%3C/svg%3E");
-}
 .info {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
   direction: rtl;
-  line-height: 100%;
+  line-height: normal;
 }
 .meal {
   text-transform: capitalize;

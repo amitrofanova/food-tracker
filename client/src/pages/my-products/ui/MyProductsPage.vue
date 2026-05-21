@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
 import { AppButton } from '@/shared/ui/button';
 import { AppModal } from '@/shared/ui/modal';
 import { Icon } from '@/shared/ui/icon';
+import { PageHeader } from '@/shared/ui/page-header';
 import type { IProduct } from '@/entities/product';
 import { CreateProductForm, useCustomProducts } from '@/features/create-product';
-
-const router = useRouter();
 
 const { products, isLoading, remove, save } = useCustomProducts();
 
@@ -85,17 +83,7 @@ const handleEditSubmit = async () => {
 </script>
 
 <template>
-  <div class="page-header">
-    <button class="btn-back" aria-label="Назад" @click="router.back()">
-      <Icon name="ArrowLeft" />
-    </button>
-    <h1 class="title">Мои продукты</h1>
-    <AppButton size="sm" @click="showAddModal = true">
-      <Icon name="PlusSymbol" size="sm" />
-      Добавить
-    </AppButton>
-  </div>
-
+  <PageHeader title="Мои продукты" />
   <p v-if="isLoading" class="empty">Загрузка…</p>
   <p v-else-if="products.length === 0" class="empty">Пока нет ни одного продукта</p>
 
@@ -180,17 +168,6 @@ const handleEditSubmit = async () => {
 </template>
 
 <style scoped>
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.title {
-  flex: 1;
-  margin: 0;
-  font-size: 20px;
-}
 .btn-back {
   appearance: none;
   border: none;
@@ -286,9 +263,6 @@ const handleEditSubmit = async () => {
   }
   .full-width {
     grid-column: 1 / -1;
-  }
-  .title {
-    font-size: 24px;
   }
 }
 </style>
