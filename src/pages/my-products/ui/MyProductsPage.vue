@@ -3,6 +3,7 @@ import { AppButton } from '@/shared/ui/button';
 import { AppModal } from '@/shared/ui/modal';
 import { Icon } from '@/shared/ui/icon';
 import { PageHeader } from '@/shared/ui/page-header';
+import { AppInput } from '@/shared/ui/input';
 import type { IProduct } from '@/entities/product';
 import { CreateProductForm, useCustomProducts } from '@/features/create-product';
 
@@ -114,50 +115,38 @@ const handleEditSubmit = async () => {
 
   <AppModal v-model="showEditModal" title="Редактировать продукт">
     <form class="form" @submit.prevent="handleEditSubmit">
-      <input
+      <AppInput
+        label="Название"
         v-model="editForm.name"
         placeholder="Название"
-        required
-        aria-required="true"
         class="full-width"
       />
-      <input
-        v-model.number="editForm.calories"
+      <AppInput
+        label="Калории (на 100г)"
+        v-model="editForm.calories"
         type="number"
-        min="1"
         placeholder="Калории (на 100г)"
-        required
-        aria-required="true"
         class="half-width"
       />
-      <input
-        v-model.number="editForm.protein"
+      <AppInput
+        label="Белки"
+        v-model="editForm.protein"
         type="number"
-        min="0"
-        step="0.1"
         placeholder="Белки"
-        required
-        aria-required="true"
         class="half-width"
       />
-      <input
-        v-model.number="editForm.fat"
+      <AppInput
+        label="Жиры"
+        v-model="editForm.fat"
         type="number"
-        min="0"
-        step="0.1"
         placeholder="Жиры"
-        required
-        aria-required="true"
         class="half-width"
       />
-      <input
-        v-model.number="editForm.carbs"
+      <AppInput
+        label="Углеводы"
+        v-model="editForm.carbs"
         type="number"
-        min="0"
-        step="0.1"
         placeholder="Углеводы"
-        required
-        aria-required="true"
         class="half-width"
       />
       <AppButton type="submit" :disabled="!isEditValid" :aria-disabled="!isEditValid">
@@ -236,15 +225,6 @@ const handleEditSubmit = async () => {
   display: grid;
   gap: 0.8rem;
   margin-top: 0.6rem;
-}
-.form input {
-  appearance: none;
-  border: 1px solid rgba(var(--color-gray), 0.7);
-  border-radius: var(--border-radius);
-  padding: 6px;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
 }
 @media (min-width: 768px) {
   .form {

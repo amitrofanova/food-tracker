@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/entities/user/';  
 import { AppButton } from '@/shared/ui/button';
+import { AppInput } from '@/shared/ui/input';
 import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 
@@ -21,7 +22,7 @@ const saveBudget = async () => {
 <template>
   <h1>Суточная норма калорий</h1>
   <form @submit.prevent="saveBudget" class="form">
-    <input v-model="calorieBudget" inputmode="numeric" pattern="[0-9]*" placeholder="Enter your calorie budget" />
+    <AppInput v-model="calorieBudget" type="number" placeholder="Enter your calorie budget" />
     <AppButton type="submit">Сохранить</AppButton>
   </form>
   <RouterLink to="/calorie-calculator" class="link">Рассчитать норму калорий</RouterLink>
@@ -37,18 +38,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-input {
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: var(--border-radius);
-  border: 1px solid rgba(var(--color-gray), 0.5);
-}
-input:focus {
-  outline: none;
-  border-color: rgb(var(--color-gray));
-  box-shadow: 0 0 0 2px rgba(var(--color-gray), 0.2);
 }
 .link {
   display: block;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/entities/user';
 import { AppButton } from '@/shared/ui/button';
+import { AppInput } from '@/shared/ui/input';
 
 const userStore = useUserStore();
 
@@ -25,10 +26,8 @@ const onSubmit = async () => {
 
 <template>
   <form @submit.prevent="onSubmit">
-    <label>Email</label>
-    <input v-model="email" type="email" required />
-    <label>Пароль</label>
-    <input v-model="password" type="password" required />
+    <AppInput label="Email" v-model="email" type="email" />
+    <AppInput label="Пароль" v-model="password" type="password" />
     <div v-if="error" class="error">{{ error }}</div>
     <AppButton type="submit" :disabled="loading">Зарегистрироваться</AppButton>
   </form>
@@ -39,30 +38,11 @@ form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-form {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px 16px;
-  align-items: center;
   max-width: 400px;
-}
-form label {
-  font-weight: 500;
-}
-form input {
-  width: 250px;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
 }
 form .error,
 form button {
-  grid-column: 1 / -1;
-}
-form button {
-  margin-top: 1rem;
+  margin-top: 0.25rem;
 }
 .error {
   color: rgb(var(--color-red));
