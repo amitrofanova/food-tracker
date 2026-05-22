@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useUserStore } from '@/entities/user/';
+import { AppProgress } from '@/shared/ui/progress';
 import { storeToRefs } from 'pinia';
 
 const diaryStore = useDiaryStore();
@@ -17,7 +18,7 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
       <div class="total-item">
         <span class="label">Калории</span>
         <span class="value">{{ dailyTotals.calories }} / {{ dailyGoal }} ккал</span>
-        <progress :value="dailyTotals.calories" :max="dailyGoal"></progress>
+        <AppProgress :value="dailyTotals.calories" :max="dailyGoal" />
       </div>
       <div class="total-item">
         <span class="label">Белки</span>
@@ -38,9 +39,9 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
 <style scoped>
 .daily-summary {
   padding: 16px;
-  background-color: rgb(var(--color-lightgreen));
   border-radius: var(--border-radius);
   color: rgb(var(--text-primary));
+  box-shadow: 0 2px 4px rgb(var(--color-gray));
 }
 .totals {
   display: flex;
