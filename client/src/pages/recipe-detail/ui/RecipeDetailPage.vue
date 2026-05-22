@@ -73,10 +73,10 @@ const deleteRecipe = async () => {
         </li>
       </ul>
 
-      <div class="add-section">
+      <!-- <div class="add-section">
         <MealSelect v-model="selectedMeal" />
         <AddEntryControls :disabled="false" @add-entry="addToDiary" />
-      </div>
+      </div> -->
 
       <div v-if="!isMobile" class="actions">
         <button class="btn-edit" @click="showEditForm = true">
@@ -92,7 +92,7 @@ const deleteRecipe = async () => {
       <MobileBottomControls
         v-if="isMobile"
         :buttons="[
-          { label: 'Редактировать', event: 'edit', color: 'rgb(var(--color-gray))' },
+          { label: 'Редактировать', event: 'edit', color: 'rgb(var(--color-darkgreen))' },
           { label: 'Удалить', event: 'delete', color: 'rgb(var(--color-red))' },
         ]"
         @edit="showEditForm = true"

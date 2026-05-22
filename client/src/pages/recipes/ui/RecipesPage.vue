@@ -139,14 +139,14 @@ const onSaved = async (recipe: IRecipe) => {
             </li>
           </ul>
           <div class="detail-actions">
-            <button class="btn-edit" @click="edit(viewedRecipe)">
+            <AppButton @click="edit(viewedRecipe)">
               <Icon name="Pencil" size="sm" />
               Редактировать
-            </button>
-            <button class="btn-delete" @click="deleteRecipe(viewedRecipe.id)">
+            </AppButton>
+            <AppButton color="rgb(var(--color-red))" @click="deleteRecipe(viewedRecipe.id)">
               <Icon name="Trash" size="sm" />
               Удалить
-            </button>
+            </AppButton>
           </div>
         </div>
       </template>
@@ -250,7 +250,7 @@ const onSaved = async (recipe: IRecipe) => {
 }
 
 .recipe-item:hover {
-  background-color: rgba(var(--color-gray), 0.06);
+  background-color: rgba(var(--color-gray), 0.1);
 }
 
 .recipe-info {
@@ -270,12 +270,12 @@ const onSaved = async (recipe: IRecipe) => {
 
 .recipe-meta {
   font-size: 0.78rem;
-  color: rgba(var(--color-darkgreen), 0.55);
+  color: rgba(var(--color-darkgreen), 0.9);
 }
 
 .recipe-weight-hint {
   font-size: 0.75rem;
-  color: rgba(var(--color-darkgreen), 0.4);
+  color: rgba(var(--color-darkgreen), 0.6);
 }
 
 .recipe-controls {
@@ -297,11 +297,11 @@ const onSaved = async (recipe: IRecipe) => {
   flex-direction: column;
   gap: 2px;
   font-size: 0.88rem;
-  color: rgba(var(--color-darkgreen), 0.7);
+  color: rgb(var(--text-primary));
 }
 
 .detail-weight {
-  color: rgba(var(--color-darkgreen), 0.45);
+  color: rgba(var(--text-primary), 0.45);
   font-size: 0.8rem;
 }
 
@@ -343,49 +343,12 @@ const onSaved = async (recipe: IRecipe) => {
 
 .detail-actions {
   display: flex;
-  align-items: center;
   gap: 0.75rem;
   padding-top: 0.25rem;
 }
-
-.btn-edit {
-  appearance: none;
-  border: 1px solid rgba(var(--color-gray), 0.6);
-  background: transparent;
-  cursor: pointer;
-  color: rgb(var(--color-darkgreen));
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  transition: background-color 0.15s;
+.detail-actions button {
+  flex: 1;
 }
-
-.btn-edit:hover {
-  background-color: rgba(var(--bg-secondary), 0.1);
-}
-
-.btn-delete {
-  appearance: none;
-  border: 1px solid rgba(var(--color-red), 0.5);
-  background: transparent;
-  cursor: pointer;
-  color: rgb(var(--color-red));
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  transition: background-color 0.15s;
-}
-
-.btn-delete:hover {
-  background-color: rgba(var(--color-red), 0.08);
-}
-
 @media (min-width: 768px) {
   .page {
     padding: var(--padding);
