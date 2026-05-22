@@ -25,7 +25,7 @@ const handleAddEntry = (weight: number) => {
         <span>Ж: {{ product.fat }}</span>
         <span>У: {{ product.carbs }}</span>
       </div>
-      <AddEntryControls :disabled="false" @add-entry="handleAddEntry" />
+      <AddEntryControls :disabled="false" size="sm" @add-entry="handleAddEntry" />
     </div>
   </div>
 </template>
