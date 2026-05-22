@@ -5,9 +5,12 @@ import { CalorieBudgetBtn, CalorieBudgetForm } from '@/features/calorie-budget';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { UserAuthModal, UserMenu } from '@/entities/user';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
+
+const { isDesktop } = useBreakpoints();
 
 const showAuthModal = ref(false);
 const showCalorieBudgetForm = ref(false);
@@ -18,7 +21,7 @@ const showCalorieBudgetForm = ref(false);
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
     <div class="controls">
       <template v-if="isLoggedIn">
-        <!-- <CalorieBudgetBtn @click="showCalorieBudgetForm = true" /> -->
+        <CalorieBudgetBtn v-if="isDesktop" @click="showCalorieBudgetForm = true" />
         <UserMenu />
       </template>
       <AppButton v-else @click="showAuthModal = true" size="sm" color="transparent">
