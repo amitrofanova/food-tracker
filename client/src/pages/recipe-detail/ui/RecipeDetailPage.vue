@@ -92,7 +92,7 @@ const deleteRecipe = async () => {
       <MobileBottomControls
         v-if="isMobile"
         :buttons="[
-          { label: 'Редактировать', event: 'edit', color: 'rgb(var(--color-secondary))' },
+          { label: 'Редактировать', event: 'edit', color: 'rgb(var(--color-gray))' },
           { label: 'Удалить', event: 'delete', color: 'rgb(var(--color-red))' },
         ]"
         @edit="showEditForm = true"
@@ -128,7 +128,7 @@ const deleteRecipe = async () => {
 .recipe-name {
   margin: 0;
   font-size: 1.4rem;
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
 }
 
 .meta {
@@ -136,11 +136,11 @@ const deleteRecipe = async () => {
   flex-direction: column;
   gap: 2px;
   font-size: 0.88rem;
-  color: rgba(var(--color-primary), 0.7);
+  color: rgba(var(--color-darkgreen), 0.7);
 }
 
 .meta-weight {
-  color: rgba(var(--color-primary), 0.45);
+  color: rgba(var(--color-darkgreen), 0.45);
   font-size: 0.8rem;
 }
 
@@ -148,7 +148,7 @@ const deleteRecipe = async () => {
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(var(--color-secondary), 0.3);
+  border: 1px solid rgba(var(--color-gray), 0.3);
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -163,7 +163,7 @@ const deleteRecipe = async () => {
 }
 
 .ingredient-item:nth-child(even) {
-  background-color: rgba(var(--color-secondary), 0.08);
+  background-color: rgba(var(--bg-secondary), 0.08);
 }
 
 .ingredient-name {
@@ -175,7 +175,7 @@ const deleteRecipe = async () => {
 }
 
 .ingredient-weight {
-  color: rgba(var(--color-primary), 0.55);
+  color: rgba(var(--color-darkgreen), 0.55);
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -195,10 +195,10 @@ const deleteRecipe = async () => {
 
 .btn-edit {
   appearance: none;
-  border: 1px solid rgba(var(--color-secondary), 0.6);
+  border: 1px solid rgba(var(--color-gray), 0.6);
   background: transparent;
   cursor: pointer;
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
   display: flex;
   align-items: center;
   gap: 6px;
@@ -209,7 +209,7 @@ const deleteRecipe = async () => {
 }
 
 .btn-edit:hover {
-  background-color: rgba(var(--color-secondary), 0.1);
+  background-color: rgba(var(--bg-secondary), 0.1);
 }
 
 .btn-delete {
@@ -233,7 +233,7 @@ const deleteRecipe = async () => {
 
 .empty {
   text-align: center;
-  color: rgba(var(--color-primary), 0.4);
+  color: rgba(var(--color-darkgreen), 0.4);
   padding: 2rem 0;
 }
 </style>

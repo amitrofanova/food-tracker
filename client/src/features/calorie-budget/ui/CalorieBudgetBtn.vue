@@ -20,7 +20,7 @@ const { user } = storeToRefs(userStore);
   align-items: end;
   text-align: end;
   background-color: transparent;
-  color: #fff;
+  color: rgb(var(--color-darkgreen));
   border: none;
   border-radius: var(--border-radius);
   padding: 8px 12px;

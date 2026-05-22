@@ -40,11 +40,11 @@ const goToSearch = () => {
     <AppButton
       v-if="isMobile"
       size="sm"
-      color="rgb(var(--color-primary))"
+      color="rgb(var(--color-darkgreen))"
       class="btn-add"
       @click="goToSearch"
     >
-      <Icon name="PlusSymbol" size="sm" />
+      <Icon name="PlusSymbol" size="sm" color="rgb(var(--bg-primary))" />
     </AppButton>
   </div>
 </template>

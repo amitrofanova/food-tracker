@@ -43,17 +43,17 @@ input {
   padding: 8px;
   font-size: 16px;
   border-radius: var(--border-radius);
-  border: 1px solid rgba(var(--color-secondary), 0.5);
+  border: 1px solid rgba(var(--color-gray), 0.5);
 }
 input:focus {
   outline: none;
-  border-color: rgb(var(--color-secondary));
-  box-shadow: 0 0 0 2px rgba(var(--color-secondary), 0.2);
+  border-color: rgb(var(--color-gray));
+  box-shadow: 0 0 0 2px rgba(var(--color-gray), 0.2);
 }
 .link {
   display: block;
   margin-top: 12px;
   text-align: center;
-  color: rgb(--var(--color-primary))
+  color: rgb(--var(--color-darkgreen))
 }
 </style

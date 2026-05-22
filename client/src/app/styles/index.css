@@ -3,7 +3,8 @@
 
 body {
   font-family: 'Gilroy-Regular', sans-serif;
-  color: rgb(var(--color-primary));
+  color: rgb(var(--text-primary));
+  background-color: rgb(var(--bg-primary));
 }
 
 *,

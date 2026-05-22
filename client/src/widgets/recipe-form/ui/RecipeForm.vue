@@ -199,23 +199,22 @@ watch(
 }
 .input {
   appearance: none;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
+  border: 1px solid rgba(var(--color-gray), 0.7);
   border-radius: var(--border-radius);
   padding: 6px 10px;
   outline: none;
   width: 100%;
   box-sizing: border-box;
   font-size: 1rem;
-  background: rgba(var(--color-background), 0.8);
 }
 .input:focus {
-  border-color: rgb(var(--color-secondary));
+  border-color: rgb(var(--color-gray));
 }
 .ingredient-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(var(--color-secondary), 0.3);
+  border: 1px solid rgba(var(--color-gray), 0.3);
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -226,7 +225,7 @@ watch(
   padding: 6px 10px;
 }
 .ingredient-item:nth-child(even) {
-  background-color: rgba(var(--color-secondary), 0.08);
+  background-color: rgba(var(--bg-secondary), 0.08);
 }
 .ingredient-name {
   flex: 1;
@@ -237,7 +236,7 @@ watch(
   font-size: 0.9rem;
 }
 .ingredient-weight {
-  color: rgba(var(--color-primary), 0.55);
+  color: rgba(var(--color-darkgreen), 0.55);
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -260,14 +259,14 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background-color: rgba(var(--color-primary), 0.06);
+  background-color: rgba(var(--color-darkgreen), 0.06);
   border-radius: var(--border-radius);
   font-size: 0.88rem;
   flex-wrap: wrap;
   gap: 4px;
 }
 .total-weight {
-  color: rgba(var(--color-primary), 0.5);
+  color: rgba(var(--color-darkgreen), 0.5);
 }
 @media (min-width: 768px) {
   .totals {

@@ -110,7 +110,7 @@ const save = async () => {
       >
         ⚠️ Обратите внимание: рацион ниже 1200 ккал не рекомендуется без наблюдения врача.
       </p>
-      <AppButton color="rgb(var(--color-primary))" @click="save">Сохранить</AppButton>
+      <AppButton color="rgb(var(--color-darkgreen))" @click="save">Сохранить</AppButton>
     </div>
   </div>
 </template>

@@ -42,7 +42,7 @@ const handleAdd = () => {
 <style scoped>
 .item-controls {
   display: flex;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
+  border: 1px solid rgba(var(--color-darkgreen), 0.7);
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -53,12 +53,11 @@ const handleAdd = () => {
   border-radius: 4px 0 0 4px;
   padding: 2px 6px;
   outline: none;
-  background: rgba(var(--color-background), 0.8);
 }
 .button-add {
   appearance: none;
   border: 0;
-  background-color: rgb(var(--color-secondary));
+  background-color: rgb(var(--color-darkgreen));
   color: #fff;
   font-weight: bold;
   cursor: pointer;

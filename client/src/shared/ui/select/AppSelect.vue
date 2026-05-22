@@ -47,7 +47,7 @@ const handleChange = (event: Event) => {
         {{ option.label }}
       </option>
     </select>
-    <Icon name="ArrowDown" color="white" class="icon" />
+    <Icon name="ArrowDown" color="rgb(var(--text-secondary))" class="icon" />
   </div>
 </template>
 
@@ -57,7 +57,7 @@ const handleChange = (event: Event) => {
   max-width: max-content;
   display: flex;
   border-radius: var(--border-radius);
-  background-color: rgb(var(--color-secondary));
+  background-color: rgb(var(--color-darkgreen));
   transition: opacity 0.2s ease-in-out 0.1s;
 }
 .select-wrapper:hover {
@@ -76,7 +76,7 @@ const handleChange = (event: Event) => {
   border: none;
   outline: none;
   background-color: transparent;
-  color: white;
+  color: rgb(var(--text-secondary));
   z-index: 1;
   cursor: pointer;
 }
@@ -107,6 +107,6 @@ const handleChange = (event: Event) => {
   transform: translateY(-50%);
 }
 option {
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
 }
 </style>

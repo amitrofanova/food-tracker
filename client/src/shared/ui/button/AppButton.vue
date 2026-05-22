@@ -5,7 +5,7 @@ const props = withDefaults(
     size?: 'sm' | 'md' | 'lg';
   }>(),
   {
-    color: 'rgb(var(--color-secondary))',
+    color: 'rgb(var(--color-darkgreen))',
     size: 'md',
   },
 );
@@ -35,6 +35,8 @@ const parseRgbFromColor = (color: string): RGB | null => {
 };
 
 const textColor = computed(() => {
+  if (props.color === 'transparent') return 'rgb(var(--color-darkgreen))';
+
   const rgb = parseRgbFromColor(props.color);
   if (!rgb) return '#fff';
 

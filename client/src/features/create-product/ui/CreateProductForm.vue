@@ -138,7 +138,7 @@ const handleSubmit = async () => {
 }
 input {
   appearance: none;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
+  border: 1px solid;
   border-radius: var(--border-radius);
   padding: 6px;
   outline: none;

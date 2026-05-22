@@ -1,8 +1,17 @@
 :root {
-  --color-primary: 49, 65, 88; /* #314158 */
-  --color-secondary: 125, 156, 196; /* #7D9CC4 */
+  --color-lightgreen: 195, 208, 154; /* #C3D09A */
+  --color-darkgreen: 83, 120, 59; /* #53783B */
+  --color-beige: 245, 245, 220; /* #F5F5DC */
+  --color-darkgray: 47, 79, 79; /* #2F4F4F */
   --color-gray: 200, 200, 200; /* #C8C8C8 */
-  --color-red: 176, 0, 32; /*#b00020 */
+  --color-red: 176, 0, 32; /* #B00020 */
+
+  --text-primary: 47, 79, 79; /* #2F4F4F */
+  --text-secondary: 255, 255, 255; /* #FFFFFF */
+  --bg-primary: 253, 253, 252; /* #FDFDFC */
+  --bg-secondary: 112, 64, 18; /* #704012 */
+  --bg-soft: 253, 252, 248; /* #FDFCF8 */
+  --bg-warm: 252, 250, 246; /* #FCFAF6 */
 
   --border-radius: 6px;
   --header-height: 80px;

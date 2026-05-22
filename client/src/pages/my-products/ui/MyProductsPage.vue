@@ -168,16 +168,6 @@ const handleEditSubmit = async () => {
 </template>
 
 <style scoped>
-.btn-back {
-  appearance: none;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  color: rgb(var(--color-primary));
-}
 .empty {
   color: rgb(var(--color-gray));
   text-align: center;
@@ -197,7 +187,7 @@ const handleEditSubmit = async () => {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(var(--color-secondary), 0.4);
+  border: 1px solid rgba(var(--color-gray), 0.4);
   border-radius: var(--border-radius);
 }
 .item-info {
@@ -214,7 +204,7 @@ const handleEditSubmit = async () => {
 }
 .item-meta {
   font-size: 0.8rem;
-  color: rgb(var(--color-secondary));
+  color: rgb(var(--color-gray));
 }
 .item-actions {
   display: flex;
@@ -230,11 +220,11 @@ const handleEditSubmit = async () => {
   align-items: center;
   padding: 6px;
   border-radius: var(--border-radius);
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
   transition: background-color 0.15s ease;
 }
 .action-btn:hover {
-  background-color: rgba(var(--color-secondary), 0.15);
+  background-color: rgba(var(--bg-secondary), 0.15);
 }
 .action-btn--danger {
   color: rgb(var(--color-red));
@@ -249,7 +239,7 @@ const handleEditSubmit = async () => {
 }
 .form input {
   appearance: none;
-  border: 1px solid rgba(var(--color-secondary), 0.7);
+  border: 1px solid rgba(var(--color-gray), 0.7);
   border-radius: var(--border-radius);
   padding: 6px;
   outline: none;

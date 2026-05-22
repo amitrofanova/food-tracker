@@ -97,11 +97,10 @@ watch(
 .modal-container {
   width: 100vw;
   height: 100vh;
-  background: white;
+  background-color: rgb(var(--bg-primary));
 }
 .modal-content {
   max-height: 90vh;
-  /* overflow-y: scroll; */
   padding: var(--padding-mobile);
 }
 @media (min-width: 768px) {
