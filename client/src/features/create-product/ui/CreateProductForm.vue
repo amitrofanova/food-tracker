@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AppButton } from '@/shared/ui/button';
+import { AppInput } from '@/shared/ui/input';
 import type { IProduct } from '@/entities/product';
 import { useCreateProduct } from '../lib/useCreateProduct';
 
@@ -73,58 +74,16 @@ const handleSubmit = async () => {
   <div>
     <h3 id="create-product-title">Свой продукт</h3>
     <form aria-labelledby="create-product-title" class="form" @submit.prevent="handleSubmit">
-      <input
-        id="product-name"
-        v-model="form.name"
-        name="name"
-        placeholder="Название"
-        required
-        aria-required="true"
-        class="full-width"
-      />
-      <input
-        v-model.number="form.calories"
-        name="calories"
+      <AppInput v-model="form.name" placeholder="Название" class="full-width" />
+      <AppInput
+        v-model="form.calories"
         type="number"
-        min="1"
         placeholder="Калории (на 100г)"
-        required
-        aria-required="true"
         class="half-width"
       />
-      <input
-        v-model.number="form.protein"
-        name="protein"
-        type="number"
-        min="0"
-        step="0.1"
-        placeholder="Белки"
-        required
-        aria-required="true"
-        class="half-width"
-      />
-      <input
-        v-model.number="form.fat"
-        name="fat"
-        type="number"
-        min="0"
-        step="0.1"
-        placeholder="Жиры"
-        required
-        aria-required="true"
-        class="half-width"
-      />
-      <input
-        v-model.number="form.carbs"
-        name="carbs"
-        type="number"
-        min="0"
-        step="0.1"
-        placeholder="Углеводы"
-        required
-        aria-required="true"
-        class="half-width"
-      />
+      <AppInput v-model="form.protein" type="number" placeholder="Белки" class="half-width" />
+      <AppInput v-model="form.fat" type="number" placeholder="Жиры" class="half-width" />
+      <AppInput v-model="form.carbs" type="number" placeholder="Углеводы" class="half-width" />
       <AppButton type="submit" :disabled="!isValid" :aria-disabled="!isValid">Сохранить</AppButton>
     </form>
   </div>
@@ -135,13 +94,6 @@ const handleSubmit = async () => {
   display: grid;
   gap: 0.8rem;
   margin-top: 0.6rem;
-}
-input {
-  appearance: none;
-  border: 1px solid;
-  border-radius: var(--border-radius);
-  padding: 6px;
-  outline: none;
 }
 @media (min-width: 768px) {
   .form {

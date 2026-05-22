@@ -2,6 +2,7 @@
 import { useVirtualizer } from '@tanstack/vue-virtual';
 import type { IProduct } from '@/entities/product';
 import { useProductSearch } from '../lib/useProductSearch';
+import { AppInput } from '@/shared/ui/input';
 import ProductSearchItem from './ProductSearchItem.vue';
 
 const emit = defineEmits<{
@@ -49,9 +50,9 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
 
 <template>
   <div class="search-wrap">
-    <input
-      :value="searchQuery"
-      @input="(e) => setSearchQuery((e.target as HTMLInputElement).value)"
+    <AppInput
+      :model-value="searchQuery"
+      @update:model-value="setSearchQuery(String($event ?? ''))"
       type="search"
       placeholder="Искать продукт или рецепт"
       class="input-search"
@@ -116,10 +117,12 @@ defineExpose({ clearSearch: () => setSearchQuery('') });
 }
 .input-search {
   width: 100%;
-  padding: 10px;
-  border-radius: var(--border-radius);
   margin-bottom: 20px;
   font-size: 16px;
+}
+.input-search :deep(.input) {
+  padding: 10px;
+  border-radius: var(--border-radius);
 }
 .results {
   flex: 1;

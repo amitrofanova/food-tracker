@@ -1,18 +1,21 @@
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    label: string;
-    modelValue: string | number;
+    label?: string;
+    modelValue: string | number | null | undefined;
     type?: string;
     placeholder?: string;
     error?: string;
     disabled?: boolean;
+    size?: 'sm' | 'md' | 'lg';
   }>(),
   {
+    label: '',
     type: 'text',
     placeholder: '',
     error: '',
     disabled: false,
+    size: 'md',
   },
 );
 
@@ -23,7 +26,7 @@ const emit = defineEmits<{
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const value = props.type === 'number' ? target.value : target.value;
+  const value = props.type === 'number' ? Number(target.value) : target.value;
   emit('update:modelValue', value);
   emit('input');
 };
@@ -31,14 +34,15 @@ const handleInput = (event: Event) => {
 
 <template>
   <div class="input-field">
-    <label :for="label.toLowerCase().replace(/\s+/g, '-')">{{ label }}</label>
+    <label v-if="label" :for="label.toLowerCase().replace(/\s+/g, '-')">{{ label }}</label>
     <input
-      :id="label.toLowerCase().replace(/\s+/g, '-')"
+      :id="label ? label.toLowerCase().replace(/\s+/g, '-') : undefined"
       :type="type"
-      :value="modelValue"
+      :value="modelValue ?? ''"
       :placeholder="placeholder"
       :disabled="disabled"
       class="input"
+      :class="`input_${size}`"
       @input="handleInput"
     />
     <span v-if="error" class="error">{{ error }}</span>
@@ -59,13 +63,29 @@ label {
 }
 
 .input {
-  padding: 8px;
   border: 1px solid #cbd5e0;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   width: 100%;
   box-sizing: border-box;
   font-size: 1em;
   transition: border-color 0.2s ease-in-out;
+}
+
+.input_sm {
+  height: 30px;
+  padding: 0 8px;
+  font-size: 0.9em;
+}
+
+.input_md {
+  height: 40px;
+  padding: 0 10px;
+}
+
+.input_lg {
+  height: 50px;
+  padding: 0 12px;
+  font-size: 1.05em;
 }
 
 .input:focus {

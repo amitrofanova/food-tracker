@@ -8,6 +8,7 @@ import type { MealType } from '@/shared/config/meals';
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { AppInput } from '@/shared/ui/input';
 import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
 
 const props = defineProps<{ initialRecipe?: IRecipe; defaultMeal?: MealType }>();
@@ -95,13 +96,7 @@ watch(
   <div class="recipe-form">
     <div class="left-column">
       <div>
-        <input
-          v-model="recipeName"
-          name="recipeName"
-          class="input item-1"
-          placeholder="Название рецепта"
-          aria-label="Название рецепта"
-        />
+        <AppInput v-model="recipeName" placeholder="Название рецепта" class="item-1" />
       </div>
       <div v-if="isDesktop" class="search-wrap">
         <ProductSearch ref="productSearchRef" @select="addIngredient" />
