@@ -44,7 +44,7 @@ const { isMobile } = useBreakpoints();
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
   font-size: 0.95rem;
   padding: 4px 2px;
 }

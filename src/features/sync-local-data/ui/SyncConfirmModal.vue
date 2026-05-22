@@ -78,7 +78,7 @@ async function discardLocal() {
       your account?
     </p>
     <div style="display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end">
-      <AppButton color="rgb(var(--color-primary))" :disabled="isSyncing" @click="discardLocal"
+      <AppButton color="rgb(var(--color-darkgreen))" :disabled="isSyncing" @click="discardLocal"
         >Discard</AppButton
       >
       <AppButton :disabled="isSyncing" @click="confirmSync">

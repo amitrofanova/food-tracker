@@ -2,7 +2,7 @@
 import { useDiaryStore } from '@/entities/diary-entry';
 import { storeToRefs } from 'pinia';
 import { Icon } from '@/shared/ui/icon';
-import { AppButton } from '@/shared/ui/button';
+import { AppButton, ButtonIcon } from '@/shared/ui/button';
 
 const diaryStore = useDiaryStore();
 const { selectedDate } = storeToRefs(diaryStore);
@@ -27,9 +27,9 @@ const nextDay = () => {
 
 <template>
   <div class="nav-wrap">
-    <AppButton @click="prevDay"><Icon name="ArrowLeft" /></AppButton>
+    <ButtonIcon name="ArrowLeft" @click="prevDay" size="md" color="rgb(var(--color-darkgreen))" />
     <span>{{ formattedDate }}</span>
-    <AppButton @click="nextDay"><Icon name="ArrowRight" /></AppButton>
+    <ButtonIcon name="ArrowRight" @click="nextDay" size="md" color="rgb(var(--color-darkgreen))" />
   </div>
 </template>
 
@@ -37,7 +37,7 @@ const nextDay = () => {
 .nav-wrap {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   justify-content: center;
 }
 </style>

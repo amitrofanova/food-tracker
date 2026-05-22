@@ -42,10 +42,10 @@ const title = computed(() => (isLoginMode.value ? 'Вход' : 'Регистра
 .btn-underline {
   background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--color-darkgreen);
   cursor: pointer;
   font-size: 16px;
-  text-decoration: underline solid rgb(var(--color-primary));
+  text-decoration: underline solid rgb(var(--color-darkgreen));
   text-underline-offset: 4px;
   transition: text-decoration-color 0.3s ease;
 }

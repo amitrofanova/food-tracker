@@ -18,7 +18,7 @@ const showCalorieBudgetForm = ref(false);
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
     <div class="controls">
       <template v-if="isLoggedIn">
-        <CalorieBudgetBtn @click="showCalorieBudgetForm = true" />
+        <!-- <CalorieBudgetBtn @click="showCalorieBudgetForm = true" /> -->
         <UserMenu />
       </template>
       <AppButton v-else @click="showAuthModal = true" size="sm" color="transparent">
@@ -39,12 +39,13 @@ const showCalorieBudgetForm = ref(false);
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--padding-mobile);
-  background-color: rgb(var(--color-primary));
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .logo {
   margin: 0;
   line-height: normal;
-  color: white;
+  color: rgb(var(--color-darkgreen));
   font-size: 24px;
   font-weight: 700;
   text-decoration: none;

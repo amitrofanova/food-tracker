@@ -70,7 +70,7 @@ label {
 
 .input:focus {
   outline: none;
-  border-color: rgb(var(--color-secondary));
+  border-color: rgb(var(--color-gray));
 }
 
 .input:disabled {

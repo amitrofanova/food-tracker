@@ -52,14 +52,8 @@ const onSaved = async (recipe: IRecipe) => {
   <div class="add-entry-wrap">
     <div v-if="!isMobile" class="controls">
       <MealSelect v-model="selectedMeal" class="meal-select" />
-      <AppButton class="btn-recipes" @click="showRecipesModal = true">
-        <Icon name="PlusSymbol" size="sm" />
-        Рецепт
-      </AppButton>
-      <AppButton @click="productModal = true" class="btn-create">
-        <Icon name="PlusSymbol" size="sm" />
-        <span>Продукт</span>
-      </AppButton>
+      <AppButton class="btn-recipes" @click="showRecipesModal = true"> Свой рецепт </AppButton>
+      <AppButton @click="productModal = true" class="btn-create"> Свой продукт </AppButton>
     </div>
     <AppModal v-model="productModal" :width="isMobile ? '100vh' : 'auto'">
       <div class="product-modal">
@@ -122,33 +116,8 @@ const onSaved = async (recipe: IRecipe) => {
 .meal-select {
   margin-right: auto;
 }
-@media (max-width: 767px) {
-  .btn-create {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    width: 36px;
-    height: 36px;
-    font-size: 28px;
-    line-height: 28px;
-  }
-}
 .btn-recipes {
   margin-right: 0.5rem;
-}
-.btn-recipes-mobile {
-  position: fixed;
-  bottom: 1rem;
-  right: 3.75rem;
-  width: 36px;
-  height: 36px;
-  background-color: rgb(var(--color-primary));
-  color: white;
-  border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
 }
 .product-modal {
   display: flex;

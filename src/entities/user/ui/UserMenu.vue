@@ -60,7 +60,7 @@ watch(
 .burger-btn span {
   width: 25px;
   height: 3px;
-  background-color: white;
+  background-color: rgb(var(--color-darkgreen));
   border-radius: 2px;
 }
 .user-menu {
@@ -72,7 +72,7 @@ watch(
   flex-direction: column;
   gap: 12px;
   padding: 1rem;
-  background-color: white;
+  background-color: rgb(var(--bg-primary));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
@@ -94,7 +94,7 @@ watch(
   display: block;
   padding: 6px 12px;
   border-radius: var(--border-radius);
-  color: var(--color-primary);
+  color: var(--color-darkgreen);
   cursor: pointer;
   font-size: 16px;
   text-decoration: none;

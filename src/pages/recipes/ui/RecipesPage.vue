@@ -225,7 +225,7 @@ const onSaved = async (recipe: IRecipe) => {
 
 .empty {
   text-align: center;
-  color: rgba(var(--color-primary), 0.4);
+  color: rgba(var(--color-darkgreen), 0.4);
   padding: 2rem 0;
 }
 
@@ -243,14 +243,14 @@ const onSaved = async (recipe: IRecipe) => {
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(var(--color-secondary), 0.4);
+  border: 1px solid rgb(var(--color-gray));
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
 .recipe-item:hover {
-  background-color: rgba(var(--color-secondary), 0.07);
+  background-color: rgba(var(--color-gray), 0.06);
 }
 
 .recipe-info {
@@ -270,12 +270,12 @@ const onSaved = async (recipe: IRecipe) => {
 
 .recipe-meta {
   font-size: 0.78rem;
-  color: rgba(var(--color-primary), 0.55);
+  color: rgba(var(--color-darkgreen), 0.55);
 }
 
 .recipe-weight-hint {
   font-size: 0.75rem;
-  color: rgba(var(--color-primary), 0.4);
+  color: rgba(var(--color-darkgreen), 0.4);
 }
 
 .recipe-controls {
@@ -297,11 +297,11 @@ const onSaved = async (recipe: IRecipe) => {
   flex-direction: column;
   gap: 2px;
   font-size: 0.88rem;
-  color: rgba(var(--color-primary), 0.7);
+  color: rgba(var(--color-darkgreen), 0.7);
 }
 
 .detail-weight {
-  color: rgba(var(--color-primary), 0.45);
+  color: rgba(var(--color-darkgreen), 0.45);
   font-size: 0.8rem;
 }
 
@@ -309,7 +309,7 @@ const onSaved = async (recipe: IRecipe) => {
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(var(--color-secondary), 0.3);
+  border: 1px solid rgba(var(--color-gray), 0.3);
   border-radius: var(--border-radius);
   overflow: hidden;
 }
@@ -324,7 +324,7 @@ const onSaved = async (recipe: IRecipe) => {
 }
 
 .ingredient-item:nth-child(even) {
-  background-color: rgba(var(--color-secondary), 0.08);
+  background-color: rgba(var(--bg-secondary), 0.08);
 }
 
 .ingredient-name {
@@ -336,7 +336,7 @@ const onSaved = async (recipe: IRecipe) => {
 }
 
 .ingredient-weight {
-  color: rgba(var(--color-primary), 0.55);
+  color: rgba(var(--color-darkgreen), 0.55);
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -350,10 +350,10 @@ const onSaved = async (recipe: IRecipe) => {
 
 .btn-edit {
   appearance: none;
-  border: 1px solid rgba(var(--color-secondary), 0.6);
+  border: 1px solid rgba(var(--color-gray), 0.6);
   background: transparent;
   cursor: pointer;
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-darkgreen));
   display: flex;
   align-items: center;
   gap: 6px;
@@ -364,7 +364,7 @@ const onSaved = async (recipe: IRecipe) => {
 }
 
 .btn-edit:hover {
-  background-color: rgba(var(--color-secondary), 0.1);
+  background-color: rgba(var(--bg-secondary), 0.1);
 }
 
 .btn-delete {

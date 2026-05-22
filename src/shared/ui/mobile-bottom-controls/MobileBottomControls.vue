@@ -20,7 +20,7 @@ const emit = defineEmits<{ [key: string]: [] }>();
         v-for="btn in buttons"
         :key="btn.event"
         class="btn"
-        :style="{ backgroundColor: btn.color ?? 'rgb(var(--color-secondary))' }"
+        :style="{ backgroundColor: btn.color ?? 'rgb(var(--color-darkgreen))' }"
         :disabled="btn.disabled"
         @click="emit(btn.event)"
       >
@@ -39,8 +39,8 @@ const emit = defineEmits<{ [key: string]: [] }>();
   display: flex;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background-color: white;
-  border-top: 1px solid rgba(var(--color-secondary), 0.2);
+  background-color: rgb(var(--bg-primary));
+  border-top: 1px solid rgba(var(--color-gray), 0.2);
   z-index: 100;
 }
 

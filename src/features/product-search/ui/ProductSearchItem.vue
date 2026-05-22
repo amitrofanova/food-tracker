@@ -34,8 +34,7 @@ const handleAddEntry = (weight: number) => {
 .result-item {
   padding: 8px 8px 8px 12px;
   border-radius: var(--border-radius);
-  background-color: rgba(var(--color-secondary), 0.2);
-  /* margin: 4px 8px; */
+  background-color: rgb(var(--bg-warm));
 }
 .item-info {
   display: flex;

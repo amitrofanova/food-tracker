@@ -38,9 +38,9 @@ const dailyGoal = computed(() => user.value?.calorieBudget ?? 0);
 <style scoped>
 .daily-summary {
   padding: 16px;
-  background-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-lightgreen));
   border-radius: var(--border-radius);
-  color: white;
+  color: rgb(var(--text-primary));
 }
 .totals {
   display: flex;
