@@ -3,6 +3,7 @@ import { Icon } from '@/shared/ui/icon';
 
 defineProps<{
   disabled: boolean;
+  size?: 'sm' | 'md' | 'lg';
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +25,7 @@ const handleAdd = () => {
 </script>
 
 <template>
-  <div class="item-controls">
+  <div class="item-controls" :class="`item-controls_${size ?? 'md'}`">
     <input
       type="number"
       name="product-weight"
@@ -46,12 +47,27 @@ const handleAdd = () => {
   border-radius: var(--border-radius);
   overflow: hidden;
 }
+.item-controls_sm .input-weight,
+.item-controls_sm .button-add {
+  height: 30px;
+}
+.item-controls_sm .input-weight {
+  font-size: 0.9em;
+}
+.item-controls_md .input-weight,
+.item-controls_md .button-add {
+  height: 40px;
+}
+.item-controls_lg .input-weight,
+.item-controls_lg .button-add {
+  height: 50px;
+}
 .input-weight {
   appearance: none;
   width: 80px;
   border: none;
   border-radius: 4px 0 0 4px;
-  padding: 2px 6px;
+  padding: 0 6px;
   outline: none;
 }
 .button-add {
