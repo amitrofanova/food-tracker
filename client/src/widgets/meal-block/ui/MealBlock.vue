@@ -5,8 +5,7 @@ import { useDiaryStore } from '@/entities/diary-entry';
 import { EntryRow } from '@/entities/diary-entry';
 import { MEAL_LABELS, type MealType } from '@/shared/config/meals';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { AppButton } from '@/shared/ui/button';
-import { Icon } from '@/shared/ui/icon';
+import { ButtonIcon } from '@/shared/ui/button';
 
 const { isMobile } = useBreakpoints();
 
@@ -27,6 +26,14 @@ const goToSearch = () => {
     <div class="header">
       <h3>{{ MEAL_LABELS[mealType] }}</h3>
       <span>{{ mealTotals[mealType] }} ккал</span>
+      <ButtonIcon
+        v-if="isMobile"
+        name="PlusSymbol"
+        size="sm"
+        color="rgb(var(--color-darkgreen))"
+        class="btn-add"
+        @click="goToSearch"
+      />
     </div>
     <div>
       <EntryRow
@@ -34,38 +41,39 @@ const goToSearch = () => {
         :key="entry.id"
         :entry="entry"
         @remove="diaryStore.removeEntry"
+        @update="({ id, weight, mealType: m }) => diaryStore.updateEntry(id, weight, m)"
       />
       <div v-if="entriesByMeal[mealType].length === 0">Нет записей</div>
     </div>
-    <AppButton
-      v-if="isMobile"
-      size="sm"
-      color="rgb(var(--color-darkgreen))"
-      class="btn-add"
-      @click="goToSearch"
-    >
-      <Icon name="PlusSymbol" size="sm" color="rgb(var(--bg-primary))" />
-    </AppButton>
   </div>
 </template>
 
 <style scoped>
 .wrap {
-  border: 1px solid #eee;
-  border-bottom: 0;
-  padding: 12px;
+  padding: 12px 0 30px;
+}
+@media (min-width: 768px) {
+  .wrap {
+    border-bottom: 1px solid #eee;
+  }
 }
 .wrap:last-child {
   margin-bottom: 50px;
-  border-bottom: 1px solid #eee;
+  border-bottom: none;
 }
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 10px;
 }
 .btn-add {
-  margin-top: 0.5rem;
-  margin-left: auto;
+  border-radius: 20%;
+  box-shadow: 0 2px 4px gray;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  bottom: 10px;
+  background-color: white;
 }
 </style>

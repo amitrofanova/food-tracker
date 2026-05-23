@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia';
 import type { MealType } from '@/shared/config/meals';
 import type { IDiaryEntry } from './types';
-import { fetchDiaryEntries, saveDiaryEntry, deleteDiaryEntry } from '@/shared/api/diary';
+import {
+  fetchDiaryEntries,
+  saveDiaryEntry,
+  updateDiaryEntry,
+  deleteDiaryEntry,
+} from '@/shared/api/diary';
 import { db } from '@/shared/db';
 import type { IProduct } from '@/entities/product';
 
@@ -73,6 +78,36 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
+  async function updateEntry(id: string, weight: number, mealType: MealType) {
+    try {
+      error.value = null;
+      if (isAuthenticated()) {
+        await updateDiaryEntry(id, { weight, mealType });
+        await loadEntries();
+      } else {
+        const entry = entries.value.find((e) => e.id === id);
+        if (!entry) return;
+        // Scale macros proportionally to the new weight
+        const factor = weight / entry.weight;
+        const updated: IDiaryEntry = {
+          ...entry,
+          mealType,
+          weight,
+          calories: Math.round(entry.calories * factor),
+          protein: Math.round(entry.protein * factor),
+          fat: Math.round(entry.fat * factor),
+          carbs: Math.round(entry.carbs * factor),
+        };
+        await db.saveEntry(updated);
+        entries.value = entries.value.map((e) => (e.id === id ? updated : e));
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to update entry';
+      console.error('Failed to update entry:', err);
+      throw err;
+    }
+  }
+
   async function removeEntry(id: string) {
     try {
       error.value = null;
@@ -138,9 +173,10 @@ export const useDiaryStore = defineStore('diary', () => {
         totals[entry.mealType] += entry.calories;
       }
     });
-    return Object.fromEntries(
-      Object.entries(totals).map(([k, v]) => [k, Math.round(v)]),
-    ) as Record<MealType, number>;
+    return Object.fromEntries(Object.entries(totals).map(([k, v]) => [k, Math.round(v)])) as Record<
+      MealType,
+      number
+    >;
   });
 
   function clearEntries() {
@@ -154,6 +190,7 @@ export const useDiaryStore = defineStore('diary', () => {
     error,
     loadEntries,
     addEntry,
+    updateEntry,
     removeEntry,
     clearEntries,
     setSelectedDate(date: string) {
