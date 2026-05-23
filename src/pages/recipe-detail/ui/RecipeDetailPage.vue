@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import type { MealType } from '@/shared/config/meals';
 import type { IRecipe } from '@/entities/recipe';
-import { useDiaryStore } from '@/entities/diary-entry';
-import { AddEntryControls } from '@/entities/diary-entry';
-import { AppModal } from '@/shared/ui/modal';
 import { Icon } from '@/shared/ui/icon';
-import { MealSelect } from '@/shared/ui/select';
 import { PageHeader } from '@/shared/ui/page-header';
 import { useRecipes } from '@/features/create-recipe';
-import { RecipeForm } from '@/widgets/recipe-form';
+import { RecipeFormModal } from '@/widgets/recipe-form';
 import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { useRouter, useRoute } from 'vue-router';
@@ -16,10 +11,8 @@ import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 
-const diaryStore = useDiaryStore();
 const { recipes, isLoading, save, remove } = useRecipes();
 
-const selectedMeal = ref<MealType>('breakfast');
 const showEditForm = ref(false);
 const { isMobile } = useBreakpoints();
 
@@ -27,14 +20,8 @@ const recipe = computed<IRecipe | undefined>(() =>
   recipes.value.find((r) => r.id === route.params.id),
 );
 
-const addToDiary = (weight: number) => {
-  if (!recipe.value) return;
-  diaryStore.addEntry(recipe.value, weight, selectedMeal.value);
-};
-
 const onSaved = async (updated: IRecipe) => {
   await save(updated);
-  showEditForm.value = false;
 };
 
 const deleteRecipe = async () => {
@@ -100,19 +87,12 @@ const deleteRecipe = async () => {
       />
     </template>
 
-    <AppModal
+    <RecipeFormModal
       v-model="showEditForm"
       title="Редактировать рецепт"
-      width="1000px"
-      @closed="showEditForm = false"
-    >
-      <RecipeForm
-        :initial-recipe="recipe"
-        @saved="onSaved"
-        @cancel="showEditForm = false"
-        style="overflow: hidden; height: 700px"
-      />
-    </AppModal>
+      :initial-recipe="recipe"
+      @saved="onSaved"
+    />
   </div>
 </template>
 
