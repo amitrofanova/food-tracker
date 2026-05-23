@@ -86,6 +86,7 @@ const onSaved = async (recipe: IRecipe) => {
         :entry="entry"
         :compact="isMobile"
         @remove="diaryStore.removeEntry"
+        @update="({ id, weight, mealType: m }) => diaryStore.updateEntry(id, weight, m)"
       />
     </div>
     <ProductSearch @select="onProductSelect" />

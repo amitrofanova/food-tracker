@@ -24,6 +24,14 @@ export async function saveDiaryEntry(entry: EntryCreatePayload) {
   return http.post('/entries', entry);
 }
 
+export async function updateDiaryEntry(
+  id: string,
+  data: { weight?: number; mealType?: MealType },
+): Promise<IDiaryEntry> {
+  const { data: result } = await http.patch(`/entries/${id}`, data);
+  return result as IDiaryEntry;
+}
+
 export async function deleteDiaryEntry(id: string) {
   return http.delete(`/entries/${id}`);
 }
