@@ -1,85 +1,22 @@
 <script setup lang="ts">
 import { AppButton } from '@/shared/ui/button';
-import { AppModal } from '@/shared/ui/modal';
 import { Icon } from '@/shared/ui/icon';
 import { PageHeader } from '@/shared/ui/page-header';
-import { AppInput } from '@/shared/ui/input';
 import type { IProduct } from '@/entities/product';
-import { CreateProductForm, useCustomProducts } from '@/features/create-product';
+import { CreateProductModal, EditProductModal, useCustomProducts } from '@/features/create-product';
 
 const { products, isLoading, remove, save } = useCustomProducts();
 
 const showAddModal = ref(false);
+const editingProduct = ref<IProduct | null>(null);
 
 const onCreated = (product: IProduct) => {
   products.value.push(product);
   showAddModal.value = false;
 };
 
-interface EditForm {
-  name: string;
-  calories: number | null;
-  protein: number | null;
-  fat: number | null;
-  carbs: number | null;
-}
-
-interface ValidatedEditForm {
-  name: string;
-  calories: number;
-  protein: number;
-  fat: number;
-  carbs: number;
-}
-
-function isValidEditForm(f: EditForm): f is ValidatedEditForm {
-  return (
-    f.name.trim().length > 0 &&
-    typeof f.calories === 'number' &&
-    f.calories > 0 &&
-    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === 'number' && v >= 0)
-  );
-}
-
-const editingId = ref<string | null>(null);
-const editForm = reactive<EditForm>({
-  name: '',
-  calories: null,
-  protein: null,
-  fat: null,
-  carbs: null,
-});
-
-const showEditModal = computed({
-  get: () => editingId.value !== null,
-  set: (open) => {
-    if (!open) editingId.value = null;
-  },
-});
-
-const isEditValid = computed(() => isValidEditForm(editForm));
-
-const startEdit = (product: IProduct) => {
-  editingId.value = product.id;
-  editForm.name = product.name;
-  editForm.calories = product.calories;
-  editForm.protein = product.protein;
-  editForm.fat = product.fat;
-  editForm.carbs = product.carbs;
-};
-
-const handleEditSubmit = async () => {
-  if (!isValidEditForm(editForm) || !editingId.value) return;
-  const updated: IProduct = {
-    id: editingId.value,
-    name: editForm.name,
-    calories: editForm.calories,
-    protein: editForm.protein,
-    fat: editForm.fat,
-    carbs: editForm.carbs,
-  };
-  await save(updated);
-  editingId.value = null;
+const handleSave = async (product: IProduct) => {
+  await save(product);
 };
 </script>
 
@@ -99,7 +36,7 @@ const handleEditSubmit = async () => {
         </span>
       </div>
       <div class="item-actions">
-        <button class="action-btn" aria-label="Редактировать" @click="startEdit(p)">
+        <button class="action-btn" aria-label="Редактировать" @click="editingProduct = p">
           <Icon name="Pencil" size="sm" />
         </button>
         <button class="action-btn action-btn--danger" aria-label="Удалить" @click="remove(p.id)">
@@ -109,51 +46,15 @@ const handleEditSubmit = async () => {
     </li>
   </ul>
 
-  <AppModal v-model="showAddModal" title="Новый продукт">
-    <CreateProductForm @created="onCreated" />
-  </AppModal>
+  <CreateProductModal v-model="showAddModal" @created="onCreated" />
 
-  <AppModal v-model="showEditModal" title="Редактировать продукт">
-    <form class="form" @submit.prevent="handleEditSubmit">
-      <AppInput
-        label="Название"
-        v-model="editForm.name"
-        placeholder="Название"
-        class="full-width"
-      />
-      <AppInput
-        label="Калории (на 100г)"
-        v-model="editForm.calories"
-        type="number"
-        placeholder="Калории (на 100г)"
-        class="half-width"
-      />
-      <AppInput
-        label="Белки"
-        v-model="editForm.protein"
-        type="number"
-        placeholder="Белки"
-        class="half-width"
-      />
-      <AppInput
-        label="Жиры"
-        v-model="editForm.fat"
-        type="number"
-        placeholder="Жиры"
-        class="half-width"
-      />
-      <AppInput
-        label="Углеводы"
-        v-model="editForm.carbs"
-        type="number"
-        placeholder="Углеводы"
-        class="half-width"
-      />
-      <AppButton type="submit" :disabled="!isEditValid" :aria-disabled="!isEditValid">
-        Сохранить
-      </AppButton>
-    </form>
-  </AppModal>
+  <EditProductModal
+    v-if="editingProduct"
+    :model-value="!!editingProduct"
+    :product="editingProduct"
+    @update:model-value="editingProduct = null"
+    @save="handleSave"
+  />
 </template>
 
 <style scoped>
@@ -220,19 +121,5 @@ const handleEditSubmit = async () => {
 }
 .action-btn--danger:hover {
   background-color: rgba(var(--color-red), 0.1);
-}
-.form {
-  display: grid;
-  gap: 0.8rem;
-  margin-top: 0.6rem;
-}
-@media (min-width: 768px) {
-  .form {
-    min-width: 500px;
-    grid-template-columns: 1fr 1fr;
-  }
-  .full-width {
-    grid-column: 1 / -1;
-  }
 }
 </style>

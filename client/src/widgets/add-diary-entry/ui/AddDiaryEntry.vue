@@ -5,12 +5,10 @@ import { useDiaryStore, EntryRow } from '@/entities/diary-entry';
 import { storeToRefs } from 'pinia';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import type { MealType } from '@/shared/config/meals';
-import { CreateProductForm, AddEntryForm } from '@/features/create-product';
+import { CreateProductModal } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
-import { RecipeForm } from '@/widgets/recipe-form';
+import { RecipeFormModal } from '@/widgets/recipe-form';
 import { useRecipes } from '@/features/create-recipe';
-import { Icon } from '@/shared/ui/icon';
-import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { MealSelect } from '@/shared/ui/select';
 import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
@@ -23,21 +21,6 @@ const props = defineProps<{ mealType?: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
 const productModal = ref(false);
 const showRecipesModal = ref(false);
-
-const createdProduct = ref<IProduct | null>(null);
-const enabledAddProductForm = ref(false);
-const handleCreated = (product: IProduct) => {
-  createdProduct.value = product;
-  enabledAddProductForm.value = true;
-};
-const addCreatedProduct = (weight: number, mealType: MealType) => {
-  if (createdProduct.value) {
-    diaryStore.addEntry(createdProduct.value, weight, mealType);
-    createdProduct.value = null;
-    enabledAddProductForm.value = false;
-    productModal.value = false;
-  }
-};
 
 const onProductSelect = (product: IProduct, weight: number) => {
   diaryStore.addEntry(product, weight, selectedMeal.value);
@@ -55,30 +38,18 @@ const onSaved = async (recipe: IRecipe) => {
       <AppButton class="btn-recipes" @click="showRecipesModal = true"> Свой рецепт </AppButton>
       <AppButton @click="productModal = true" class="btn-create"> Свой продукт </AppButton>
     </div>
-    <AppModal v-model="productModal" :width="isMobile ? '100vh' : 'auto'">
-      <div class="product-modal">
-        <CreateProductForm @created="handleCreated" />
-        <AddEntryForm
-          :disabled="!enabledAddProductForm"
-          :newProduct="createdProduct"
-          :default-meal="selectedMeal"
-          @add-entry="addCreatedProduct"
-        />
-      </div>
-    </AppModal>
-    <AppModal
+    <CreateProductModal
+      v-model="productModal"
+      :default-meal="selectedMeal"
+      @add-entry="(p, w, m) => diaryStore.addEntry(p, w, m)"
+    />
+    <RecipeFormModal
       v-model="showRecipesModal"
-      :width="'1000px'"
       title="Создать рецепт"
-      style="overflow: hidden"
-    >
-      <RecipeForm
-        @saved="onSaved"
-        @added="showRecipesModal = false"
-        :default-meal="selectedMeal"
-        style="overflow: hidden; height: 700px"
-      />
-    </AppModal>
+      :default-meal="selectedMeal"
+      @saved="onSaved"
+      @added="showRecipesModal = false"
+    />
     <div v-if="isMobile" class="meal-entries">
       <EntryRow
         v-for="entry in entriesByMeal[selectedMeal]"

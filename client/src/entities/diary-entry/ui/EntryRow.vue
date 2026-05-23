@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { Icon } from '@/shared/ui/icon';
-import { AppModal } from '@/shared/ui/modal';
-import { AppInput } from '@/shared/ui/input';
-import { AppButton } from '@/shared/ui/button';
-import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
-import { MealSelect } from '@/shared/ui/select';
+import DiaryEntryEditModal from './DiaryEntryEditModal.vue';
 import type { IDiaryEntry } from '../model/types';
 import type { MealType } from '@/shared/config/meals';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-
-const { isMobile } = useBreakpoints();
 
 const props = defineProps<{ entry: IDiaryEntry; compact?: boolean }>();
 const emit = defineEmits<{
@@ -18,26 +11,6 @@ const emit = defineEmits<{
 }>();
 
 const isOpen = ref(false);
-const localWeight = ref<number>(props.entry.weight);
-const localMeal = ref<MealType>(props.entry.mealType);
-
-const openModal = () => {
-  localWeight.value = props.entry.weight;
-  localMeal.value = props.entry.mealType;
-  isOpen.value = true;
-};
-
-const onSave = () => {
-  if (localWeight.value > 0) {
-    emit('update', { id: props.entry.id, weight: localWeight.value, mealType: localMeal.value });
-    isOpen.value = false;
-  }
-};
-
-const onRemove = () => {
-  emit('remove', props.entry.id);
-  isOpen.value = false;
-};
 </script>
 
 <template>
@@ -50,28 +23,16 @@ const onRemove = () => {
         <span class="macros">Б:{{ entry.protein }} Ж:{{ entry.fat }} У:{{ entry.carbs }}</span>
       </div>
     </div>
-    <button @click="openModal" class="edit-btn">
+    <button @click="isOpen = true" class="edit-btn">
       <Icon name="Pencil" size="sm" />
     </button>
 
-    <AppModal v-model="isOpen" :title="entry.productName" max-width="400px">
-      <div class="edit-modal">
-        <AppInput label="Вес (г)" type="number" v-model="localWeight" />
-        <div class="edit-modal__actions">
-          <MealSelect v-model="localMeal" />
-          <AppButton color="rgb(var(--color-red))" @click="onRemove">
-            <Icon name="Trash" size="sm" />
-            Удалить запись
-          </AppButton>
-        </div>
-        <MobileBottomControls
-          v-if="isMobile"
-          :buttons="[{ label: 'Сохранить', event: 'save' }]"
-          @save="onSave"
-        />
-        <AppButton v-else @click="onSave">Сохранить</AppButton>
-      </div>
-    </AppModal>
+    <DiaryEntryEditModal
+      v-model="isOpen"
+      :entry="entry"
+      @update="emit('update', $event)"
+      @remove="emit('remove', $event)"
+    />
   </div>
 </template>
 
@@ -125,16 +86,5 @@ const onRemove = () => {
 }
 .edit-btn:hover {
   color: rgb(var(--color-darkgreen));
-}
-.edit-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-top: 0.5rem;
-}
-.edit-modal__actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
 }
 </style>

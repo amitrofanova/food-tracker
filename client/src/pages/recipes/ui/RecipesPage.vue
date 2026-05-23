@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import type { MealType } from '@/shared/config/meals';
 import type { IRecipe } from '@/entities/recipe';
+import { RecipeDetailModal } from '@/entities/recipe';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { AddEntryControls } from '@/entities/diary-entry';
 import { AppButton } from '@/shared/ui/button';
 import { PageHeader } from '@/shared/ui/page-header';
-import { AppModal } from '@/shared/ui/modal';
 import { Icon } from '@/shared/ui/icon';
 import { MealSelect } from '@/shared/ui/select';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { useRecipes } from '@/features/create-recipe';
-import { RecipeForm } from '@/widgets/recipe-form';
+import { RecipeFormModal } from '@/widgets/recipe-form';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -50,10 +50,7 @@ const deleteRecipe = async (id: string) => {
 
 const onSaved = async (recipe: IRecipe) => {
   await save(recipe);
-  if (editingRecipe.value) {
-    showForm.value = false;
-    editingRecipe.value = undefined;
-  }
+  editingRecipe.value = undefined;
 };
 </script>
 
@@ -95,62 +92,23 @@ const onSaved = async (recipe: IRecipe) => {
       </li>
     </ul>
 
-    <AppModal
+    <RecipeFormModal
       v-model="showForm"
       :title="formTitle"
-      width="1000px"
+      :initial-recipe="editingRecipe"
+      :default-meal="selectedMeal"
+      @saved="onSaved"
+      @added="showForm = false"
       @closed="editingRecipe = undefined"
-    >
-      <RecipeForm
-        :initial-recipe="editingRecipe"
-        @saved="onSaved"
-        @added="
-          showForm = false;
-          editingRecipe = undefined;
-        "
-        style="overflow: hidden; height: 700px"
-      />
-    </AppModal>
+    />
 
-    <AppModal
+    <RecipeDetailModal
       :model-value="!!viewedRecipe"
-      :title="viewedRecipe?.name"
+      :recipe="viewedRecipe"
       @update:model-value="viewedRecipe = undefined"
-    >
-      <template v-if="viewedRecipe">
-        <div class="detail-body">
-          <div class="detail-meta">
-            <span>{{ viewedRecipe.calories }} ккал/100г</span>
-            <span
-              >Б&thinsp;{{ viewedRecipe.protein }} · Ж&thinsp;{{ viewedRecipe.fat }} · У&thinsp;{{
-                viewedRecipe.carbs
-              }}</span
-            >
-            <span class="detail-weight">Рецепт: {{ viewedRecipe.totalWeight }}&thinsp;г</span>
-          </div>
-          <ul class="ingredient-list">
-            <li
-              v-for="ing in viewedRecipe.ingredients"
-              :key="ing.productId"
-              class="ingredient-item"
-            >
-              <span class="ingredient-name">{{ ing.productName }}</span>
-              <span class="ingredient-weight">{{ ing.weight }}&thinsp;г</span>
-            </li>
-          </ul>
-          <div class="detail-actions">
-            <AppButton @click="edit(viewedRecipe)">
-              <Icon name="Pencil" size="sm" />
-              Редактировать
-            </AppButton>
-            <AppButton color="rgb(var(--color-red))" @click="deleteRecipe(viewedRecipe.id)">
-              <Icon name="Trash" size="sm" />
-              Удалить
-            </AppButton>
-          </div>
-        </div>
-      </template>
-    </AppModal>
+      @edit="edit"
+      @delete="deleteRecipe"
+    />
   </template>
 
   <!-- Mobile -->
@@ -189,23 +147,15 @@ const onSaved = async (recipe: IRecipe) => {
       </li>
     </ul>
 
-    <AppModal
+    <RecipeFormModal
       v-model="showForm"
       :title="formTitle"
-      width="1000px"
+      :initial-recipe="editingRecipe"
+      :default-meal="selectedMeal"
+      @saved="onSaved"
+      @added="showForm = false"
       @closed="editingRecipe = undefined"
-    >
-      <RecipeForm
-        :initial-recipe="editingRecipe"
-        :default-meal="selectedMeal"
-        @saved="onSaved"
-        @added="
-          showForm = false;
-          editingRecipe = undefined;
-        "
-        style="overflow: hidden; height: 700px"
-      />
-    </AppModal>
+    />
   </template>
 </template>
 
@@ -285,70 +235,6 @@ const onSaved = async (recipe: IRecipe) => {
   flex-shrink: 0;
 }
 
-.detail-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 280px;
-}
-
-.detail-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.88rem;
-  color: rgb(var(--text-primary));
-}
-
-.detail-weight {
-  color: rgba(var(--text-primary), 0.45);
-  font-size: 0.8rem;
-}
-
-.ingredient-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid rgba(var(--color-gray), 0.3);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-
-.ingredient-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 10px;
-  font-size: 0.9rem;
-}
-
-.ingredient-item:nth-child(even) {
-  background-color: rgba(var(--bg-secondary), 0.08);
-}
-
-.ingredient-name {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ingredient-weight {
-  color: rgba(var(--color-darkgreen), 0.55);
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-
-.detail-actions {
-  display: flex;
-  gap: 0.75rem;
-  padding-top: 0.25rem;
-}
-.detail-actions button {
-  flex: 1;
-}
 @media (min-width: 768px) {
   .page {
     padding: var(--padding);
