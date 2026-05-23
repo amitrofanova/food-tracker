@@ -9,6 +9,8 @@ export interface CalorieFormData {
   height: string;
   activityLevel: ActivityLevel;
   goal: Goal;
+  targetWeight: string;
+  targetDate: string;
 }
 
 export interface CalorieResult {
@@ -16,10 +18,16 @@ export interface CalorieResult {
   tdee: number;
   targetCalories: number;
   dailyDeficitOrSurplus: number;
+  weeklyWeightChange: number; // kg/week; negative = loss, positive = gain
+  daysToGoal: number | null; // null for maintain
+  adjustedTargetDate: string | null; // formatted date; non-null when user's deadline was too aggressive
+  wasAdjusted: boolean;
 }
 
 export interface ValidationErrors {
   age?: string;
   weight?: string;
   height?: string;
+  targetWeight?: string;
+  targetDate?: string;
 }
