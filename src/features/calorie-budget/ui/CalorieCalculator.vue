@@ -20,6 +20,17 @@ const activityOptions = [
 const save = async () => {
   await userStore.setCalorieBudget(result.value?.targetCalories || 0);
 };
+
+// Minimum selectable date: MIN_GOAL_DAYS from today, formatted as YYYY-MM-DD
+const minTargetDate = computed(() => {
+  const d = new Date();
+  d.setDate(d.getDate() + 14);
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-');
+});
 </script>
 
 <template>
@@ -82,6 +93,24 @@ const save = async () => {
           <input type="radio" name="goal" value="gain" v-model="form.goal" /> Набор массы
         </label>
       </fieldset>
+      <template v-if="form.goal !== 'maintain'">
+        <AppInput
+          :label="form.goal === 'lose' ? 'Целевой вес (кг)' : 'Желаемый вес (кг)'"
+          type="number"
+          :placeholder="form.goal === 'lose' ? '65' : '80'"
+          v-model="form.targetWeight"
+          :error="errors.targetWeight"
+          @input="clearError('targetWeight')"
+        />
+        <AppInput
+          label="Желаемая дата"
+          type="date"
+          :min="minTargetDate"
+          v-model="form.targetDate"
+          :error="errors.targetDate"
+          @input="clearError('targetDate')"
+        />
+      </template>
       <AppButton type="submit">Рассчитать норму</AppButton>
     </form>
     <div v-if="result" class="calorie-calc__result">
@@ -95,20 +124,40 @@ const save = async () => {
       <p class="calorie-calc__target">
         🎯 Цель: <strong>{{ result.targetCalories }}</strong> ккал/день
       </p>
-      <p>
-        <template v-if="result.dailyDeficitOrSurplus < 0">
-          📉 Дефицит: {{ Math.abs(result.dailyDeficitOrSurplus) }} ккал
-        </template>
-        <template v-else-if="result.dailyDeficitOrSurplus > 0">
-          📈 Профицит: +{{ result.dailyDeficitOrSurplus }} ккал
-        </template>
-        <template v-else> ⚖️ Без изменений </template>
-      </p>
+
+      <template v-if="result.dailyDeficitOrSurplus !== 0">
+        <p v-if="result.dailyDeficitOrSurplus < 0">
+          📉 Дефицит: <strong>{{ Math.abs(result.dailyDeficitOrSurplus) }}</strong> ккал/день
+        </p>
+        <p v-else>
+          📈 Профицит: <strong>+{{ result.dailyDeficitOrSurplus }}</strong> ккал/день
+        </p>
+        <p>
+          ⚖️ Темп: вес будет
+          <strong
+            >{{ result.weeklyWeightChange > 0 ? '+' : ''
+            }}{{ result.weeklyWeightChange }} кг</strong
+          >
+          / неделю
+        </p>
+        <p v-if="result.daysToGoal">
+          📅 До цели: <strong>~{{ Math.round(result.daysToGoal / 7) }} недель</strong>
+        </p>
+        <p v-if="result.wasAdjusted" class="calorie-calc__warning">
+          ⚠️ Ваша дата слишком агрессивна. При безопасном темпе цель достижима к {{
+            result.adjustedTargetDate
+          }}.
+        </p>
+      </template>
+      <template v-else>
+        <p>⚖️ Без изменений в весе</p>
+      </template>
+
       <p
         v-if="result.targetCalories <= 1200 && form.gender === 'female'"
         class="calorie-calc__warning"
       >
-        ⚠️ Обратите внимание: рацион ниже 1200 ккал не рекомендуется без наблюдения врача.
+        ⚠️ Рацион ниже 1200 ккал не рекомендуется без наблюдения врача.
       </p>
       <AppButton color="rgb(var(--color-darkgreen))" @click="save">Сохранить</AppButton>
     </div>
