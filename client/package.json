@@ -16,6 +16,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^8.1.0",
     "@capacitor/android": "^8.3.4",
     "@capacitor/camera": "^8.2.0",
     "@capacitor/cli": "^8.3.4",
@@ -53,6 +54,7 @@
     "vue-tsc": "^3.2.4"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": "please-use-yarn"
   }
 }

@@ -260,6 +260,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
+"@capacitor-mlkit/barcode-scanning@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.npmjs.org/@capacitor-mlkit/barcode-scanning/-/barcode-scanning-8.1.0.tgz"
+  integrity sha512-lhOYHZINLOCT0i5YSbSMkouik3zh0BncJouumNTgXCT0/533Z4733jAX9zv+nEd++bE8QHeUl2g0NrewreumnQ==
+
 "@capacitor/android@^8.3.4":
   version "8.3.4"
   resolved "https://registry.npmjs.org/@capacitor/android/-/android-8.3.4.tgz"

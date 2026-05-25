@@ -96,7 +96,7 @@ watch(
 }
 .modal-container {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background-color: rgb(var(--bg-primary));
 }
 .modal-content {

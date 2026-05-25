@@ -25,12 +25,12 @@ const diaryStore = useDiaryStore();
 .wrapper {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height) - var(--padding));
+  height: calc(100dvh - var(--header-height) - var(--padding));
   overflow: hidden;
 }
 @media (max-width: 767px) {
   .wrapper {
-    height: calc(100vh - var(--header-height) - calc(var(--padding-mobile) * 3));
+    height: calc(100dvh - var(--header-height) - calc(var(--padding-mobile) * 3));
   }
 }
 /* AddDiaryEntry uses a self-contained calc() height designed for the home page.

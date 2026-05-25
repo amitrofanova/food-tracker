@@ -75,7 +75,7 @@ const onSaved = async (recipe: IRecipe) => {
 
 <style scoped>
 .add-entry-wrap {
-  height: calc(100vh - var(--padding) - var(--header-height));
+  height: calc(100dvh - var(--padding) - var(--header-height));
   display: flex;
   flex-direction: column;
   overflow: hidden;
