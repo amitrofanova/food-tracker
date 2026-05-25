@@ -50,12 +50,12 @@ const onSaved = async (recipe: IRecipe) => {
       @saved="onSaved"
       @added="showRecipesModal = false"
     />
-    <div v-if="isMobile" class="meal-entries">
+    <div v-if="isMobile" class="meal-entries" :class="{ 'meal-entries_mini': isMobile }">
       <EntryRow
         v-for="entry in entriesByMeal[selectedMeal]"
         :key="entry.id"
         :entry="entry"
-        :compact="isMobile"
+        :mini="isMobile"
         @remove="diaryStore.removeEntry"
         @update="({ id, weight, mealType: m }) => diaryStore.updateEntry(id, weight, m)"
       />
@@ -98,6 +98,12 @@ const onSaved = async (recipe: IRecipe) => {
 }
 .meal-entries {
   overflow-y: auto;
+}
+.meal-entries_mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0 8px;
 }
 .entry-row:last-child {
   margin-bottom: 1rem;
