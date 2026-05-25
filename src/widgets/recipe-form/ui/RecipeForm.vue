@@ -103,7 +103,7 @@ watch(
       </div>
     </div>
 
-    <div v-if="isDesktop" class="right-column">
+    <div v-show="isDesktop || ingredients.length > 0" class="right-column">
       <ul v-if="ingredients.length > 0" class="ingredient-list">
         <li v-for="ing in ingredients" :key="ing.productId" class="ingredient-item">
           <span class="ingredient-name">{{ ing.productName }}</span>
@@ -128,12 +128,11 @@ watch(
         >
         <span class="total-weight">Итого: {{ totalWeight }}&thinsp;г</span>
       </div>
-
       <AppButton v-if="isDesktop" :disabled="!isValid" class="btn-save" @click="handleSave"
         >Сохранить рецепт</AppButton
       >
       <AddEntryForm
-        v-if="isDesktop"
+        v-if="isDesktop && savedRecipe"
         :disabled="!savedRecipe"
         :new-product="savedRecipe"
         :default-meal="props.defaultMeal"
