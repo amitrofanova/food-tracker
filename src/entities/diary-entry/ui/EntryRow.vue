@@ -4,7 +4,7 @@ import DiaryEntryEditModal from './DiaryEntryEditModal.vue';
 import type { IDiaryEntry } from '../model/types';
 import type { MealType } from '@/shared/config/meals';
 
-const props = defineProps<{ entry: IDiaryEntry; compact?: boolean }>();
+defineProps<{ entry: IDiaryEntry; compact?: boolean; mini?: boolean }>();
 const emit = defineEmits<{
   (e: 'remove', id: string): void;
   (e: 'update', payload: { id: string; weight: number; mealType: MealType }): void;
@@ -14,7 +14,14 @@ const isOpen = ref(false);
 </script>
 
 <template>
-  <div class="entry-row" :class="{ compact: props.compact }">
+  <div v-if="mini" class="entry-chip">
+    <span class="name">{{ entry.productName }}</span>
+    <span class="weight">{{ entry.weight }} г</span>
+    <button @click="isOpen = true" class="edit-btn">
+      <Icon name="Pencil" size="sm" />
+    </button>
+  </div>
+  <div v-else class="entry-row" :class="{ compact: compact }">
     <div class="info-wrap">
       <span class="name">{{ entry.productName }}</span>
       <div class="data-wrap">
@@ -26,14 +33,13 @@ const isOpen = ref(false);
     <button @click="isOpen = true" class="edit-btn">
       <Icon name="Pencil" size="sm" />
     </button>
-
-    <DiaryEntryEditModal
-      v-model="isOpen"
-      :entry="entry"
-      @update="emit('update', $event)"
-      @remove="emit('remove', $event)"
-    />
   </div>
+  <DiaryEntryEditModal
+    v-model="isOpen"
+    :entry="entry"
+    @update="emit('update', $event)"
+    @remove="emit('remove', $event)"
+  />
 </template>
 
 <style scoped>
@@ -86,5 +92,32 @@ const isOpen = ref(false);
 }
 .edit-btn:hover {
   color: rgb(var(--color-darkgreen));
+}
+.entry-chip .edit-btn {
+  flex: 0 0 auto;
+}
+.entry-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(50% - 4px);
+  min-width: 0;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(var(--color-darkgreen), 0.3);
+  background: rgba(var(--color-darkgreen), 0.07);
+  gap: 4px;
+}
+.entry-chip .name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.entry-chip .weight {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
 }
 </style>
