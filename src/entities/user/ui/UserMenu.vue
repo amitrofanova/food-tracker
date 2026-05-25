@@ -32,7 +32,7 @@ watch(
     </div>
     <div v-show="isOpen" class="user-menu">
       <p class="">{{ userStore.user?.email }}</p>
-      <ul>
+      <ul @click="close">
         <li class="list-item"><RouterLink to="/my-products">Мои продукты</RouterLink></li>
         <li class="list-item"><RouterLink to="/recipes">Мои рецепты</RouterLink></li>
         <li class="list-item">
