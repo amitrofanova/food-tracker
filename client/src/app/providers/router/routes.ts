@@ -22,6 +22,7 @@ export const routes: RouteRecordRaw[] = [
     path: '/my-products',
     name: 'my-products',
     component: () => import('@/pages/my-products'),
+    meta: { hideHeaderOnMobile: true },
   },
   {
     path: '/recipes',

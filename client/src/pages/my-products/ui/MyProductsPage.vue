@@ -2,16 +2,28 @@
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
 import { PageHeader } from '@/shared/ui/page-header';
+import type { MealType } from '@/shared/config/meals';
 import type { IProduct } from '@/entities/product';
 import { CreateProductModal, EditProductModal, useCustomProducts } from '@/features/create-product';
+import { useDiaryStore } from '@/entities/diary-entry';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
+import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
 
 const { products, isLoading, remove, save } = useCustomProducts();
+const diaryStore = useDiaryStore();
 
 const showAddModal = ref(false);
 const editingProduct = ref<IProduct | null>(null);
+const selectedMeal = ref<MealType>('breakfast');
+
+const { isMobile } = useBreakpoints();
 
 const onCreated = (product: IProduct) => {
   products.value.push(product);
+};
+
+const onAddEntry = (product: IProduct, weight: number, meal: MealType) => {
+  diaryStore.addEntry(product, weight, meal);
   showAddModal.value = false;
 };
 
@@ -21,7 +33,13 @@ const handleSave = async (product: IProduct) => {
 </script>
 
 <template>
-  <PageHeader title="Мои продукты" />
+  <PageHeader title="Мои продукты">
+    <AppButton v-if="!isMobile" @click="showAddModal = true">
+      <Icon name="Plus" size="sm" />
+      Добавить
+    </AppButton>
+  </PageHeader>
+
   <p v-if="isLoading" class="empty">Загрузка…</p>
   <p v-else-if="products.length === 0" class="empty">Пока нет ни одного продукта</p>
 
@@ -46,7 +64,18 @@ const handleSave = async (product: IProduct) => {
     </li>
   </ul>
 
-  <CreateProductModal v-model="showAddModal" @created="onCreated" />
+  <MobileBottomControls
+    v-if="isMobile"
+    :buttons="[{ label: 'Добавить продукт', event: 'add' }]"
+    @add="showAddModal = true"
+  />
+
+  <CreateProductModal
+    v-model="showAddModal"
+    :default-meal="selectedMeal"
+    @created="onCreated"
+    @add-entry="onAddEntry"
+  />
 
   <EditProductModal
     v-if="editingProduct"

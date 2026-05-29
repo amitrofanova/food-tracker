@@ -20,7 +20,7 @@ const { isMobile } = useBreakpoints();
       {{ backLabel }}
     </button>
     <h1 v-if="title" class="title">{{ title }}</h1>
-    <slot v-else />
+    <slot />
   </div>
 </template>
 

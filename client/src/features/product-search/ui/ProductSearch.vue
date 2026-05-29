@@ -220,7 +220,6 @@ defineExpose({
 }
 @media (max-width: 767px) {
   .results {
-    margin-bottom: 120px;
     padding-bottom: 100px;
   }
 }
