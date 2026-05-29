@@ -34,12 +34,14 @@ const isOpen = ref(false);
       <Icon name="Pencil" size="sm" />
     </button>
   </div>
-  <DiaryEntryEditModal
-    v-model="isOpen"
-    :entry="entry"
-    @update="emit('update', $event)"
-    @remove="emit('remove', $event)"
-  />
+  <slot name="edit-modal" :is-open="isOpen" :on-close="() => (isOpen = false)">
+    <DiaryEntryEditModal
+      v-model="isOpen"
+      :entry="entry"
+      @update="emit('update', $event)"
+      @remove="emit('remove', $event)"
+    />
+  </slot>
 </template>
 
 <style scoped>

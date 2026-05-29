@@ -25,7 +25,6 @@ const { isMobile } = useBreakpoints();
 const localWeight = ref<number>(props.entry.weight);
 const localMeal = ref<MealType>(props.entry.mealType);
 
-// Reset local state to entry values each time the modal opens.
 watch(
   () => props.modelValue,
   (open) => {

@@ -4,7 +4,6 @@ import type { IProduct } from '@/entities/product';
 import { useProductSearch } from '../lib/useProductSearch';
 import { useBarcodeScanner } from '../lib/useBarcodeScanner';
 import { AppInput } from '@/shared/ui/input';
-import { Icon } from '@/shared/ui/icon';
 import ProductSearchItem from './ProductSearchItem.vue';
 import { ButtonIcon } from '@/shared/ui/button';
 
@@ -25,7 +24,6 @@ const {
 
 const { scan, scanning, scanError, isNative } = useBarcodeScanner();
 
-// When a product is found by barcode it overrides text search results
 const barcodeProduct = ref<IProduct | null>(null);
 
 const displayResults = computed(() =>
@@ -222,6 +220,7 @@ defineExpose({
 }
 @media (max-width: 767px) {
   .results {
+    margin-bottom: 120px;
     padding-bottom: 100px;
   }
 }

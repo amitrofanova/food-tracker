@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
 import type { IRecipe, IRecipeIngredient } from '@/entities/recipe';
+import { IngredientEditModal } from '@/entities/recipe';
 import { ProductSearch } from '@/features/product-search';
 import { AddEntryForm } from '@/features/create-product';
 import { useDiaryStore } from '@/entities/diary-entry';
 import type { MealType } from '@/shared/config/meals';
 import { AppButton } from '@/shared/ui/button';
-import { Icon } from '@/shared/ui/icon';
+import { EntryRow } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { AppInput } from '@/shared/ui/input';
 import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
@@ -59,6 +60,11 @@ const removeIngredient = (productId: string) => {
   ingredients.value = ingredients.value.filter((i) => i.productId !== productId);
 };
 
+const updateIngredient = ({ productId, weight }: { productId: string; weight: number }) => {
+  const ing = ingredients.value.find((i) => i.productId === productId);
+  if (ing) ing.weight = weight;
+};
+
 const isValid = computed(() => recipeName.value.trim().length > 0 && ingredients.value.length > 0);
 
 const handleSave = () => {
@@ -104,19 +110,35 @@ watch(
     </div>
 
     <div v-show="isDesktop || ingredients.length > 0" class="right-column">
-      <ul v-if="ingredients.length > 0" class="ingredient-list">
-        <li v-for="ing in ingredients" :key="ing.productId" class="ingredient-item">
-          <span class="ingredient-name">{{ ing.productName }}</span>
-          <span class="ingredient-weight">{{ ing.weight }}&thinsp;г</span>
-          <button
-            class="btn-remove"
-            aria-label="Удалить ингредиент"
-            @click="removeIngredient(ing.productId)"
-          >
-            <Icon name="Close" size="sm" />
-          </button>
-        </li>
-      </ul>
+      <div v-if="ingredients.length > 0" class="ingredient-list">
+        <EntryRow
+          v-for="ing in ingredients"
+          :key="ing.productId"
+          :entry="{
+            id: ing.productId,
+            productId: ing.productId,
+            productName: ing.productName,
+            weight: ing.weight,
+            calories: ing.calories,
+            protein: ing.protein,
+            fat: ing.fat,
+            carbs: ing.carbs,
+            date: '',
+            mealType: 'breakfast',
+          }"
+          :mini="isMobile"
+        >
+          <template #edit-modal="{ isOpen, onClose }">
+            <IngredientEditModal
+              :model-value="isOpen"
+              :ingredient="ing"
+              @update:model-value="(v) => !v && onClose()"
+              @update="updateIngredient"
+              @remove="removeIngredient"
+            />
+          </template>
+        </EntryRow>
+      </div>
       <div v-if="ingredients.length > 0" class="totals">
         <span
           >На 100г: <strong>{{ per100g.calories }} ккал</strong></span
@@ -180,7 +202,6 @@ watch(
   flex-grow: 0;
 }
 .right-column {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -205,48 +226,9 @@ watch(
   border-color: rgb(var(--color-gray));
 }
 .ingredient-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid rgba(var(--color-gray), 0.3);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-.ingredient-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-}
-.ingredient-item:nth-child(even) {
-  background-color: rgba(var(--bg-secondary), 0.08);
-}
-.ingredient-name {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.9rem;
-}
-.ingredient-weight {
-  color: rgba(var(--color-darkgreen), 0.55);
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-.btn-remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: rgb(var(--color-red));
-  display: flex;
-  align-items: center;
-  padding: 2px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-.btn-remove:hover {
-  background-color: rgba(var(--color-red), 0.1);
+  flex-wrap: wrap;
+  gap: 6px;
 }
 .totals {
   display: flex;
@@ -269,6 +251,12 @@ watch(
   .left-column,
   .right-column {
     flex: 1;
+  }
+  .ingredient-list {
+    display: block;
+    border: 1px solid rgba(var(--color-gray), 0.3);
+    border-radius: var(--border-radius);
+    overflow: hidden;
   }
 }
 </style>

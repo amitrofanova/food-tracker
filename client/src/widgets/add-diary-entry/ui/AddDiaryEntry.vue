@@ -11,12 +11,12 @@ import { RecipeFormModal } from '@/widgets/recipe-form';
 import { useRecipes } from '@/features/create-recipe';
 import { AppButton } from '@/shared/ui/button';
 import { MealSelect } from '@/shared/ui/select';
-import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
+import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 
 const diaryStore = useDiaryStore();
 const { entriesByMeal } = storeToRefs(diaryStore);
 const { save } = useRecipes();
-const { isMobile } = useBreakpoints();
+const { isMobile, isDesktop } = useBreakpoints();
 const props = defineProps<{ mealType?: MealType }>();
 const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
 const productModal = ref(false);
@@ -33,7 +33,7 @@ const onSaved = async (recipe: IRecipe) => {
 
 <template>
   <div class="add-entry-wrap">
-    <div v-if="!isMobile" class="controls">
+    <div v-if="isDesktop" class="controls">
       <MealSelect v-model="selectedMeal" class="meal-select" />
       <AppButton class="btn-recipes" @click="showRecipesModal = true"> Свой рецепт </AppButton>
       <AppButton @click="productModal = true" class="btn-create"> Свой продукт </AppButton>
@@ -50,7 +50,7 @@ const onSaved = async (recipe: IRecipe) => {
       @saved="onSaved"
       @added="showRecipesModal = false"
     />
-    <div v-if="isMobile" class="meal-entries" :class="{ 'meal-entries_mini': isMobile }">
+    <div v-if="isMobile" class="meal-entries">
       <EntryRow
         v-for="entry in entriesByMeal[selectedMeal]"
         :key="entry.id"
@@ -98,8 +98,6 @@ const onSaved = async (recipe: IRecipe) => {
 }
 .meal-entries {
   overflow-y: auto;
-}
-.meal-entries_mini {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
