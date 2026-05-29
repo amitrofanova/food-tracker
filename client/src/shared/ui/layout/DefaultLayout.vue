@@ -7,7 +7,8 @@
 
 <style scoped>
 .main {
-  padding: var(--padding-mobile) var(--padding-mobile) calc(var(--padding-mobile) * 2);
+  padding: var(--padding-mobile) var(--padding-mobile)
+    calc(var(--padding-mobile) * 2 + var(--mobile-bottom-bar-height, 0px));
 }
 @media (min-width: 768px) {
   .main {

@@ -11,10 +11,23 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{ [key: string]: [] }>();
+
+const barRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  if (barRef.value) {
+    const h = barRef.value.offsetHeight;
+    document.documentElement.style.setProperty('--mobile-bottom-bar-height', `${h}px`);
+  }
+});
+
+onUnmounted(() => {
+  document.documentElement.style.removeProperty('--mobile-bottom-bar-height');
+});
 </script>
 
 <template>
-  <div class="bottom-bar">
+  <div ref="barRef" class="bottom-bar">
     <slot>
       <button
         v-for="btn in buttons"
