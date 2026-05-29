@@ -11,6 +11,7 @@ export const routes: RouteRecordRaw[] = [
     name: 'search',
     component: () => import('@/pages/search'),
     props: true,
+    meta: { hideHeaderOnMobile: true },
   },
   {
     path: '/calorie-calculator',

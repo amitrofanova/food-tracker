@@ -30,11 +30,9 @@ const diaryStore = useDiaryStore();
 }
 @media (max-width: 767px) {
   .wrapper {
-    height: calc(100dvh - var(--header-height) - calc(var(--padding-mobile) * 3));
+    height: calc(100dvh - calc(var(--padding-mobile) * 3));
   }
 }
-/* AddDiaryEntry uses a self-contained calc() height designed for the home page.
-   Here it must fill the remaining flex space after the back-button header. */
 :deep(.add-entry-wrap) {
   flex: 1 !important;
   height: auto !important;

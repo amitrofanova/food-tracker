@@ -5,9 +5,15 @@ import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { SyncConfirmModal } from '@/features/sync-local-data';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
+import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 const diaryStore = useDiaryStore();
+const route = useRoute();
+const { isMobile } = useBreakpoints();
+
+const showHeader = computed(() => !(isMobile.value && route.meta.hideHeaderOnMobile));
 
 watch(isLoggedIn, (loggedIn) => {
   if (loggedIn) {
@@ -21,7 +27,7 @@ watch(isLoggedIn, (loggedIn) => {
 <template>
   <DefaultLayout>
     <template #header>
-      <AppHeader />
+      <AppHeader v-if="showHeader" />
     </template>
     <router-view />
   </DefaultLayout>
