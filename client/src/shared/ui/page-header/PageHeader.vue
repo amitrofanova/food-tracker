@@ -26,7 +26,7 @@ const { isMobile } = useBreakpoints();
 
 <style scoped>
 .page-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
