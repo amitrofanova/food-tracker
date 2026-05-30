@@ -9,7 +9,9 @@ import { ButtonIcon } from '@/shared/ui/button';
 
 const emit = defineEmits<{
   (e: 'select', product: IProduct, weight: number): void;
-}>();
+}>(); 
+
+const props = defineProps<{ suggestedWeight?: number }>();
 
 const {
   searchQuery,
@@ -83,6 +85,10 @@ defineExpose({
     setSearchQuery('');
     barcodeProduct.value = null;
   },
+  setQuery: (q: string) => {
+    barcodeProduct.value = null;
+    setSearchQuery(q);
+  },
 });
 </script>
 
@@ -131,6 +137,7 @@ defineExpose({
           <ProductSearchItem
             v-else
             :product="displayResults[virtualRow.index] as IProduct"
+            :suggested-weight="props.suggestedWeight"
             @select="(product, weight) => emit('select', product, weight)"
           />
         </div>

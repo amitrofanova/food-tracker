@@ -4,6 +4,7 @@ import { AddEntryControls } from '@/entities/diary-entry';
 
 const props = defineProps<{
   product: IProduct;
+  suggestedWeight?: number;
 }>();
 
 const emit = defineEmits<{
@@ -25,7 +26,7 @@ const handleAddEntry = (weight: number) => {
         <span>Ж: {{ product.fat }}</span>
         <span>У: {{ product.carbs }}</span>
       </div>
-      <AddEntryControls :disabled="false" size="sm" @add-entry="handleAddEntry" />
+      <AddEntryControls :disabled="false" size="sm" :default-weight="suggestedWeight" @add-entry="handleAddEntry" />
     </div>
   </div>
 </template>

@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { Icon } from '@/shared/ui/icon';
 
-defineProps<{
+const props = defineProps<{
   disabled: boolean;
   size?: 'sm' | 'md' | 'lg';
+  defaultWeight?: number;
 }>();
 
 const emit = defineEmits<{
   (e: 'add-entry', weight: number): void;
 }>();
 
-const weight = ref<number>();
+const weight = ref<number | undefined>(props.defaultWeight);
 const isAdded = ref(false);
+
+watch(
+  () => props.defaultWeight,
+  (v) => {
+    weight.value = v;
+  },
+);
 
 const handleAdd = () => {
   if (!weight.value || weight.value <= 0) return;
