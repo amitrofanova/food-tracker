@@ -34,10 +34,7 @@ const handleSave = async (product: IProduct) => {
 
 <template>
   <PageHeader title="Мои продукты">
-    <AppButton v-if="!isMobile" @click="showAddModal = true">
-      <Icon name="Plus" size="sm" />
-      Добавить
-    </AppButton>
+    <AppButton v-if="!isMobile" @click="showAddModal = true"> Добавить </AppButton>
   </PageHeader>
 
   <p v-if="isLoading" class="empty">Загрузка…</p>

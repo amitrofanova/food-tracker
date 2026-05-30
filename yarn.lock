@@ -260,6 +260,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
+"@capacitor-community/speech-recognition@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/@capacitor-community/speech-recognition/-/speech-recognition-7.0.1.tgz"
+  integrity sha512-ykpBZziR575X0eURO5vXaD9gVrXXC/7Ra2qql/2KP6/jxWOqAFuw4eKjSPjwdAgGE6a/Z+v8FJm4SVh57MVwDA==
+
 "@capacitor-mlkit/barcode-scanning@^8.1.0":
   version "8.1.0"
   resolved "https://registry.npmjs.org/@capacitor-mlkit/barcode-scanning/-/barcode-scanning-8.1.0.tgz"

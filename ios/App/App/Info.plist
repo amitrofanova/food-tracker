@@ -49,5 +49,9 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Сканирование штрихкодов продуктов</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Используется для голосового добавления продуктов в дневник</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Используется для голосового добавления продуктов в дневник</string>
 </dict>
 </plist>
