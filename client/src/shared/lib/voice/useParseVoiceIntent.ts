@@ -22,14 +22,14 @@ export function useParseVoiceIntent() {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const parse = async (transcript: string): Promise<VoiceIntent | null> => {
+  const parse = async (transcript: string, defaultMeal?: MealType): Promise<VoiceIntent | null> => {
     isLoading.value = true;
     error.value = null;
 
     try {
       const { data } = await http.post<{ productName: string; weight: number; meal: string }>(
         '/voice/parse',
-        { transcript },
+        { transcript, defaultMeal },
       );
 
       const meal: MealType = MEAL_ALIASES[String(data.meal ?? '').toLowerCase()] ?? 'breakfast';
@@ -40,10 +40,12 @@ export function useParseVoiceIntent() {
         meal,
       };
     } catch (err: any) {
+      const raw = err?.response?.data?.raw;
       const msg = err?.response?.data?.error;
       if (err?.response?.status === 429) {
         error.value = 'Превышен лимит запросов — подождите минуту';
       } else {
+        console.error('Voice parse error', msg, 'raw AI output:', raw);
         error.value = msg ?? (err instanceof Error ? err.message : 'Ошибка разбора команды');
       }
       return null;
