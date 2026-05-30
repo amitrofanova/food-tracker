@@ -5,7 +5,6 @@ import { useDiaryStore, EntryRow } from '@/entities/diary-entry';
 import { storeToRefs } from 'pinia';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import type { MealType } from '@/shared/config/meals';
-import { MEAL_LABELS } from '@/shared/config/meals';
 import { CreateProductModal } from '@/features/create-product';
 import { ProductSearch } from '@/features/product-search';
 import { RecipeFormModal } from '@/widgets/recipe-form';
@@ -16,6 +15,7 @@ import { MealSelect } from '@/shared/ui/select';
 import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 import { useVoiceInput } from '@/shared/lib/voice/useVoiceInput';
 import { useParseVoiceIntent, type VoiceIntent } from '@/shared/lib/voice/useParseVoiceIntent';
+import VoiceConfirmModal from './VoiceConfirmModal.vue';
 
 const diaryStore = useDiaryStore();
 const { entriesByMeal } = storeToRefs(diaryStore);
@@ -28,6 +28,7 @@ const showRecipesModal = ref(false);
 
 const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null);
 const voiceIntent = ref<VoiceIntent | null>(null);
+const voiceModalOpen = ref(false);
 
 const { state: voiceState, error: voiceError, listen } = useVoiceInput();
 const { parse, isLoading: isParsing, error: parseError } = useParseVoiceIntent();
@@ -40,22 +41,24 @@ const onVoiceClick = async () => {
   voiceIntent.value = null;
   const transcript = await listen();
   if (!transcript) return;
-  const intent = await parse(transcript);
+  const intent = await parse(transcript, selectedMeal.value);
   if (!intent || !intent.productName) return;
   voiceIntent.value = intent;
   selectedMeal.value = intent.meal;
-  productSearchRef.value?.setQuery(intent.productName);
+  voiceModalOpen.value = true;
 };
 
 const clearVoiceIntent = () => {
   voiceIntent.value = null;
 };
 
-const onProductSelect = (product: IProduct, weight: number) => {
-  const w = voiceIntent.value?.weight ?? weight;
-  const meal = voiceIntent.value?.meal ?? selectedMeal.value;
-  diaryStore.addEntry(product, w, meal);
+const onVoiceConfirm = (product: IProduct, weight: number, meal: MealType) => {
+  diaryStore.addEntry(product, weight, meal);
   voiceIntent.value = null;
+};
+
+const onProductSelect = (product: IProduct, weight: number) => {
+  diaryStore.addEntry(product, weight, selectedMeal.value);
 };
 
 const onSaved = async (recipe: IRecipe) => {
@@ -116,19 +119,15 @@ const mobileButtons = computed(() => [
     <div v-else-if="voiceStatusError" class="voice-status voice-status--error">
       ⚠ {{ voiceStatusError }}
     </div>
-    <div v-else-if="voiceIntent" class="voice-intent">
-      <span class="voice-intent__text">
-        🎤 {{ voiceIntent.productName }} · {{ voiceIntent.weight }} г ·
-        {{ MEAL_LABELS[voiceIntent.meal] }}
-      </span>
-      <button class="voice-intent__dismiss" @click="clearVoiceIntent">✕</button>
-    </div>
 
-    <ProductSearch
-      ref="productSearchRef"
-      :suggested-weight="voiceIntent?.weight"
-      @select="onProductSelect"
+    <VoiceConfirmModal
+      v-model="voiceModalOpen"
+      :intent="voiceIntent"
+      @confirm="onVoiceConfirm"
+      @closed="clearVoiceIntent"
     />
+
+    <ProductSearch ref="productSearchRef" @select="onProductSelect" />
     <MobileBottomControls
       v-if="isMobile"
       :buttons="mobileButtons"

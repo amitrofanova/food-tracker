@@ -72,6 +72,9 @@ watchEffect(() => {
   )
     return;
 
+  const el = scrollContainerRef.value;
+  if (el.scrollHeight <= el.clientHeight) return; // container not scrollable — don't auto-load
+
   const [lastItem] = [...virtualRows.value].reverse();
   if (!lastItem) return;
 
