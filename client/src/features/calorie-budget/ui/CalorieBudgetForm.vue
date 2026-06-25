@@ -43,6 +43,6 @@ h1 {
   display: block;
   margin-top: 12px;
   text-align: center;
-  color: rgb(--var(--color-darkgreen))
+  color: rgb(var(--color-darkgreen))
 }
 </style

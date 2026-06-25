@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import axios from 'axios';
 import { registerUser, loginUser, getCurrentUser, updateCurrentUser } from '@/shared/api/auth';
 import { db } from '@/shared/db';
 import type { IUser } from './types';
@@ -40,8 +41,9 @@ export const useUserStore = defineStore('user', () => {
         hasPendingSync.value = true;
       }
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { error?: string } } };
-      error.value = axiosErr.response?.data?.error || 'Login failed';
+      error.value = axios.isAxiosError(err)
+        ? (err.response?.data?.error ?? 'Login failed')
+        : 'Login failed';
     }
   }
 
@@ -51,8 +53,9 @@ export const useUserStore = defineStore('user', () => {
       await registerUser({ email, password });
       await login(email, password);
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { error?: string } } };
-      error.value = axiosErr.response?.data?.error || 'Registration failed';
+      error.value = axios.isAxiosError(err)
+        ? (err.response?.data?.error ?? 'Registration failed')
+        : 'Registration failed';
     }
   }
 

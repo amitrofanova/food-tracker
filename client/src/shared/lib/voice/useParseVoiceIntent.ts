@@ -1,5 +1,6 @@
 import type { MealType } from '@/shared/config/meals';
 import { http } from '@/shared/api/http';
+import axios from 'axios';
 
 export interface VoiceIntent {
   productName: string;
@@ -39,14 +40,18 @@ export function useParseVoiceIntent() {
         weight: Math.max(1, Math.round(Number(data.weight) || 100)),
         meal,
       };
-    } catch (err: any) {
-      const raw = err?.response?.data?.raw;
-      const msg = err?.response?.data?.error;
-      if (err?.response?.status === 429) {
-        error.value = 'Превышен лимит запросов — подождите минуту';
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const raw = err.response?.data?.raw as string | undefined;
+        const msg = err.response?.data?.error as string | undefined;
+        if (err.response?.status === 429) {
+          error.value = 'Превышен лимит запросов — подождите минуту';
+        } else {
+          console.error('Voice parse error', msg, 'raw AI output:', raw);
+          error.value = msg ?? 'Ошибка разбора команды';
+        }
       } else {
-        console.error('Voice parse error', msg, 'raw AI output:', raw);
-        error.value = msg ?? (err instanceof Error ? err.message : 'Ошибка разбора команды');
+        error.value = err instanceof Error ? err.message : 'Ошибка разбора команды';
       }
       return null;
     } finally {

@@ -9,8 +9,8 @@ import {
 } from '@/shared/api/diary';
 import { db } from '@/shared/db';
 import type { IProduct } from '@/entities/product';
-
-const isAuthenticated = () => !!localStorage.getItem('token');
+import { isAuthenticated } from '@/shared/lib/auth';
+import { extractErrorMessage } from '@/shared/lib/error';
 
 export const useDiaryStore = defineStore('diary', () => {
   const entries = ref<IDiaryEntry[]>([]);
@@ -30,7 +30,7 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = all.filter((e) => e.date === target);
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to load entries';
+      error.value = extractErrorMessage(err, 'Failed to load entries');
       console.error('Failed to load entries:', err);
     } finally {
       isLoading.value = false;
@@ -72,7 +72,7 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = [...entries.value, localEntry];
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to save entry';
+      error.value = extractErrorMessage(err, 'Failed to save entry');
       console.error('Failed to save entry:', err);
       throw err;
     }
@@ -102,7 +102,7 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = entries.value.map((e) => (e.id === id ? updated : e));
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update entry';
+      error.value = extractErrorMessage(err, 'Failed to update entry');
       console.error('Failed to update entry:', err);
       throw err;
     }
@@ -119,7 +119,7 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = entries.value.filter((e) => e.id !== id);
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete entry';
+      error.value = extractErrorMessage(err, 'Failed to delete entry');
       console.error('Failed to delete entry:', err);
       throw err;
     }

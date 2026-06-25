@@ -1,8 +1,8 @@
 import { db } from '@/shared/db';
 import type { IProduct } from '@/entities/product';
 import { upsertCustomProduct } from '@/shared/api/customProducts';
-
-const isAuthenticated = () => !!localStorage.getItem('token');
+import { isAuthenticated } from '@/shared/lib/auth';
+import { extractErrorMessage } from '@/shared/lib/error';
 
 export function useCreateProduct() {
   const error = ref<string | null>(null);
@@ -20,7 +20,7 @@ export function useCreateProduct() {
         return formData;
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create product';
+      error.value = extractErrorMessage(err, 'Failed to create product');
       console.error('Failed to create product:', err);
       throw err;
     }

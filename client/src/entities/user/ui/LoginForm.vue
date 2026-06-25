@@ -26,8 +26,8 @@ const onSubmit = async () => {
 
 <template>
   <form @submit.prevent="onSubmit">
-    <AppInput v-model="email" type="email" />
-    <AppInput v-model="password" type="password" />
+    <AppInput v-model="email" type="email" placeholder="Email" />
+    <AppInput v-model="password" type="password" placeholder="Пароль" />
     <div v-if="error" class="error">{{ error }}</div>
     <AppButton type="submit" :disabled="loading">Войти</AppButton>
   </form>
@@ -38,7 +38,6 @@ form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 400px;
 }
 form .error,
 form button {

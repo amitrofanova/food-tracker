@@ -17,7 +17,7 @@ const title = computed(() => (isLoginMode.value ? 'Вход' : 'Регистра
 </script>
 
 <template>
-  <AppModal v-model="show" :title="title">
+  <AppModal v-model="show" :title="title" width="400px">
     <template v-if="isLoginMode">
       <LoginForm @close="show = false" />
       <div class="btn-wrapper">

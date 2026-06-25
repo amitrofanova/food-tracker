@@ -26,8 +26,8 @@ const onSubmit = async () => {
 
 <template>
   <form @submit.prevent="onSubmit">
-    <AppInput label="Email" v-model="email" type="email" />
-    <AppInput label="Пароль" v-model="password" type="password" />
+    <AppInput v-model="email" type="email" placeholder="Email" />
+    <AppInput v-model="password" type="password" placeholder="Пароль" />
     <div v-if="error" class="error">{{ error }}</div>
     <AppButton type="submit" :disabled="loading">Зарегистрироваться</AppButton>
   </form>

@@ -1,6 +1,23 @@
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 import { Capacitor } from '@capacitor/core';
 
+interface WebSpeechRecognition extends EventTarget {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onerror: ((e: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => WebSpeechRecognition;
+    webkitSpeechRecognition?: new () => WebSpeechRecognition;
+  }
+}
+
 export type VoiceInputState = 'idle' | 'listening' | 'error';
 
 export function useVoiceInput() {
@@ -39,7 +56,7 @@ export function useVoiceInput() {
 
   function _listenWeb(): Promise<string | null> {
     return new Promise((resolve) => {
-      const Ctor = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+      const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
       if (!Ctor) {
         error.value = 'Голосовой ввод не поддерживается в этом браузере';
         state.value = 'error';
@@ -52,13 +69,13 @@ export function useVoiceInput() {
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      recognition.onresult = (e: any) => {
-        const text = e.results[0][0].transcript as string;
+      recognition.onresult = (e: SpeechRecognitionEvent) => {
+        const text = e.results[0][0].transcript;
         state.value = 'idle';
         resolve(text);
       };
 
-      recognition.onerror = (e: any) => {
+      recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
         error.value = e.error ?? 'Ошибка микрофона';
         state.value = 'error';
         resolve(null);

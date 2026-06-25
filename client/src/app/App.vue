@@ -15,7 +15,7 @@ const { isMobile } = useBreakpoints();
 
 const showHeader = computed(() => !(isMobile.value && route.meta.hideHeaderOnMobile));
 
-watch(isLoggedIn, (loggedIn) => {
+watch(isLoggedIn, (loggedIn: boolean) => {
   if (loggedIn) {
     diaryStore.loadEntries();
   } else {

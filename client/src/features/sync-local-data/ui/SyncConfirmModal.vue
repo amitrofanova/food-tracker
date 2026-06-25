@@ -18,7 +18,7 @@ const isSyncing = ref(false);
 
 watch(
   () => userStore.hasPendingSync,
-  async (val) => {
+  async (val: boolean) => {
     if (val) {
       const entries = await db.getAllEntries();
       pendingCount.value = entries.length;

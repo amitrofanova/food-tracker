@@ -5,7 +5,7 @@ export const API_BASE = '/cgi/search.pl';
 const PRODUCT_FIELDS = 'code,product_name,generic_name,nutriments';
 
 export interface OpenFoodFactsResponse {
-  products: any[];
+  products: OpenFoodFactsProduct[];
   page: number;
   page_count: number;
   page_size: number;
