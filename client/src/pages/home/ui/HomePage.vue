@@ -5,6 +5,7 @@ import { DateNavigation } from '@/widgets/date-navigation';
 import { DailySummary } from '@/widgets/daily-summary';
 import { MealBlock } from '@/widgets/meal-block';
 import { AddDiaryEntry } from '@/widgets/add-diary-entry';
+import { VoiceButton } from '@/widgets/voice-diary-entry';
 
 const { isDesktop } = useBreakpoints();
 </script>
@@ -17,6 +18,7 @@ const { isDesktop } = useBreakpoints();
       <DailySummary class="summary" />
       <MealBlock v-for="type in MEAL_TYPES" :key="type" :mealType="type" />
     </div>
+    <VoiceButton v-if="!isDesktop" class="voice-fab" />
   </div>
 </template>
 
@@ -30,5 +32,15 @@ const { isDesktop } = useBreakpoints();
 }
 .summary {
   margin: 20px 0;
+}
+.voice-in-controls {
+  margin-right: 0.5rem;
+}
+.voice-fab {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
 }
 </style>

@@ -6,6 +6,7 @@ import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { UserAuthModal, UserMenu } from '@/entities/user';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { VoiceButton } from '@/widgets/voice-diary-entry';
 
 const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
@@ -19,6 +20,7 @@ const showCalorieBudgetForm = ref(false);
 <template>
   <header class="header">
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
+    <VoiceButton v-if="isDesktop" />
     <div class="controls">
       <template v-if="isLoggedIn">
         <CalorieBudgetBtn v-if="isDesktop" @click="showCalorieBudgetForm = true" />
@@ -67,4 +69,7 @@ const showCalorieBudgetForm = ref(false);
     font-size: 32px;
   }
 }
+/* .voice-btn {
+  opacity: ;
+} */
 </style>
