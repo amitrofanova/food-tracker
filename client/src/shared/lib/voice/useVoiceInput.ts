@@ -39,12 +39,17 @@ export function useVoiceInput() {
         return null;
       }
 
-      const { matches } = await SpeechRecognition.start({
-        language: 'ru-RU',
-        maxResults: 1,
-        popup: false,
-        partialResults: false,
-      });
+      const startOpts = { language: 'ru-RU', maxResults: 1, popup: false, partialResults: false };
+
+      let matches: string[] | undefined;
+      try {
+        ({ matches } = await SpeechRecognition.start(startOpts));
+      } catch {
+        // First attempt often fails on Android while the recognition service is still
+        // binding — retry once silently before surfacing the error to the user.
+        ({ matches } = await SpeechRecognition.start(startOpts));
+      }
+
       state.value = 'idle';
       return matches?.[0] ?? null;
     } catch (err) {
