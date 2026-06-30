@@ -4,8 +4,12 @@ import axios from 'axios';
 
 export interface VoiceIntent {
   productName: string;
-  weight: number;
+  weight: number | null;
   meal: MealType;
+  calories: number | null;
+  protein: number | null;
+  fat: number | null;
+  carbs: number | null;
 }
 
 const MEAL_ALIASES: Record<string, MealType> = {
@@ -28,17 +32,32 @@ export function useParseVoiceIntent() {
     error.value = null;
 
     try {
-      const { data } = await http.post<{ productName: string; weight: number; meal: string }>(
-        '/voice/parse',
-        { transcript, defaultMeal },
-      );
+      const { data } = await http.post<{
+        productName: string;
+        weight: number | null;
+        meal: string;
+        calories: number | null;
+        protein: number | null;
+        fat: number | null;
+        carbs: number | null;
+      }>('/voice/parse', { transcript, defaultMeal });
 
       const meal: MealType = MEAL_ALIASES[String(data.meal ?? '').toLowerCase()] ?? 'breakfast';
 
+      const toNullable = (v: number | null): number | null =>
+        v !== null && !isNaN(v) ? Math.max(0, Math.round(v)) : null;
+
       return {
         productName: String(data.productName ?? '').trim(),
-        weight: Math.max(1, Math.round(Number(data.weight) || 100)),
+        weight:
+          data.weight !== null && data.weight !== undefined
+            ? Math.max(1, Math.round(Number(data.weight) || 1))
+            : null,
         meal,
+        calories: toNullable(data.calories),
+        protein: toNullable(data.protein),
+        fat: toNullable(data.fat),
+        carbs: toNullable(data.carbs),
       };
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
