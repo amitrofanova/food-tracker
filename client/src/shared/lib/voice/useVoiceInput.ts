@@ -83,7 +83,7 @@ export function useVoiceInput() {
       recognition.maxAlternatives = 1;
 
       recognition.onresult = (e: SpeechRecognitionEvent) => {
-        const text = e.results[0][0].transcript;
+        const text = e.results[0]?.[0]?.transcript ?? null;
         state.value = 'idle';
         resolve(text);
       };
