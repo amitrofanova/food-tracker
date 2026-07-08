@@ -9,7 +9,7 @@ import { ButtonIcon } from '@/shared/ui/button';
 
 const emit = defineEmits<{
   (e: 'select', product: IProduct, weight: number): void;
-}>(); 
+}>();
 
 const props = defineProps<{ suggestedWeight?: number }>();
 
@@ -47,6 +47,26 @@ const handleTextInput = (val: string) => {
 };
 
 const scrollContainerRef = ref<HTMLElement | null>(null);
+const LOAD_MORE_THRESHOLD_PX = 120;
+
+const maybeLoadMore = async (allowUnderfilledContainer = false) => {
+  if (
+    !scrollContainerRef.value ||
+    !hasMore.value ||
+    isFetchingNextPage.value ||
+    barcodeProduct.value
+  ) {
+    return;
+  }
+
+  const el = scrollContainerRef.value;
+  const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+  const isUnderfilled = el.scrollHeight <= el.clientHeight;
+
+  if (distanceToBottom <= LOAD_MORE_THRESHOLD_PX || (allowUnderfilledContainer && isUnderfilled)) {
+    await loadMore();
+  }
+};
 
 const virtualizer = useVirtualizer(
   computed(() => ({
@@ -64,23 +84,15 @@ const virtualRows = computed(() => virtualizer.value.getVirtualItems());
 const totalSize = computed(() => virtualizer.value.getTotalSize());
 
 watchEffect(() => {
-  if (
-    !scrollContainerRef.value ||
-    !hasMore.value ||
-    isFetchingNextPage.value ||
-    barcodeProduct.value
-  )
-    return;
+  void virtualRows.value.length;
+  void displayResults.value.length;
+  void hasMore.value;
+  void isFetchingNextPage.value;
+  void barcodeProduct.value;
 
-  const el = scrollContainerRef.value;
-  if (el.scrollHeight <= el.clientHeight) return; // container not scrollable — don't auto-load
-
-  const [lastItem] = [...virtualRows.value].reverse();
-  if (!lastItem) return;
-
-  if (lastItem.index >= displayResults.value.length - 1) {
-    loadMore();
-  }
+  nextTick(() => {
+    void maybeLoadMore(true);
+  });
 });
 
 defineExpose({
@@ -116,7 +128,7 @@ defineExpose({
       >
       </ButtonIcon>
     </div>
-    <div ref="scrollContainerRef" class="results">
+    <div ref="scrollContainerRef" class="results" @scroll="() => void maybeLoadMore()">
       <div :style="{ position: 'relative', height: `${totalSize}px`, marginBottom: '50px' }">
         <div
           v-for="virtualRow in virtualRows"
