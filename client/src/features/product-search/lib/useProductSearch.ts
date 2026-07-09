@@ -96,7 +96,11 @@ export const useProductSearch = () => {
           }
 
           const apiResponse = await searchApi(searchQuery.value, pageParam);
-          const apiProducts = apiResponse.products.filter(isValid).map(mapOpenFoodFactsToProduct);
+          const rawProducts = Array.isArray(apiResponse?.products) ? apiResponse.products : [];
+          const apiProducts = rawProducts.filter(isValid).map(mapOpenFoodFactsToProduct);
+          const currentPage = typeof apiResponse?.page === 'number' ? apiResponse.page : pageParam;
+          const totalPages =
+            typeof apiResponse?.page_count === 'number' ? apiResponse.page_count : currentPage;
 
           if (apiProducts.length > 0 && pageParam === 1) {
             try {
@@ -111,7 +115,7 @@ export const useProductSearch = () => {
 
           return {
             products: apiProducts,
-            nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
+            nextPage: currentPage < totalPages ? pageParam + 1 : undefined,
           };
         } catch (err) {
           dbError.value = err instanceof Error ? err.message : 'Failed to search products';
