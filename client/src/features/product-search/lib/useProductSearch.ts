@@ -41,7 +41,8 @@ export const useProductSearch = () => {
         dbError.value = null;
         return await db.getCustomProducts(searchQuery.value);
       } catch (err) {
-        dbError.value = err instanceof Error ? err.message : 'Failed to load custom products';
+        dbError.value =
+          err instanceof Error ? err.message : 'Ошибка загрузки пользовательских продуктов';
         console.error('Failed to load custom products:', err);
         return [];
       }
@@ -72,7 +73,7 @@ export const useProductSearch = () => {
       try {
         return await db.getProducts(searchQuery.value);
       } catch (err) {
-        dbError.value = err instanceof Error ? err.message : 'Failed to load local products';
+        dbError.value = err instanceof Error ? err.message : 'Ошибка загрузки продуктов';
         console.error('Failed to load local products:', err);
         return [];
       }
@@ -114,7 +115,7 @@ export const useProductSearch = () => {
             nextPage: apiResponse.page < apiResponse.page_count ? pageParam + 1 : undefined,
           };
         } catch (err) {
-          dbError.value = err instanceof Error ? err.message : 'Failed to search products';
+          dbError.value = err instanceof Error ? err.message : 'Ошибка поиска продуктов';
           console.error('Failed to search products:', err);
           throw err;
         }

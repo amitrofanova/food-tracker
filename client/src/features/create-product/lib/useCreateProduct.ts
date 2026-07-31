@@ -20,7 +20,7 @@ export function useCreateProduct() {
         return formData;
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Failed to create product');
+      error.value = extractErrorMessage(err, 'Ошибка создания продукта');
       console.error('Failed to create product:', err);
       throw err;
     }

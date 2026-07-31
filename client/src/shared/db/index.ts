@@ -84,7 +84,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to save entry:', error);
       throw new Error(
-        `Failed to save entry: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка сохранения записи: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -96,7 +96,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to delete entry:', error);
       throw new Error(
-        `Failed to delete entry: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка удаления записи: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -107,7 +107,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to load entries:', error);
       throw new Error(
-        `Failed to load entries: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка загрузки записей: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -120,7 +120,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to get products:', error);
       throw new Error(
-        `Failed to get products: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка получения продуктов: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -132,7 +132,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to get custom products:', error);
       throw new Error(
-        `Failed to get custom products: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка получения пользовательских продуктов: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -143,7 +143,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to load custom products:', error);
       throw new Error(
-        `Failed to load custom products: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка загрузки пользовательских продуктов: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -155,7 +155,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to delete custom product:', error);
       throw new Error(
-        `Failed to delete custom product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка удаления продукта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -167,7 +167,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to save product:', error);
       throw new Error(
-        `Failed to save product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка сохранения продукта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -181,7 +181,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to save custom product:', error);
       throw new Error(
-        `Failed to save custom product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка сохранения продукта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -195,7 +195,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to save user:', error);
       throw new Error(
-        `Failed to save user: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка сохранения пользователя: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -207,7 +207,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to get user:', error);
       throw new Error(
-        `Failed to get user: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка получения пользователя: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -218,12 +218,12 @@ export class CalorieTrackerDB extends Dexie {
       assertPositiveNumber(calorieBudget, 'Calorie budget');
       const updated = await this.users.update(id, { calorieBudget });
       if (updated === 0) {
-        throw new Error('User not found');
+        throw new Error('Пользователь не найден');
       }
     } catch (error) {
       console.error('Failed to update calorie budget:', error);
       throw new Error(
-        `Failed to update calorie budget: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка обновления нормы калорий: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -235,7 +235,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to load recipes:', error);
       throw new Error(
-        `Failed to load recipes: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка загрузки рецептов: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -248,7 +248,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to save recipe:', error);
       throw new Error(
-        `Failed to save recipe: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка сохранения рецепта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }
@@ -260,7 +260,7 @@ export class CalorieTrackerDB extends Dexie {
     } catch (error) {
       console.error('Failed to delete recipe:', error);
       throw new Error(
-        `Failed to delete recipe: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Ошибка удаления рецепта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
       );
     }
   }

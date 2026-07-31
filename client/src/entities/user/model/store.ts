@@ -42,8 +42,8 @@ export const useUserStore = defineStore('user', () => {
       }
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Login failed')
-        : 'Login failed';
+        ? (err.response?.data?.error ?? 'Ошибка входа')
+        : 'Ошибка входа';
     }
   }
 
@@ -54,8 +54,8 @@ export const useUserStore = defineStore('user', () => {
       await login(email, password);
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Registration failed')
-        : 'Registration failed';
+        ? (err.response?.data?.error ?? 'Ошибка регистрации')
+        : 'Ошибка регистрации';
     }
   }
 
