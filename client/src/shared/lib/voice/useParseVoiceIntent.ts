@@ -63,7 +63,9 @@ export function useParseVoiceIntent() {
       if (axios.isAxiosError(err)) {
         const raw = err.response?.data?.raw as string | undefined;
         const msg = err.response?.data?.error as string | undefined;
-        if (err.response?.status === 429) {
+        if (err.response?.status === 401) {
+          error.value = 'Войдите в аккаунт, чтобы использовать голосовой ввод';
+        } else if (err.response?.status === 429) {
           error.value = 'Превышен лимит запросов — подождите минуту';
         } else {
           console.error('Voice parse error', msg, 'raw AI output:', raw);
