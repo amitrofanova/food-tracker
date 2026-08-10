@@ -27,7 +27,7 @@ watch(isLoggedIn, (loggedIn: boolean) => {
 </script>
 
 <template>
-  <div v-if="isLoading">
+  <div v-if="isLoading" class="loading-screen">
     <AppleSpinner />
   </div>
   <DefaultLayout v-else>
