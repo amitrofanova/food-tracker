@@ -22,6 +22,7 @@ export const useUserStore = defineStore('user', () => {
   const error = ref<string | null>(null);
   const hasPendingSync = ref(false);
   const syncVersion = ref(0);
+  const authModalOpen = ref(false);
 
   setUnauthorizedHandler(() => {
     user.value = null;
@@ -45,6 +46,7 @@ export const useUserStore = defineStore('user', () => {
       await setNativeTokens(data.token, data.refreshToken);
     }
     user.value = data.user;
+    authModalOpen.value = false;
   }
 
   async function init() {
@@ -110,6 +112,10 @@ export const useUserStore = defineStore('user', () => {
     syncVersion.value++;
   }
 
+  function openAuthModal() {
+    authModalOpen.value = true;
+  }
+
   const isLoggedIn = computed(() => user.value !== null);
 
   init();
@@ -118,9 +124,11 @@ export const useUserStore = defineStore('user', () => {
     user,
     error,
     isLoggedIn,
+    authModalOpen,
     hasPendingSync,
     syncVersion,
     notifySynced,
+    openAuthModal,
     login,
     register,
     logout,

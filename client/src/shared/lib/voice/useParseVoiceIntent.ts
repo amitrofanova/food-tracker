@@ -23,6 +23,11 @@ const MEAL_ALIASES: Record<string, MealType> = {
   snack: 'snack',
 };
 
+const PARSE_FAIL_MESSAGE = 'Не получилось разобрать фразу. Попробуйте ещё раз';
+export const SESSION_EXPIRED_MESSAGE =
+  'Сессия истекла. Войдите снова, чтобы использовать голосовой ввод';
+const RATE_LIMIT_MESSAGE = 'Слишком много запросов подряд. Подождите немного';
+
 export function useParseVoiceIntent() {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -47,8 +52,14 @@ export function useParseVoiceIntent() {
       const toNullable = (v: number | null): number | null =>
         v !== null && !isNaN(v) ? Math.max(0, Math.round(v)) : null;
 
+      const productName = String(data.productName ?? '').trim();
+      if (!productName) {
+        error.value = PARSE_FAIL_MESSAGE;
+        return null;
+      }
+
       return {
-        productName: String(data.productName ?? '').trim(),
+        productName,
         weight:
           data.weight !== null && data.weight !== undefined
             ? Math.max(1, Math.round(Number(data.weight) || 1))
@@ -61,18 +72,16 @@ export function useParseVoiceIntent() {
       };
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const raw = err.response?.data?.raw as string | undefined;
-        const msg = err.response?.data?.error as string | undefined;
-        if (err.response?.status === 401) {
-          error.value = 'Войдите в аккаунт, чтобы использовать голосовой ввод';
-        } else if (err.response?.status === 429) {
-          error.value = 'Превышен лимит запросов — подождите минуту';
+        const status = err.response?.status;
+        if (status === 401) {
+          error.value = SESSION_EXPIRED_MESSAGE;
+        } else if (status === 429) {
+          error.value = RATE_LIMIT_MESSAGE;
         } else {
-          console.error('Voice parse error', msg, 'raw AI output:', raw);
-          error.value = msg ?? 'Ошибка разбора команды';
+          error.value = PARSE_FAIL_MESSAGE;
         }
       } else {
-        error.value = err instanceof Error ? err.message : 'Ошибка разбора команды';
+        error.value = PARSE_FAIL_MESSAGE;
       }
       return null;
     } finally {
