@@ -74,6 +74,7 @@ const onDirectConfirm = () => {
     :model-value="modelValue"
     title="Добавить в дневник"
     width="600px"
+    :fill="!isDirectAdd"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div class="vc-meta">
@@ -127,6 +128,7 @@ const onDirectConfirm = () => {
   gap: 0.75rem;
   align-items: flex-end;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 .vc-weight {
   width: 7rem;
@@ -137,8 +139,9 @@ const onDirectConfirm = () => {
 .vc-search {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 120px);
-  min-height: 200px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 .vc-direct {
   padding: 0.5rem 0 1rem;

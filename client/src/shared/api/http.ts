@@ -80,8 +80,3 @@ http.interceptors.response.use(
     return http.request(config);
   },
 );
-
-export const openfoodfactsHttp = axios.create({
-  baseURL: 'https://world.openfoodfacts.org',
-  headers: { 'Content-Type': 'application/json' },
-});

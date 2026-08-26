@@ -200,6 +200,7 @@ watch(
   flex-direction: column;
   gap: 10px;
   flex-grow: 0;
+  min-height: 0;
 }
 .right-column {
   display: flex;
@@ -208,9 +209,11 @@ watch(
 }
 .search-wrap {
   flex: 1;
+  min-height: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .input {
   appearance: none;
@@ -251,6 +254,7 @@ watch(
   .left-column,
   .right-column {
     flex: 1;
+    min-height: 0;
   }
   .ingredient-list {
     display: block;

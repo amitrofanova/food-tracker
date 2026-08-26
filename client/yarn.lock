@@ -893,11 +893,6 @@
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.102.2.tgz#b320ef63aadf55d0ab55ee4f92b602f72521a9ed"
   integrity sha512-zQ5794PXBlV5Wl7N23SR1/Ss+wPE/h2Ye4XlKpm3omN8i8b/Fd4DAdqpLS2AXj5M/RMObt3k5qy3E7kzt/AvBA==
 
-"@tanstack/virtual-core@3.17.8":
-  version "3.17.8"
-  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.17.8.tgz#3a801d8b0569a67b7490d3fe64c83758d18a230c"
-  integrity sha512-BfEvehNpOT75r5Ksc5xW6NZuXujTfb7nlSEyVu4XHG3gdxNg1KqXruWbDewXOUaUYIo4oRbSfkjIajz4MAT8tA==
-
 "@tanstack/vue-query@^5.96.1":
   version "5.102.2"
   resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-5.102.2.tgz#4c0c2a5986923db3fd57d4968326c42d42c9a29e"
@@ -907,13 +902,6 @@
     "@tanstack/query-core" "5.102.2"
     "@vue/devtools-api" "^6.6.3"
     vue-demi "^0.14.10"
-
-"@tanstack/vue-virtual@^3.13.23":
-  version "3.13.36"
-  resolved "https://registry.yarnpkg.com/@tanstack/vue-virtual/-/vue-virtual-3.13.36.tgz#fb411b55bffc55c7364349feb028c7b6577cbf39"
-  integrity sha512-gKpExv4RbB9luVG+SucTXoqPZv/gzu/Yvz6BNO+8kpNxJ2x+I/ulryzl5W9BRciahZGp5Tls3Dp5XP1ztVGbMw==
-  dependencies:
-    "@tanstack/virtual-core" "3.17.8"
 
 "@tsconfig/node24@^24.0.4":
   version "24.0.4"

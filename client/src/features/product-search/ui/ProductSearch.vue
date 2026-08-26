@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useVirtualizer } from '@tanstack/vue-virtual';
 import type { IProduct } from '@/entities/product';
 import { useProductSearch } from '../lib/useProductSearch';
+import { useLoadMoreOnScroll } from '../lib/useLoadMoreOnScroll';
 import { useBarcodeScanner } from '../lib/useBarcodeScanner';
 import { AppInput } from '@/shared/ui/input';
 import ProductSearchItem from './ProductSearchItem.vue';
@@ -9,7 +9,7 @@ import { ButtonIcon } from '@/shared/ui/button';
 
 const emit = defineEmits<{
   (e: 'select', product: IProduct, weight: number): void;
-}>(); 
+}>();
 
 const props = defineProps<{ suggestedWeight?: number }>();
 
@@ -21,6 +21,7 @@ const {
   error,
   hasMore,
   loadMore,
+  isFetchingMore,
   isFetchingNextPage,
 } = useProductSearch();
 
@@ -48,39 +49,18 @@ const handleTextInput = (val: string) => {
 
 const scrollContainerRef = ref<HTMLElement | null>(null);
 
-const virtualizer = useVirtualizer(
-  computed(() => ({
-    count:
-      hasMore.value && !barcodeProduct.value
-        ? displayResults.value.length + 1
-        : displayResults.value.length,
-    getScrollElement: () => scrollContainerRef.value,
-    estimateSize: () => 80,
-    overscan: 5,
-  })),
+const canLoadMore = computed(
+  () =>
+    !barcodeProduct.value && !!hasMore.value && !isFetchingNextPage.value && !displayLoading.value,
 );
 
-const virtualRows = computed(() => virtualizer.value.getVirtualItems());
-const totalSize = computed(() => virtualizer.value.getTotalSize());
+const { onScroll } = useLoadMoreOnScroll(scrollContainerRef, loadMore, {
+  enabled: canLoadMore,
+  loadedCount: () => displayResults.value.length,
+});
 
-watchEffect(() => {
-  if (
-    !scrollContainerRef.value ||
-    !hasMore.value ||
-    isFetchingNextPage.value ||
-    barcodeProduct.value
-  )
-    return;
-
-  const el = scrollContainerRef.value;
-  if (el.scrollHeight <= el.clientHeight) return; // container not scrollable — don't auto-load
-
-  const [lastItem] = [...virtualRows.value].reverse();
-  if (!lastItem) return;
-
-  if (lastItem.index >= displayResults.value.length - 1) {
-    loadMore();
-  }
+watch(searchQuery, () => {
+  if (scrollContainerRef.value) scrollContainerRef.value.scrollTop = 0;
 });
 
 defineExpose({
@@ -116,53 +96,32 @@ defineExpose({
       >
       </ButtonIcon>
     </div>
-    <div ref="scrollContainerRef" class="results">
-      <div :style="{ position: 'relative', height: `${totalSize}px`, marginBottom: '50px' }">
-        <div
-          v-for="virtualRow in virtualRows"
-          :key="virtualRow.index"
-          :style="{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: `${virtualRow.size}px`,
-            transform: `translateY(${virtualRow.start}px)`,
-          }"
-        >
-          <div
-            v-if="virtualRow.index >= displayResults.length && hasMore && !barcodeProduct"
-            class="status"
-            style="position: static; transform: none"
-          >
-            <div class="spinner"></div>
-          </div>
-          <ProductSearchItem
-            v-else
-            :product="displayResults[virtualRow.index] as IProduct"
-            :suggested-weight="props.suggestedWeight"
-            @select="(product, weight) => emit('select', product, weight)"
-          />
-        </div>
+    <div ref="scrollContainerRef" class="results" @scroll.passive="onScroll">
+      <div v-if="displayResults.length" class="results-list">
+        <ProductSearchItem
+          v-for="product in displayResults"
+          :key="product.id"
+          :product="product"
+          :suggested-weight="props.suggestedWeight"
+          @select="(selected, weight) => emit('select', selected, weight)"
+        />
       </div>
-      <div
-        v-if="displayLoading && !isFetchingNextPage"
-        class="status"
-        :style="{ position: 'absolute', top: `${totalSize}px` }"
-      >
+      <div v-if="isFetchingMore" class="status">
         <div class="spinner"></div>
       </div>
-      <div
-        v-else-if="displayError && !isFetchingNextPage"
-        class="status"
-        :style="{ position: 'absolute', top: `${totalSize}px` }"
-      >
+      <div v-else-if="displayLoading" class="status status--overlay">
+        <div class="spinner"></div>
+      </div>
+      <div v-else-if="displayError && !displayResults.length" class="status status--overlay">
         {{ displayError }}
       </div>
-      <div v-else-if="displayResults.length === 0 && searchQuery" class="status">
+      <div v-else-if="displayError" class="status">
+        {{ displayError }}
+      </div>
+      <div v-else-if="displayResults.length === 0 && searchQuery" class="status status--overlay">
         Нет результатов
       </div>
-      <div v-else-if="!displayResults.length && !searchQuery" class="status">
+      <div v-else-if="!displayResults.length && !searchQuery" class="status status--overlay">
         Введите запрос для поиска
       </div>
     </div>
@@ -176,8 +135,10 @@ defineExpose({
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .input-row {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -223,6 +184,9 @@ defineExpose({
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   position: relative;
   border-radius: var(--border-radius);
   scrollbar-width: none;
@@ -233,14 +197,21 @@ defineExpose({
     padding-bottom: 100px;
   }
 }
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .status {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary);
+}
+.status--overlay {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  text-align: center;
-  padding: 20px;
-  color: var(--color-text-secondary);
 }
 .spinner {
   display: inline-block;

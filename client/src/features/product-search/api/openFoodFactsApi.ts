@@ -1,8 +1,6 @@
-import { openfoodfactsHttp } from '@/shared/api/http';
+import axios from 'axios';
+import { http } from '@/shared/api/http';
 import type { OpenFoodFactsProduct } from '../model/mappers';
-
-export const API_BASE = '/cgi/search.pl';
-const PRODUCT_FIELDS = 'code,product_name,generic_name,nutriments';
 
 export interface OpenFoodFactsResponse {
   products: OpenFoodFactsProduct[];
@@ -12,27 +10,38 @@ export interface OpenFoodFactsResponse {
   count: number;
 }
 
-export async function searchProducts(query: string, page = 1): Promise<OpenFoodFactsResponse> {
-  const params = {
-    search_terms: query.trim(),
-    lang: 'en',
-    // lc: 'ru',
-    page,
-    page_size: 20,
-    json: 1,
-    action: 'process',
-    // sort_by: 'unique_scans_n',
-    fields: PRODUCT_FIELDS,
-  };
+function rethrowOffError(err: unknown): never {
+  if (axios.isAxiosError(err) && (err.response?.status === 502 || err.code === 'ERR_NETWORK')) {
+    throw new Error('Каталог продуктов временно недоступен');
+  }
+  throw err;
+}
 
-  const { data } = await openfoodfactsHttp.get(API_BASE, { params });
-  return data;
+export async function searchProducts(query: string, page = 1): Promise<OpenFoodFactsResponse> {
+  try {
+    const { data } = await http.get<OpenFoodFactsResponse>('/products/search', {
+      params: { q: query.trim(), page },
+    });
+    return {
+      products: data.products ?? [],
+      page: data.page ?? page,
+      page_count: data.page_count ?? 0,
+      page_size: data.page_size ?? 20,
+      count: data.count ?? 0,
+    };
+  } catch (err) {
+    rethrowOffError(err);
+  }
 }
 
 export async function getProductByBarcode(barcode: string): Promise<OpenFoodFactsProduct | null> {
-  const { data } = await openfoodfactsHttp.get(`/api/v2/product/${barcode}.json`, {
-    params: { fields: PRODUCT_FIELDS },
-  });
-  if (data.status !== 1 || !data.product) return null;
-  return data.product as OpenFoodFactsProduct;
+  try {
+    const { data } = await http.get<{ status?: number; product?: OpenFoodFactsProduct }>(
+      `/products/barcode/${encodeURIComponent(barcode)}`,
+    );
+    if (data.status !== 1 || !data.product) return null;
+    return data.product;
+  } catch (err) {
+    rethrowOffError(err);
+  }
 }
