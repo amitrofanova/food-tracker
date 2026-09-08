@@ -15,7 +15,7 @@ export default defineConfigWithVueTs(
     files: ['**/*.{vue,ts,mts,tsx}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'android/**', 'ios/**']),
 
   ...pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
@@ -39,6 +39,26 @@ export default defineConfigWithVueTs(
           classes: true,
           variables: true,
           typedefs: true,
+        },
+      ],
+      'vue/no-v-html': 'error',
+      // Предупреждает о потенциально опасных href/src атрибутах (javascript: протоколы)
+      // Требует кастомной валидации или безопасных связок
+      'vue/no-parsing-error': 'error',
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'window',
+          message:
+            'Избегайте прямого использования window без необходимости. Проверьте, не утекли ли туда важные данные.',
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          property: 'innerHTML',
+          message:
+            'Использование innerHTML уязвимо для XSS. Используйте textContent или v-clean-html.',
         },
       ],
     },

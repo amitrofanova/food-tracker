@@ -1,14 +1,33 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { registerUser, loginUser, getCurrentUser, updateCurrentUser } from '@/shared/api/auth';
+import {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  updateCurrentUser,
+  logoutUser,
+} from '@/shared/api/auth';
 import { db } from '@/shared/db';
 import type { IUser } from './types';
+import {
+  clearNativeTokens,
+  isNativePlatform,
+  setNativeTokens,
+  setSessionHint,
+  setUnauthorizedHandler,
+} from '@/shared/lib/auth';
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
   const hasPendingSync = ref(false);
   const syncVersion = ref(0);
+  const authModalOpen = ref(false);
+
+  setUnauthorizedHandler(() => {
+    user.value = null;
+    hasPendingSync.value = false;
+  });
 
   async function checkLocalData() {
     const localEntries = await db.getAllEntries();
@@ -17,16 +36,29 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // Restore session from token on app load
+  async function persistSession(data: {
+    token?: string;
+    refreshToken?: string;
+    user: IUser;
+  }) {
+    setSessionHint(true);
+    if (isNativePlatform() && data.token && data.refreshToken) {
+      await setNativeTokens(data.token, data.refreshToken);
+    }
+    user.value = data.user;
+    authModalOpen.value = false;
+  }
+
   async function init() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    localStorage.removeItem('token');
     try {
       const { data } = await getCurrentUser();
       user.value = data;
+      setSessionHint(true);
       await checkLocalData();
     } catch {
-      localStorage.removeItem('token');
+      setSessionHint(false);
+      await clearNativeTokens();
     }
   }
 
@@ -34,16 +66,15 @@ export const useUserStore = defineStore('user', () => {
     try {
       error.value = null;
       const { data } = await loginUser({ email, password });
-      localStorage.setItem('token', data.token);
-      user.value = data.user;
+      await persistSession(data);
       const localEntries = await db.getAllEntries();
       if (localEntries.length > 0) {
         hasPendingSync.value = true;
       }
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Login failed')
-        : 'Login failed';
+        ? (err.response?.data?.error ?? 'Ошибка входа')
+        : 'Ошибка входа';
     }
   }
 
@@ -54,13 +85,19 @@ export const useUserStore = defineStore('user', () => {
       await login(email, password);
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Registration failed')
-        : 'Registration failed';
+        ? (err.response?.data?.error ?? 'Ошибка регистрации')
+        : 'Ошибка регистрации';
     }
   }
 
-  function logout() {
-    localStorage.removeItem('token');
+  async function logout() {
+    try {
+      await logoutUser();
+    } catch {
+      // Clear the local session even if the server call fails.
+    }
+    setSessionHint(false);
+    await clearNativeTokens();
     user.value = null;
     hasPendingSync.value = false;
   }
@@ -75,6 +112,10 @@ export const useUserStore = defineStore('user', () => {
     syncVersion.value++;
   }
 
+  function openAuthModal() {
+    authModalOpen.value = true;
+  }
+
   const isLoggedIn = computed(() => user.value !== null);
 
   init();
@@ -83,9 +124,11 @@ export const useUserStore = defineStore('user', () => {
     user,
     error,
     isLoggedIn,
+    authModalOpen,
     hasPendingSync,
     syncVersion,
     notifySynced,
+    openAuthModal,
     login,
     register,
     logout,

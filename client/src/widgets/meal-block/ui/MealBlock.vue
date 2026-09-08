@@ -69,7 +69,7 @@ const goToSearch = () => {
 }
 .btn-add {
   border-radius: 20%;
-  box-shadow: 0 2px 4px gray;
+  box-shadow: 0 2px 4px rgb(var(--color-lightgray));
   appearance: none;
   width: 30px;
   height: 30px;

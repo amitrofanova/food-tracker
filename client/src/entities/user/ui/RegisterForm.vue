@@ -9,16 +9,30 @@ const emit = defineEmits<{ (e: 'close'): void }>();
 
 const email = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 const loading = ref(false);
-const error = computed(() => userStore.error);
+const localError = ref<string | null>(null);
+const error = computed(() => localError.value ?? userStore.error);
+
+const MIN_PASSWORD_LENGTH = 8;
 
 const onSubmit = async () => {
+  localError.value = null;
+  if (password.value.length < MIN_PASSWORD_LENGTH) {
+    localError.value = `Пароль должен содержать минимум ${MIN_PASSWORD_LENGTH} символов`;
+    return;
+  }
+  if (password.value !== confirmPassword.value) {
+    localError.value = 'Пароли не совпадают';
+    return;
+  }
   loading.value = true;
   await userStore.register(email.value, password.value);
   loading.value = false;
   if (!userStore.error) {
     email.value = '';
     password.value = '';
+    confirmPassword.value = '';
     emit('close');
   }
 };
@@ -28,6 +42,7 @@ const onSubmit = async () => {
   <form @submit.prevent="onSubmit">
     <AppInput v-model="email" type="email" placeholder="Email" />
     <AppInput v-model="password" type="password" placeholder="Пароль" />
+    <AppInput v-model="confirmPassword" type="password" placeholder="Повторите пароль" />
     <div v-if="error" class="error">{{ error }}</div>
     <AppButton type="submit" :disabled="loading">Зарегистрироваться</AppButton>
   </form>

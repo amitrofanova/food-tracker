@@ -9,11 +9,10 @@ import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { VoiceButton } from '@/widgets/voice-diary-entry';
 
 const userStore = useUserStore();
-const { isLoggedIn } = storeToRefs(userStore);
+const { isLoggedIn, authModalOpen } = storeToRefs(userStore);
 
 const { isDesktop } = useBreakpoints();
 
-const showAuthModal = ref(false);
 const showCalorieBudgetForm = ref(false);
 </script>
 
@@ -26,11 +25,11 @@ const showCalorieBudgetForm = ref(false);
         <CalorieBudgetBtn v-if="isDesktop" @click="showCalorieBudgetForm = true" />
         <UserMenu />
       </template>
-      <AppButton v-else @click="showAuthModal = true" size="sm" color="transparent">
+      <AppButton v-else @click="userStore.openAuthModal()" size="sm" color="transparent">
         Войти
       </AppButton>
     </div>
-    <UserAuthModal v-model="showAuthModal"></UserAuthModal>
+    <UserAuthModal v-model="authModalOpen"></UserAuthModal>
     <AppModal v-model="showCalorieBudgetForm">
       <CalorieBudgetForm @close="showCalorieBudgetForm = false" />
     </AppModal>

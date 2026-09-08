@@ -1,25 +1,36 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { Icon } from '@/shared/ui/icon';
 import { useDiaryStore } from '@/entities/diary-entry';
+import { useUserStore } from '@/entities/user';
 import type { IProduct } from '@/entities/product';
 import type { MealType } from '@/shared/config/meals';
 import { useVoiceInput } from '@/shared/lib/voice/useVoiceInput';
-import { useParseVoiceIntent, type VoiceIntent } from '@/shared/lib/voice/useParseVoiceIntent';
+import {
+  useParseVoiceIntent,
+  type VoiceIntent,
+  SESSION_EXPIRED_MESSAGE,
+} from '@/shared/lib/voice/useParseVoiceIntent';
 import VoiceConfirmModal from './VoiceConfirmModal.vue';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 
+const AUTH_REQUIRED_MESSAGE = 'Голосовой ввод с ИИ доступен после входа в аккаунт';
+
 const { isDesktop } = useBreakpoints();
 const diaryStore = useDiaryStore();
+const userStore = useUserStore();
+const { isLoggedIn } = storeToRefs(userStore);
 
 const { state, error: voiceError, listen } = useVoiceInput();
 const { parse, isLoading: isParsing, error: parseError } = useParseVoiceIntent();
 
 const voiceIntent = ref<VoiceIntent | null>(null);
 const confirmOpen = ref(false);
+const authRequiredError = ref<string | null>(null);
 
 const isListening = computed(() => state.value === 'listening');
 const isBusy = computed(() => isListening.value || isParsing.value);
-const statusError = computed(() => voiceError.value || parseError.value);
+const statusError = computed(() => voiceError.value || parseError.value || authRequiredError.value);
 
 const statusText = computed(() => {
   if (isListening.value) return 'Слушаю...';
@@ -33,7 +44,12 @@ const isExpanded = computed(() => !!statusText.value);
 const dismissError = () => {
   voiceError.value = null;
   parseError.value = null;
+  authRequiredError.value = null;
 };
+
+watch(isLoggedIn, (loggedIn) => {
+  if (loggedIn) authRequiredError.value = null;
+});
 
 const onClick = async () => {
   if (statusError.value) {
@@ -42,11 +58,22 @@ const onClick = async () => {
   }
   if (isBusy.value) return;
 
+  if (!isLoggedIn.value) {
+    authRequiredError.value = AUTH_REQUIRED_MESSAGE;
+    // userStore.openAuthModal();
+    return;
+  }
+
   const transcript = await listen();
   if (!transcript) return;
 
   const intent = await parse(transcript);
-  if (!intent?.productName) return;
+  if (!intent) {
+    if (parseError.value === SESSION_EXPIRED_MESSAGE) {
+      userStore.openAuthModal();
+    }
+    return;
+  }
 
   voiceIntent.value = intent;
   confirmOpen.value = true;
@@ -133,6 +160,15 @@ const onConfirm = (product: IProduct, weight: number, meal: MealType) => {
 
 .voice-btn--expanded {
   max-width: 280px;
+  border-radius: 20px;
+}
+
+.voice-btn--error.voice-btn--expanded {
+  max-width: 400px;
+  height: auto;
+  min-height: 40px;
+  white-space: normal;
+  text-align: left;
 }
 
 .voice-btn--listening {
@@ -146,6 +182,13 @@ const onConfirm = (product: IProduct, weight: number, meal: MealType) => {
 .voice-btn--error {
   background-color: rgb(var(--bg-warm));
   color: rgb(var(--color-red));
+}
+
+.voice-btn--error .voice-btn__text {
+  overflow: visible;
+  text-overflow: unset;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .voice-btn__icon {
