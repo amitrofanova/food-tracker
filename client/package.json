@@ -26,7 +26,6 @@
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/push-notifications": "^8.1.1",
     "@tanstack/vue-query": "^5.96.1",
-    "@tanstack/vue-virtual": "^3.13.23",
     "@vueuse/core": "^14.2.1",
     "axios": "^1.15.2",
     "capacitor-voice-recorder": "^7.0.6",

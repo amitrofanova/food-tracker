@@ -24,6 +24,8 @@ const MEAL_ALIASES: Record<string, MealType> = {
 };
 
 const PARSE_FAIL_MESSAGE = 'Не получилось разобрать фразу. Попробуйте ещё раз';
+const UNAVAILABLE_MESSAGE =
+  'Нет связи с сервисом распознавания. Проверьте соединение и попробуйте ещё раз';
 export const SESSION_EXPIRED_MESSAGE =
   'Сессия истекла. Войдите снова, чтобы использовать голосовой ввод';
 const RATE_LIMIT_MESSAGE = 'Слишком много запросов подряд. Подождите немного';
@@ -77,11 +79,13 @@ export function useParseVoiceIntent() {
           error.value = SESSION_EXPIRED_MESSAGE;
         } else if (status === 429) {
           error.value = RATE_LIMIT_MESSAGE;
+        } else if (!status || status === 502 || status === 503) {
+          error.value = UNAVAILABLE_MESSAGE;
         } else {
           error.value = PARSE_FAIL_MESSAGE;
         }
       } else {
-        error.value = PARSE_FAIL_MESSAGE;
+        error.value = UNAVAILABLE_MESSAGE;
       }
       return null;
     } finally {

@@ -14,12 +14,15 @@ const props = withDefaults(
     width?: string;
     maxWidth?: string;
     transitionName?: string;
+    /** Fill the viewport/dialog and keep overflow inside the slot (nested scroll). */
+    fill?: boolean;
   }>(),
   {
     closeOnClickOutside: true,
     showCloseButton: true,
     maxWidth: '100vw',
     transitionName: 'modal-fade',
+    fill: false,
   },
 );
 
@@ -67,11 +70,15 @@ watch(
   <Teleport to="body">
     <Transition appear :name="transitionName" @after-leave="emit('closed')">
       <div v-if="modelValue" class="modal-overlay" @mousedown.self="handleOverlayClick">
-        <div class="modal-container" :style="{ width: adaptedWidth, maxWidth }">
+        <div
+          class="modal-container"
+          :class="{ 'modal-container--fill': fill }"
+          :style="{ width: adaptedWidth, maxWidth }"
+        >
           <button v-if="showCloseButton" class="btn-close" @click="close" aria-label="Закрыть">
             <Icon name="Close" size="sm" />
           </button>
-          <div class="modal-content">
+          <div class="modal-content" :class="{ 'modal-content--fill': fill }">
             <h2 v-if="title" class="header">{{ title }}</h2>
             <slot />
           </div>
@@ -103,6 +110,22 @@ watch(
   max-height: 90vh;
   padding: var(--padding-mobile);
 }
+.modal-container--fill {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.modal-content--fill {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-height: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 @media (min-width: 768px) {
   .modal-container {
     width: auto;
@@ -111,6 +134,11 @@ watch(
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     position: relative;
     overflow-y: auto;
+  }
+  .modal-container--fill {
+    height: 90vh;
+    max-height: 90vh;
+    overflow: hidden;
   }
   .modal-content {
     padding: var(--padding);
@@ -134,6 +162,7 @@ watch(
 }
 .header {
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 .btn-close {
   position: absolute;
