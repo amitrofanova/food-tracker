@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createLocalDiaryEntry, portionMacros, type IDiaryEntry } from '@/entities/diary-entry/model/types';
-import { toEntryCreatePayload } from '../diary';
+import { fromApiDiaryEntry, toEntryCreatePayload } from '../diary';
 
 const product = {
   id: 'oats',
@@ -30,6 +30,8 @@ describe('toEntryCreatePayload', () => {
     expect(payload.fat).toBe(7);
     expect(payload.carbs).toBe(66);
     expect(payload.weight).toBe(150);
+    expect(payload.productName).toBe('Овсянка');
+    expect(payload.productId).toBe('oats');
     expect(payload).not.toHaveProperty('id');
     expect(payload).not.toHaveProperty('macrosPer100g');
   });
@@ -54,5 +56,28 @@ describe('toEntryCreatePayload', () => {
     expect(payload.protein).toBe(13);
     expect(payload.fat).toBe(7);
     expect(payload.carbs).toBe(66);
+  });
+});
+
+describe('fromApiDiaryEntry', () => {
+  it('reads the per-100g snapshot from the entry row, not a nested product', () => {
+    const entry = fromApiDiaryEntry({
+      id: '12',
+      date: '2026-09-18',
+      productId: null,
+      productName: 'Творог',
+      mealType: 'breakfast',
+      weight: 150,
+      calories: 100,
+      protein: 16,
+      fat: 5,
+      carbs: 3,
+    });
+
+    expect(entry.productName).toBe('Творог');
+    expect(entry.productId).toBe('');
+    expect(entry.calories).toBe(100);
+    expect(entry.macrosPer100g).toBe(true);
+    expect(portionMacros(entry).calories).toBe(150);
   });
 });

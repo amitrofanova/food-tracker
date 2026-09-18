@@ -29,6 +29,7 @@ export const useDiaryStore = defineStore('diary', () => {
     error.value = null;
     try {
       if (isAuthenticated()) {
+        // Server rows are snapshots: productName + per-100g macros, not a live Product join.
         entries.value = await fetchDiaryEntries(date || selectedDate.value);
       } else {
         const all = await db.getAllEntries();
@@ -58,6 +59,7 @@ export const useDiaryStore = defineStore('diary', () => {
       error.value = null;
       const localEntry = createLocalDiaryEntry(product, { date, weight, mealType });
       if (isAuthenticated()) {
+        // Snapshot only: do not upsert a global Product by name for custom/recipe/offline food.
         await saveDiaryEntry(toEntryCreatePayload(localEntry));
         await loadEntries(date);
       } else {
