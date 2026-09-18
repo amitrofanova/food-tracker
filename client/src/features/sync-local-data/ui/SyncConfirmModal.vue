@@ -4,85 +4,104 @@ import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
-import { saveDiaryEntry, toEntryCreatePayload } from '@/shared/api/diary';
-import { upsertCustomProduct } from '@/shared/api/customProducts';
-import { upsertRecipe } from '@/shared/api/recipes';
-import { db } from '@/shared/db';
+import { createBrowserLocalDataSyncer } from '../lib/createBrowserSyncDeps';
+import { formatPendingLocalSummary, type PendingLocalCounts } from '../lib/syncLocalData';
 
 const userStore = useUserStore();
 const diaryStore = useDiaryStore();
 const queryClient = useQueryClient();
+const syncer = createBrowserLocalDataSyncer();
 
-const pendingCount = ref(0);
-const isSyncing = ref(false);
+const pendingCounts = ref<PendingLocalCounts>({ entries: 0, products: 0, recipes: 0 });
+const activeAction = ref<'sync' | 'discard' | null>(null);
+const syncError = ref<string | null>(null);
+
+const isBusy = computed(() => activeAction.value !== null);
+const pendingSummary = computed(() => formatPendingLocalSummary(pendingCounts.value));
 
 watch(
   () => userStore.hasPendingSync,
-  async (val: boolean) => {
-    if (val) {
-      const entries = await db.getAllEntries();
-      pendingCount.value = entries.length;
+  async (open: boolean) => {
+    if (!open) {
+      syncError.value = null;
+      return;
     }
+    pendingCounts.value = await syncer.pendingCounts();
   },
   { immediate: true },
 );
 
-async function confirmSync() {
-  isSyncing.value = true;
+async function onConfirmSync() {
+  activeAction.value = 'sync';
+  syncError.value = null;
   try {
-    const customProducts = await db.getAllCustomProducts();
-    for (const product of customProducts) {
-      await upsertCustomProduct(product);
-    }
-
-    const recipes = await db.getAllRecipes();
-    for (const recipe of recipes) {
-      await upsertRecipe(recipe);
-    }
-
-    const entries = await db.getAllEntries();
-    for (const entry of entries) {
-      await saveDiaryEntry(toEntryCreatePayload(entry));
-    }
-    await db.entries.clear();
+    await syncer.confirmSync();
     userStore.hasPendingSync = false;
     userStore.notifySynced();
     queryClient.invalidateQueries({ queryKey: ['custom-products'] });
     queryClient.invalidateQueries({ queryKey: ['recipes-search'] });
     await diaryStore.loadEntries();
+  } catch (err) {
+    syncError.value =
+      err instanceof Error ? err.message : 'Не удалось синхронизировать локальные данные';
   } finally {
-    isSyncing.value = false;
+    activeAction.value = null;
   }
 }
 
-async function discardLocal() {
-  await db.entries.clear();
-  userStore.hasPendingSync = false;
-  await diaryStore.loadEntries();
+async function onDiscardLocal() {
+  activeAction.value = 'discard';
+  syncError.value = null;
+  try {
+    await syncer.discardLocal();
+    userStore.hasPendingSync = false;
+    userStore.notifySynced();
+    await diaryStore.loadEntries();
+  } catch (err) {
+    syncError.value = err instanceof Error ? err.message : 'Не удалось удалить локальные данные';
+  } finally {
+    activeAction.value = null;
+  }
 }
 </script>
 
 <template>
   <AppModal
     :model-value="userStore.hasPendingSync"
-    title="Sync local data"
+    title="Локальные данные"
     :close-on-click-outside="false"
     :show-close-button="false"
     max-width="420px"
     @update:model-value="() => {}"
   >
-    <p>
-      You have <strong>{{ pendingCount }}</strong>
-      {{ pendingCount === 1 ? 'entry' : 'entries' }} saved offline. Would you like to sync them to
-      your account?
+    <p v-if="pendingSummary">
+      У вас есть локальные данные без синхронизации:
+      <strong>{{ pendingSummary }}</strong
+      >. Перенести их в аккаунт?
     </p>
-    <div style="display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end">
-      <AppButton color="rgb(var(--color-darkgreen))" :disabled="isSyncing" @click="discardLocal"
-        >Discard</AppButton
-      >
-      <AppButton :disabled="isSyncing" @click="confirmSync">
-        {{ isSyncing ? 'Syncing…' : 'Yes, sync' }}
+    <p v-else>У вас есть локальные данные без синхронизации. Перенести их в аккаунт?</p>
+    <p v-if="syncError" class="error">{{ syncError }}</p>
+    <div class="actions">
+      <AppButton color="rgb(var(--color-darkgreen))" :disabled="isBusy" @click="onDiscardLocal">
+        Не переносить
+      </AppButton>
+      <AppButton :disabled="isBusy" @click="onConfirmSync">
+        {{ activeAction === 'sync' ? 'Синхронизация…' : 'Да, синхронизировать' }}
       </AppButton>
     </div>
   </AppModal>
 </template>
+
+<style scoped>
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+.error {
+  color: rgb(var(--color-red));
+  margin-top: 12px;
+}
+</style>
