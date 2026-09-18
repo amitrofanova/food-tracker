@@ -10,6 +10,8 @@ import {
   type AuthUser,
 } from '@/shared/api/auth';
 import { db } from '@/shared/db';
+import { fetchCustomProducts } from '@/shared/api/customProducts';
+import { fetchRecipes } from '@/shared/api/recipes';
 import type { IUser } from './types';
 import {
   clearNativeTokens,
@@ -40,10 +42,30 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function checkLocalData() {
-    const localEntries = await db.getAllEntries();
-    if (localEntries.length > 0) {
-      hasPendingSync.value = true;
+    const [localEntries, localProducts, localRecipes] = await Promise.all([
+      db.getAllEntries(),
+      db.getAllCustomProducts(),
+      db.getAllRecipes(),
+    ]);
+
+    let pendingProducts = 0;
+    let pendingRecipes = 0;
+    try {
+      const [serverProducts, serverRecipes] = await Promise.all([
+        fetchCustomProducts(),
+        fetchRecipes(),
+      ]);
+      const serverProductIds = new Set(serverProducts.map((product) => product.id));
+      const serverRecipeIds = new Set(serverRecipes.map((recipe) => recipe.id));
+      pendingProducts = localProducts.filter((product) => !serverProductIds.has(product.id)).length;
+      pendingRecipes = localRecipes.filter((recipe) => !serverRecipeIds.has(recipe.id)).length;
+    } catch {
+      // Catalog unavailable: diary IndexedDB rows are still unsynced guest data.
+      pendingProducts = 0;
+      pendingRecipes = 0;
     }
+
+    hasPendingSync.value = localEntries.length + pendingProducts + pendingRecipes > 0;
   }
 
   async function persistSession(data: AuthSessionResponse) {
@@ -73,10 +95,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = null;
       const { data } = await loginUser({ email, password });
       await persistSession(data);
-      const localEntries = await db.getAllEntries();
-      if (localEntries.length > 0) {
-        hasPendingSync.value = true;
-      }
+      await checkLocalData();
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
         ? (err.response?.data?.error ?? 'Ошибка входа')
