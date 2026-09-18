@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { EntryRow } from '@/entities/diary-entry';
-import { MEAL_LABELS, type MealType } from '@/shared/config/meals';
+import { MEAL_LABELS, type MealType } from '@/shared/config';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { ButtonIcon } from '@/shared/ui/button';
 

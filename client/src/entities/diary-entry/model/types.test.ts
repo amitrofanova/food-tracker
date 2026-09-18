@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createLocalDiaryEntry, portionMacros, type IDiaryEntry } from '@/entities/diary-entry/model/types';
-import { fromApiDiaryEntry, toEntryCreatePayload } from '../diary';
+import {
+  createLocalDiaryEntry,
+  fromApiDiaryEntry,
+  portionMacros,
+  toEntryCreatePayload,
+  type IDiaryEntry,
+} from './types';
 
 const product = {
   id: 'oats',

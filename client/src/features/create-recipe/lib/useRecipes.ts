@@ -1,6 +1,6 @@
 import { db } from '@/shared/db';
 import type { IRecipe } from '@/entities/recipe';
-import { fetchRecipes, upsertRecipe, deleteRecipeApi } from '@/shared/api/recipes';
+import { fetchRecipes, upsertRecipe, deleteRecipeApi } from '@/shared/api';
 import { useUserStore } from '@/entities/user';
 import { useSyncedEntity } from '@/shared/lib/useSyncedEntity';
 import { toRef } from 'vue';

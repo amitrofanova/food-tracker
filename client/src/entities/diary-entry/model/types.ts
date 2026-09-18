@@ -1,4 +1,5 @@
-import type { MealType } from '@/shared/config/meals'; //TODO export here
+import type { MealType } from '@/shared/config'; //TODO export here
+import type { ApiDiaryEntry, EntryCreatePayload } from '@/shared/api';
 
 export type DiaryMacros = {
   calories: number;
@@ -81,5 +82,38 @@ export function normalizeIndexedDbDiaryEntry(entry: IDiaryEntry): IDiaryEntry {
     ...entry,
     ...macrosPer100gFromIndexedDbEntry(entry),
     macrosPer100g: true,
+  };
+}
+
+/** Map GET/PATCH /api/entries: macros on the row are the per-100g snapshot. */
+export function fromApiDiaryEntry(data: ApiDiaryEntry): IDiaryEntry {
+  return {
+    id: String(data.id),
+    date: data.date,
+    productId: data.productId ?? '',
+    productName: data.productName,
+    mealType: data.mealType,
+    weight: data.weight,
+    calories: data.calories,
+    protein: data.protein,
+    fat: data.fat,
+    carbs: data.carbs,
+    macrosPer100g: true,
+  };
+}
+
+/** POST /api/entries: calories/protein/fat/carbs are always per 100g. */
+export function toEntryCreatePayload(entry: IDiaryEntry): EntryCreatePayload {
+  const macros = macrosPer100gFromIndexedDbEntry(entry);
+  return {
+    date: entry.date,
+    ...(entry.productId ? { productId: entry.productId } : {}),
+    productName: entry.productName,
+    mealType: entry.mealType,
+    weight: entry.weight,
+    calories: macros.calories,
+    protein: macros.protein,
+    fat: macros.fat,
+    carbs: macros.carbs,
   };
 }

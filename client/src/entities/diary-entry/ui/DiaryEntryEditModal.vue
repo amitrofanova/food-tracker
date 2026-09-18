@@ -6,7 +6,7 @@ import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 import { MealSelect } from '@/shared/ui/select';
 import { Icon } from '@/shared/ui/icon';
 import type { IDiaryEntry } from '../model/types';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 
 const props = defineProps<{

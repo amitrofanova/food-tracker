@@ -4,7 +4,7 @@ import {
   fetchCustomProducts,
   upsertCustomProduct,
   deleteCustomProduct as deleteCustomProductApi,
-} from '@/shared/api/customProducts';
+} from '@/shared/api';
 import { useUserStore } from '@/entities/user';
 import { useSyncedEntity } from '@/shared/lib/useSyncedEntity';
 import { toRef } from 'vue';

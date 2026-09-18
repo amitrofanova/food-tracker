@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/entities/user';
-import { vClickOutside } from '@/shared/lib/directives/click-outside';
+import { vClickOutside } from '@/shared/lib/directives';
 import { useRoute } from 'vue-router';
 
 const userStore = useUserStore();

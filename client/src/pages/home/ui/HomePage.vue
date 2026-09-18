@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { MEAL_TYPES } from '@/shared/config/meals';
+import { MEAL_TYPES } from '@/shared/config';
 import { DateNavigation } from '@/widgets/date-navigation';
 import { DailySummary } from '@/widgets/daily-summary';
 import { MealBlock } from '@/widgets/meal-block';

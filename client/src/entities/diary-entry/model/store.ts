@@ -1,20 +1,21 @@
 import { defineStore } from 'pinia';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import {
   createLocalDiaryEntry,
+  fromApiDiaryEntry,
   normalizeIndexedDbDiaryEntry,
   portionMacros,
+  toEntryCreatePayload,
+  type DiaryProductSnapshot,
   type IDiaryEntry,
 } from './types';
 import {
   fetchDiaryEntries,
   saveDiaryEntry,
-  toEntryCreatePayload,
   updateDiaryEntry,
   deleteDiaryEntry,
-} from '@/shared/api/diary';
+} from '@/shared/api';
 import { db } from '@/shared/db';
-import type { IProduct } from '@/entities/product';
 import { isAuthenticated } from '@/shared/lib/auth';
 import { extractErrorMessage } from '@/shared/lib/error';
 
@@ -30,7 +31,7 @@ export const useDiaryStore = defineStore('diary', () => {
     try {
       if (isAuthenticated()) {
         // Server rows are snapshots: productName + per-100g macros, not a live Product join.
-        entries.value = await fetchDiaryEntries(date || selectedDate.value);
+        entries.value = (await fetchDiaryEntries(date || selectedDate.value)).map(fromApiDiaryEntry);
       } else {
         const all = await db.getAllEntries();
         const normalized = all.map(normalizeIndexedDbDiaryEntry);
@@ -53,7 +54,7 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  async function addEntry(product: IProduct, weight: number, mealType: MealType) {
+  async function addEntry(product: DiaryProductSnapshot, weight: number, mealType: MealType) {
     const date = selectedDate.value;
     try {
       error.value = null;

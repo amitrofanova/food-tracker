@@ -4,13 +4,8 @@ import { Icon } from '@/shared/ui/icon';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useUserStore } from '@/entities/user';
 import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config/meals';
-import { useVoiceInput } from '@/shared/lib/voice/useVoiceInput';
-import {
-  useParseVoiceIntent,
-  type VoiceIntent,
-  SESSION_EXPIRED_MESSAGE,
-} from '@/shared/lib/voice/useParseVoiceIntent';
+import type { MealType } from '@/shared/config';
+import { useVoiceInput, useParseVoiceIntent, SESSION_EXPIRED_MESSAGE, type VoiceIntent } from '@/shared/lib/voice';
 import VoiceConfirmModal from './VoiceConfirmModal.vue';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/shared/ui/icon/IconBase.vue';
+import { Icon } from '@/shared/ui/icon';
 import { useRoute } from 'vue-router';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 

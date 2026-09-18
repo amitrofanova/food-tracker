@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config/meals';
-import type { VoiceIntent } from '@/shared/lib/voice/useParseVoiceIntent';
+import type { MealType } from '@/shared/config';
+import type { VoiceIntent } from '@/shared/lib/voice';
 import { ProductSearch } from '@/features/product-search';
 import { AppModal } from '@/shared/ui/modal';
 import { AppInput } from '@/shared/ui/input';

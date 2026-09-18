@@ -6,12 +6,12 @@ import {
   getCurrentUser,
   updateCurrentUser,
   logoutUser,
+  fetchCustomProducts,
+  fetchRecipes,
   type AuthSessionResponse,
   type AuthUser,
-} from '@/shared/api/auth';
+} from '@/shared/api';
 import { db } from '@/shared/db';
-import { fetchCustomProducts } from '@/shared/api/customProducts';
-import { fetchRecipes } from '@/shared/api/recipes';
 import type { IUser } from './types';
 import {
   clearNativeTokens,

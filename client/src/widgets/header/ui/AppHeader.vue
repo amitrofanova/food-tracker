@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/entities/user';
+import { useUserStore, UserMenu } from '@/entities/user';
+import { UserAuthModal } from '@/features/auth';
 import { CalorieBudgetBtn, CalorieBudgetForm } from '@/features/calorie-budget';
 import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
-import { UserAuthModal, UserMenu } from '@/entities/user';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { VoiceButton } from '@/widgets/voice-diary-entry';
 
 const userStore = useUserStore();
 const { isLoggedIn, authModalOpen } = storeToRefs(userStore);
@@ -19,7 +18,7 @@ const showCalorieBudgetForm = ref(false);
 <template>
   <header class="header">
     <RouterLink to="/" class="logo">Food Tracker</RouterLink>
-    <VoiceButton v-if="isDesktop" />
+    <slot name="voice" />
     <div class="controls">
       <template v-if="isLoggedIn">
         <CalorieBudgetBtn v-if="isDesktop" @click="showCalorieBudgetForm = true" />

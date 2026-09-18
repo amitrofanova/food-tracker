@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCalorieCalculator } from '../model/useCalorieCalculator';
-import { useUserStore } from '@/entities/user/';
+import { useUserStore } from '@/entities/user';
 import { AppButton } from '@/shared/ui/button';
 import { AppSelect } from '@/shared/ui/select';
 import { AppInput } from '@/shared/ui/input';

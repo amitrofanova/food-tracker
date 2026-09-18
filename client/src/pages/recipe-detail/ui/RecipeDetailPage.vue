@@ -2,8 +2,7 @@
 import type { IRecipe } from '@/entities/recipe';
 import { Icon } from '@/shared/ui/icon';
 import { PageHeader } from '@/shared/ui/page-header';
-import { useRecipes } from '@/features/create-recipe';
-import { RecipeFormModal } from '@/widgets/recipe-form';
+import { RecipeFormModal, useRecipes } from '@/features/create-recipe';
 import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { useRouter, useRoute } from 'vue-router';

@@ -2,7 +2,7 @@
 import { Icon } from '@/shared/ui/icon';
 import DiaryEntryEditModal from './DiaryEntryEditModal.vue';
 import { portionMacros, type IDiaryEntry } from '../model/types';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 
 const props = defineProps<{ entry: IDiaryEntry; compact?: boolean; mini?: boolean }>();
 const emit = defineEmits<{

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IRecipe } from '@/entities/recipe';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import { AppModal } from '@/shared/ui/modal';
 import RecipeForm from './RecipeForm.vue';
 

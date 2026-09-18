@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MealSelect } from '@/shared/ui/select';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import type { IProduct } from '@/entities/product';
 import { AddEntryControls } from '@/entities/diary-entry';
 

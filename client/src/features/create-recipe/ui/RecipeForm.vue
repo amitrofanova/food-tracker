@@ -2,15 +2,15 @@
 import type { IProduct } from '@/entities/product';
 import type { IRecipe, IRecipeIngredient } from '@/entities/recipe';
 import { IngredientEditModal } from '@/entities/recipe';
-import { ProductSearch } from '@/features/product-search';
-import { AddEntryForm } from '@/features/create-product';
+import { ProductSearch } from '@/features/product-search/@x/create-recipe';
+import { AddEntryForm } from '@/features/create-product/@x/create-recipe';
 import { useDiaryStore } from '@/entities/diary-entry';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import { AppButton } from '@/shared/ui/button';
 import { EntryRow } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 import { AppInput } from '@/shared/ui/input';
-import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
+import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 
 const props = defineProps<{ initialRecipe?: IRecipe; defaultMeal?: MealType }>();
 const emit = defineEmits<{ saved: [recipe: IRecipe]; added: [] }>();
