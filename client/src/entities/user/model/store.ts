@@ -6,6 +6,8 @@ import {
   getCurrentUser,
   updateCurrentUser,
   logoutUser,
+  type AuthSessionResponse,
+  type AuthUser,
 } from '@/shared/api/auth';
 import { db } from '@/shared/db';
 import type { IUser } from './types';
@@ -29,6 +31,14 @@ export const useUserStore = defineStore('user', () => {
     hasPendingSync.value = false;
   });
 
+  function toUser(data: AuthUser): IUser {
+    const next: IUser = { id: data.id, email: data.email };
+    if (typeof data.calorieBudget === 'number') {
+      next.calorieBudget = data.calorieBudget;
+    }
+    return next;
+  }
+
   async function checkLocalData() {
     const localEntries = await db.getAllEntries();
     if (localEntries.length > 0) {
@@ -36,16 +46,12 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  async function persistSession(data: {
-    token?: string;
-    refreshToken?: string;
-    user: IUser;
-  }) {
+  async function persistSession(data: AuthSessionResponse) {
     setSessionHint(true);
     if (isNativePlatform() && data.token && data.refreshToken) {
       await setNativeTokens(data.token, data.refreshToken);
     }
-    user.value = data.user;
+    user.value = toUser(data.user);
     authModalOpen.value = false;
   }
 
@@ -53,7 +59,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('token');
     try {
       const { data } = await getCurrentUser();
-      user.value = data;
+      user.value = toUser(data);
       setSessionHint(true);
       await checkLocalData();
     } catch {
@@ -105,7 +111,7 @@ export const useUserStore = defineStore('user', () => {
   async function setCalorieBudget(budget: number) {
     if (!user.value) return;
     const { data } = await updateCurrentUser({ calorieBudget: budget });
-    user.value = data;
+    user.value = toUser(data);
   }
 
   function notifySynced() {

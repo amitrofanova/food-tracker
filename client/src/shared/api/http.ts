@@ -28,6 +28,7 @@ function isAuthSkipUrl(url = ''): boolean {
 
 http.interceptors.request.use(async (config) => {
   if (isNativePlatform()) {
+    config.headers['X-Client'] = 'capacitor';
     const token = await getNativeAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -43,7 +44,7 @@ async function refreshSession(): Promise<boolean> {
   refreshInFlight = (async () => {
     try {
       const nativeRefresh = isNativePlatform() ? await getNativeRefreshToken() : null;
-      const { data } = await http.post<{ token: string; refreshToken: string }>(
+      const { data } = await http.post<{ token?: string; refreshToken?: string }>(
         '/auth/refresh',
         nativeRefresh ? { refreshToken: nativeRefresh } : {},
       );
