@@ -4,7 +4,7 @@ import { AppModal } from '@/shared/ui/modal';
 import { AppButton } from '@/shared/ui/button';
 import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
-import { saveDiaryEntry } from '@/shared/api/diary';
+import { saveDiaryEntry, toEntryCreatePayload } from '@/shared/api/diary';
 import { upsertCustomProduct } from '@/shared/api/customProducts';
 import { upsertRecipe } from '@/shared/api/recipes';
 import { db } from '@/shared/db';
@@ -42,8 +42,7 @@ async function confirmSync() {
 
     const entries = await db.getAllEntries();
     for (const entry of entries) {
-      const { id, ...rest } = entry;
-      await saveDiaryEntry(rest);
+      await saveDiaryEntry(toEntryCreatePayload(entry));
     }
     await db.entries.clear();
     userStore.hasPendingSync = false;
