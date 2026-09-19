@@ -1,14 +1,21 @@
 import { defineStore } from 'pinia';
-import type { MealType } from '@/shared/config/meals';
-import type { IDiaryEntry } from './types';
+import type { MealType } from '@/shared/config';
+import {
+  createLocalDiaryEntry,
+  fromApiDiaryEntry,
+  normalizeIndexedDbDiaryEntry,
+  portionMacros,
+  toEntryCreatePayload,
+  type DiaryProductSnapshot,
+  type IDiaryEntry,
+} from './types';
 import {
   fetchDiaryEntries,
   saveDiaryEntry,
   updateDiaryEntry,
   deleteDiaryEntry,
-} from '@/shared/api/diary';
+} from '@/shared/api';
 import { db } from '@/shared/db';
-import type { IProduct } from '@/entities/product';
 import { isAuthenticated } from '@/shared/lib/auth';
 import { extractErrorMessage } from '@/shared/lib/error';
 
@@ -23,11 +30,21 @@ export const useDiaryStore = defineStore('diary', () => {
     error.value = null;
     try {
       if (isAuthenticated()) {
-        entries.value = await fetchDiaryEntries(date || selectedDate.value);
+        // Server rows are snapshots: productName + per-100g macros, not a live Product join.
+        entries.value = (await fetchDiaryEntries(date || selectedDate.value)).map(fromApiDiaryEntry);
       } else {
         const all = await db.getAllEntries();
+        const normalized = all.map(normalizeIndexedDbDiaryEntry);
+        const migrated = normalized.filter((entry, index) => entry !== all[index]);
+        if (migrated.length > 0) {
+          try {
+            await Promise.all(migrated.map((entry) => db.saveEntry(entry)));
+          } catch (err) {
+            console.error('Failed to migrate diary macros to per-100g:', err);
+          }
+        }
         const target = date || selectedDate.value;
-        entries.value = all.filter((e) => e.date === target);
+        entries.value = normalized.filter((e) => e.date === target);
       }
     } catch (err) {
       error.value = extractErrorMessage(err, 'Ошибка загрузки дневника');
@@ -37,37 +54,16 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
-  async function addEntry(product: IProduct, weight: number, mealType: MealType) {
+  async function addEntry(product: DiaryProductSnapshot, weight: number, mealType: MealType) {
     const date = selectedDate.value;
     try {
       error.value = null;
+      const localEntry = createLocalDiaryEntry(product, { date, weight, mealType });
       if (isAuthenticated()) {
-        await saveDiaryEntry({
-          date,
-          productId: product.id,
-          productName: product.name,
-          mealType,
-          weight,
-          calories: product.calories,
-          protein: product.protein,
-          fat: product.fat,
-          carbs: product.carbs,
-        });
+        // Snapshot only: do not upsert a global Product by name for custom/recipe/offline food.
+        await saveDiaryEntry(toEntryCreatePayload(localEntry));
         await loadEntries(date);
       } else {
-        const factor = weight / 100;
-        const localEntry: IDiaryEntry = {
-          id: crypto.randomUUID(),
-          date,
-          productId: product.id,
-          productName: product.name,
-          mealType,
-          weight,
-          calories: Math.round(product.calories * factor),
-          protein: Math.round(product.protein * factor),
-          fat: Math.round(product.fat * factor),
-          carbs: Math.round(product.carbs * factor),
-        };
         await db.saveEntry(localEntry);
         entries.value = [...entries.value, localEntry];
       }
@@ -87,16 +83,10 @@ export const useDiaryStore = defineStore('diary', () => {
       } else {
         const entry = entries.value.find((e) => e.id === id);
         if (!entry) return;
-        // Scale macros proportionally to the new weight
-        const factor = weight / entry.weight;
         const updated: IDiaryEntry = {
           ...entry,
           mealType,
           weight,
-          calories: Math.round(entry.calories * factor),
-          protein: Math.round(entry.protein * factor),
-          fat: Math.round(entry.fat * factor),
-          carbs: Math.round(entry.carbs * factor),
         };
         await db.saveEntry(updated);
         entries.value = entries.value.map((e) => (e.id === id ? updated : e));
@@ -148,10 +138,11 @@ export const useDiaryStore = defineStore('diary', () => {
       carbs: 0,
     };
     dailyEntries.value.forEach((entry) => {
-      totals.calories += entry.calories || 0;
-      totals.proteins += entry.protein || 0;
-      totals.fats += entry.fat || 0;
-      totals.carbs += entry.carbs || 0;
+      const portion = portionMacros(entry);
+      totals.calories += portion.calories;
+      totals.proteins += portion.protein;
+      totals.fats += portion.fat;
+      totals.carbs += portion.carbs;
     });
     return {
       calories: Math.round(totals.calories),
@@ -169,8 +160,8 @@ export const useDiaryStore = defineStore('diary', () => {
       snack: 0,
     };
     dailyEntries.value.forEach((entry) => {
-      if (entry.mealType && typeof entry.calories === 'number') {
-        totals[entry.mealType] += entry.calories;
+      if (entry.mealType) {
+        totals[entry.mealType] += portionMacros(entry).calories;
       }
     });
     return Object.fromEntries(Object.entries(totals).map(([k, v]) => [k, Math.round(v)])) as Record<

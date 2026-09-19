@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import type { IRecipe } from '@/entities/recipe';
 import { RecipeDetailModal } from '@/entities/recipe';
 import { useDiaryStore } from '@/entities/diary-entry';
@@ -10,8 +10,7 @@ import { PageHeader } from '@/shared/ui/page-header';
 import { Icon } from '@/shared/ui/icon';
 import { MealSelect } from '@/shared/ui/select';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { useRecipes } from '@/features/create-recipe';
-import { RecipeFormModal } from '@/widgets/recipe-form';
+import { RecipeFormModal, useRecipes } from '@/features/create-recipe';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

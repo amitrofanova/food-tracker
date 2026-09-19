@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { AddDiaryEntry } from '@/widgets/add-diary-entry';
 import { PageHeader } from '@/shared/ui/page-header';

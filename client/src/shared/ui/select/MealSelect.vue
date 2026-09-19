@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config/meals';
+import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config';
 import AppSelect from './AppSelect.vue';
 
 withDefaults(

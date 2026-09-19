@@ -1,6 +1,6 @@
 import { db } from '@/shared/db';
 import type { IProduct } from '@/entities/product';
-import { upsertCustomProduct } from '@/shared/api/customProducts';
+import { upsertCustomProduct } from '@/shared/api';
 import { isAuthenticated } from '@/shared/lib/auth';
 import { extractErrorMessage } from '@/shared/lib/error';
 

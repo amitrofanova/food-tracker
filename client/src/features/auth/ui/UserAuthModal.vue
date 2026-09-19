@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { LoginForm, RegisterForm } from '@/entities/user';
 import { AppModal } from '@/shared/ui/modal';
+import LoginForm from './LoginForm.vue';
+import RegisterForm from './RegisterForm.vue';
 
 const show = defineModel<boolean>({ default: false });
 const isLoginMode = ref(true);

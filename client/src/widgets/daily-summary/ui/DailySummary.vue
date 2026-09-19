@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDiaryStore } from '@/entities/diary-entry';
-import { useUserStore } from '@/entities/user/';
+import { useUserStore } from '@/entities/user';
 import { AppProgress } from '@/shared/ui/progress';
 import { storeToRefs } from 'pinia';
 

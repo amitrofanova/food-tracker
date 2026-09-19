@@ -1,10 +1,9 @@
 import { http } from './http';
-import type { IDiaryEntry } from '@/entities/diary-entry';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 
 export interface EntryCreatePayload {
   date: string;
-  productId: string;
+  productId?: string;
   productName: string;
   mealType: MealType;
   weight: number;
@@ -14,9 +13,22 @@ export interface EntryCreatePayload {
   carbs: number;
 }
 
-export async function fetchDiaryEntries(date?: string): Promise<IDiaryEntry[]> {
+export type ApiDiaryEntry = {
+  id: string;
+  date: string;
+  productId?: string | null;
+  productName: string;
+  mealType: MealType;
+  weight: number;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+};
+
+export async function fetchDiaryEntries(date?: string): Promise<ApiDiaryEntry[]> {
   const params = date ? { date } : {};
-  const { data } = await http.get('/entries', { params });
+  const { data } = await http.get<ApiDiaryEntry[]>('/entries', { params });
   return data;
 }
 
@@ -27,9 +39,9 @@ export async function saveDiaryEntry(entry: EntryCreatePayload) {
 export async function updateDiaryEntry(
   id: string,
   data: { weight?: number; mealType?: MealType },
-): Promise<IDiaryEntry> {
-  const { data: result } = await http.patch(`/entries/${id}`, data);
-  return result as IDiaryEntry;
+): Promise<ApiDiaryEntry> {
+  const { data: result } = await http.patch<ApiDiaryEntry>(`/entries/${id}`, data);
+  return result;
 }
 
 export async function deleteDiaryEntry(id: string) {

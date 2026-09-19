@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useUserStore } from '@/entities/user/';  
+import { useUserStore } from '@/entities/user';  
 import { AppButton } from '@/shared/ui/button';
 import { AppInput } from '@/shared/ui/input';
 import { storeToRefs } from 'pinia';

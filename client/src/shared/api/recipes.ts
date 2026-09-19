@@ -1,13 +1,13 @@
 import { http } from './http';
-import type { IRecipe } from '@/entities/recipe';
+import type { RecipeDto } from '@/shared/model';
 
-export async function fetchRecipes(): Promise<IRecipe[]> {
-  const { data } = await http.get<IRecipe[]>('/recipes');
+export async function fetchRecipes(): Promise<RecipeDto[]> {
+  const { data } = await http.get<RecipeDto[]>('/recipes');
   return data;
 }
 
-export async function upsertRecipe(recipe: IRecipe): Promise<IRecipe> {
-  const { data } = await http.post<IRecipe>('/recipes', recipe);
+export async function upsertRecipe(recipe: RecipeDto): Promise<RecipeDto> {
+  const { data } = await http.post<RecipeDto>('/recipes', recipe);
   return data;
 }
 

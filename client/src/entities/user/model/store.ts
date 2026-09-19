@@ -6,7 +6,11 @@ import {
   getCurrentUser,
   updateCurrentUser,
   logoutUser,
-} from '@/shared/api/auth';
+  fetchCustomProducts,
+  fetchRecipes,
+  type AuthSessionResponse,
+  type AuthUser,
+} from '@/shared/api';
 import { db } from '@/shared/db';
 import type { IUser } from './types';
 import {
@@ -29,23 +33,47 @@ export const useUserStore = defineStore('user', () => {
     hasPendingSync.value = false;
   });
 
-  async function checkLocalData() {
-    const localEntries = await db.getAllEntries();
-    if (localEntries.length > 0) {
-      hasPendingSync.value = true;
+  function toUser(data: AuthUser): IUser {
+    const next: IUser = { id: data.id, email: data.email };
+    if (typeof data.calorieBudget === 'number') {
+      next.calorieBudget = data.calorieBudget;
     }
+    return next;
   }
 
-  async function persistSession(data: {
-    token?: string;
-    refreshToken?: string;
-    user: IUser;
-  }) {
+  async function checkLocalData() {
+    const [localEntries, localProducts, localRecipes] = await Promise.all([
+      db.getAllEntries(),
+      db.getAllCustomProducts(),
+      db.getAllRecipes(),
+    ]);
+
+    let pendingProducts = 0;
+    let pendingRecipes = 0;
+    try {
+      const [serverProducts, serverRecipes] = await Promise.all([
+        fetchCustomProducts(),
+        fetchRecipes(),
+      ]);
+      const serverProductIds = new Set(serverProducts.map((product) => product.id));
+      const serverRecipeIds = new Set(serverRecipes.map((recipe) => recipe.id));
+      pendingProducts = localProducts.filter((product) => !serverProductIds.has(product.id)).length;
+      pendingRecipes = localRecipes.filter((recipe) => !serverRecipeIds.has(recipe.id)).length;
+    } catch {
+      // Catalog unavailable: diary IndexedDB rows are still unsynced guest data.
+      pendingProducts = 0;
+      pendingRecipes = 0;
+    }
+
+    hasPendingSync.value = localEntries.length + pendingProducts + pendingRecipes > 0;
+  }
+
+  async function persistSession(data: AuthSessionResponse) {
     setSessionHint(true);
     if (isNativePlatform() && data.token && data.refreshToken) {
       await setNativeTokens(data.token, data.refreshToken);
     }
-    user.value = data.user;
+    user.value = toUser(data.user);
     authModalOpen.value = false;
   }
 
@@ -53,7 +81,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('token');
     try {
       const { data } = await getCurrentUser();
-      user.value = data;
+      user.value = toUser(data);
       setSessionHint(true);
       await checkLocalData();
     } catch {
@@ -67,10 +95,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = null;
       const { data } = await loginUser({ email, password });
       await persistSession(data);
-      const localEntries = await db.getAllEntries();
-      if (localEntries.length > 0) {
-        hasPendingSync.value = true;
-      }
+      await checkLocalData();
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
         ? (err.response?.data?.error ?? 'Ошибка входа')
@@ -105,7 +130,7 @@ export const useUserStore = defineStore('user', () => {
   async function setCalorieBudget(budget: number) {
     if (!user.value) return;
     const { data } = await updateCurrentUser({ calorieBudget: budget });
-    user.value = data;
+    user.value = toUser(data);
   }
 
   function notifySynced() {

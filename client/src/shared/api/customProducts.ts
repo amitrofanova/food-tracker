@@ -1,13 +1,13 @@
 import { http } from './http';
-import type { IProduct } from '@/entities/product';
+import type { ProductDto } from '@/shared/model';
 
-export async function fetchCustomProducts(): Promise<IProduct[]> {
-  const { data } = await http.get<IProduct[]>('/custom-products');
+export async function fetchCustomProducts(): Promise<ProductDto[]> {
+  const { data } = await http.get<ProductDto[]>('/custom-products');
   return data;
 }
 
-export async function upsertCustomProduct(product: IProduct): Promise<IProduct> {
-  const { data } = await http.post<IProduct>('/custom-products', product);
+export async function upsertCustomProduct(product: ProductDto): Promise<ProductDto> {
+  const { data } = await http.post<ProductDto>('/custom-products', product);
   return data;
 }
 

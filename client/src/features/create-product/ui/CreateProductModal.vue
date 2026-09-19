@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import { AppModal } from '@/shared/ui/modal';
 import CreateProductForm from './CreateProductForm.vue';
 import AddEntryForm from './AddEntryForm.vue';

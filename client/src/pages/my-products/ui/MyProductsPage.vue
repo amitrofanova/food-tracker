@@ -2,12 +2,12 @@
 import { AppButton } from '@/shared/ui/button';
 import { Icon } from '@/shared/ui/icon';
 import { PageHeader } from '@/shared/ui/page-header';
-import type { MealType } from '@/shared/config/meals';
+import type { MealType } from '@/shared/config';
 import type { IProduct } from '@/entities/product';
 import { CreateProductModal, EditProductModal, useCustomProducts } from '@/features/create-product';
 import { useDiaryStore } from '@/entities/diary-entry';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
-import MobileBottomControls from '@/shared/ui/mobile-bottom-controls/MobileBottomControls.vue';
+import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
 
 const { products, isLoading, remove, save } = useCustomProducts();
 const diaryStore = useDiaryStore();

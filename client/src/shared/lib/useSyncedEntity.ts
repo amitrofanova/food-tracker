@@ -1,4 +1,4 @@
-import type { Ref } from 'vue';
+import { onMounted, ref, watch, type Ref } from 'vue';
 import { isAuthenticated } from './auth';
 
 interface SyncedEntityOptions<T extends { id: string }> {
@@ -10,6 +10,30 @@ interface SyncedEntityOptions<T extends { id: string }> {
   bulkPutLocal: (items: T[]) => Promise<unknown>;
   putLocal: (item: T) => Promise<unknown>;
   deleteLocal: (id: string) => Promise<unknown>;
+}
+
+/** Keep local-only rows (guest / unsynced) when replacing the cache from the server. */
+export function mergeServerItemsPreservingLocalOnly<T extends { id: string }>(
+  serverItems: T[],
+  localItems: T[],
+): T[] {
+  const serverIds = new Set(serverItems.map((item) => item.id));
+  const localOnly = localItems.filter((item) => !serverIds.has(item.id));
+  return [...serverItems, ...localOnly];
+}
+
+export async function reconcileSyncedCollection<T extends { id: string }>(
+  options: Pick<
+    SyncedEntityOptions<T>,
+    'fetchServer' | 'getAllLocal' | 'clearLocal' | 'bulkPutLocal'
+  >,
+): Promise<T[]> {
+  const serverItems = await options.fetchServer();
+  const localItems = await options.getAllLocal();
+  const merged = mergeServerItemsPreservingLocalOnly(serverItems, localItems);
+  await options.clearLocal();
+  if (merged.length) await options.bulkPutLocal(merged);
+  return merged;
 }
 
 export function useSyncedEntity<T extends { id: string }>(
@@ -24,10 +48,7 @@ export function useSyncedEntity<T extends { id: string }>(
     try {
       if (isAuthenticated()) {
         try {
-          const serverItems = await options.fetchServer();
-          await options.clearLocal();
-          if (serverItems.length) await options.bulkPutLocal(serverItems);
-          items.value = serverItems;
+          items.value = await reconcileSyncedCollection(options);
         } catch {
           items.value = await options.getAllLocal();
         }

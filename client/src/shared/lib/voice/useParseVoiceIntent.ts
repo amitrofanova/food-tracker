@@ -1,5 +1,5 @@
-import type { MealType } from '@/shared/config/meals';
-import { http } from '@/shared/api/http';
+import type { MealType } from '@/shared/config';
+import { http } from '@/shared/api';
 import axios from 'axios';
 
 export interface VoiceIntent {

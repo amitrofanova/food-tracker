@@ -1,8 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { IDiaryEntry } from '@/entities/diary-entry';
-import type { IProduct } from '@/entities/product';
-import type { IRecipe } from '@/entities/recipe';
-import type { IUser } from '@/entities/user';
+import type { DiaryEntryDto, ProductDto, RecipeDto, UserDto } from '@/shared/model';
 
 function assertNonEmptyString(value: unknown, field: string): asserts value is string {
   if (typeof value !== 'string' || !value.trim()) {
@@ -22,12 +19,12 @@ function assertNonNegativeNumber(value: unknown, field: string): asserts value i
   }
 }
 
-function validateUser(user: IUser): void {
+function validateUser(user: UserDto): void {
   assertNonNegativeNumber(user.id, 'User id');
   assertNonEmptyString(user.email, 'User email');
 }
 
-function validateProduct(product: IProduct): void {
+function validateProduct(product: ProductDto): void {
   assertNonEmptyString(product.id, 'Product id');
   assertNonEmptyString(product.name, 'Product name');
   assertNonNegativeNumber(product.calories, 'Product calories');
@@ -36,7 +33,7 @@ function validateProduct(product: IProduct): void {
   assertNonNegativeNumber(product.carbs, 'Product carbs');
 }
 
-function validateDiaryEntry(entry: IDiaryEntry): void {
+function validateDiaryEntry(entry: DiaryEntryDto): void {
   assertNonEmptyString(entry.id, 'Diary entry id');
   assertNonEmptyString(entry.date, 'Diary entry date');
   assertNonEmptyString(entry.productId, 'Diary entry productId');
@@ -50,11 +47,11 @@ function validateDiaryEntry(entry: IDiaryEntry): void {
 }
 
 export class CalorieTrackerDB extends Dexie {
-  entries!: Table<IDiaryEntry, string>;
-  products!: Table<IProduct, string>;
-  customProducts!: Table<IProduct, string>;
-  users!: Table<IUser, string>;
-  recipes!: Table<IRecipe, string>;
+  entries!: Table<DiaryEntryDto, string>;
+  products!: Table<ProductDto, string>;
+  customProducts!: Table<ProductDto, string>;
+  users!: Table<UserDto, string>;
+  recipes!: Table<RecipeDto, string>;
 
   constructor() {
     super('CalorieTrackerDB');
@@ -77,7 +74,7 @@ export class CalorieTrackerDB extends Dexie {
   }
 
   // Diary
-  async saveEntry(entry: IDiaryEntry): Promise<void> {
+  async saveEntry(entry: DiaryEntryDto): Promise<void> {
     try {
       validateDiaryEntry(entry);
       await this.entries.put(entry);
@@ -101,7 +98,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async getAllEntries(): Promise<IDiaryEntry[]> {
+  async getAllEntries(): Promise<DiaryEntryDto[]> {
     try {
       return await this.entries.toArray();
     } catch (error) {
@@ -113,7 +110,7 @@ export class CalorieTrackerDB extends Dexie {
   }
 
   // Product
-  async getProducts(query: string): Promise<IProduct[]> {
+  async getProducts(query: string): Promise<ProductDto[]> {
     try {
       const lowerQuery = query.toLowerCase();
       return await this.products.where('name').startsWithIgnoreCase(lowerQuery).toArray();
@@ -125,7 +122,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async getCustomProducts(query: string): Promise<IProduct[]> {
+  async getCustomProducts(query: string): Promise<ProductDto[]> {
     try {
       const lowerQuery = query.toLowerCase();
       return await this.customProducts.where('name').startsWithIgnoreCase(lowerQuery).toArray();
@@ -137,7 +134,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async getAllCustomProducts(): Promise<IProduct[]> {
+  async getAllCustomProducts(): Promise<ProductDto[]> {
     try {
       return await this.customProducts.toArray();
     } catch (error) {
@@ -160,7 +157,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async putProduct(product: IProduct): Promise<void> {
+  async putProduct(product: ProductDto): Promise<void> {
     try {
       validateProduct(product);
       await this.products.put(product);
@@ -172,7 +169,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async putCustomProduct(product: IProduct): Promise<IProduct> {
+  async putCustomProduct(product: ProductDto): Promise<ProductDto> {
     try {
       validateProduct(product);
       const customProduct = { ...product };
@@ -187,7 +184,7 @@ export class CalorieTrackerDB extends Dexie {
   }
 
   // User
-  async saveUser(user: IUser): Promise<void> {
+  async saveUser(user: UserDto): Promise<void> {
     try {
       validateUser(user);
       const plainUser = { ...user };
@@ -200,7 +197,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async getUser(name: string): Promise<IUser | undefined> {
+  async getUser(name: string): Promise<UserDto | undefined> {
     try {
       assertNonEmptyString(name, 'User name');
       return await this.users.where('name').equals(name).first();
@@ -229,7 +226,7 @@ export class CalorieTrackerDB extends Dexie {
   }
 
   // Recipes
-  async getAllRecipes(): Promise<IRecipe[]> {
+  async getAllRecipes(): Promise<RecipeDto[]> {
     try {
       return await this.recipes.toArray();
     } catch (error) {
@@ -240,7 +237,7 @@ export class CalorieTrackerDB extends Dexie {
     }
   }
 
-  async putRecipe(recipe: IRecipe): Promise<void> {
+  async putRecipe(recipe: RecipeDto): Promise<void> {
     try {
       assertNonEmptyString(recipe.id, 'Recipe id');
       assertNonEmptyString(recipe.name, 'Recipe name');

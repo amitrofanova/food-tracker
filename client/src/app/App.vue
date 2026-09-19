@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { AppHeader } from '@/widgets/header';
+import { VoiceButton } from '@/widgets/voice-diary-entry';
 import { DefaultLayout } from '@/shared/ui/layout';
 import { useUserStore } from '@/entities/user';
 import { useDiaryStore } from '@/entities/diary-entry';
@@ -13,7 +14,7 @@ const { isLoggedIn } = storeToRefs(useUserStore());
 const diaryStore = useDiaryStore();
 const { isLoading } = storeToRefs(diaryStore);
 const route = useRoute();
-const { isMobile } = useBreakpoints();
+const { isMobile, isDesktop } = useBreakpoints();
 
 const showHeader = computed(() => !(isMobile.value && route.meta.hideHeaderOnMobile));
 
@@ -32,7 +33,11 @@ watch(isLoggedIn, (loggedIn: boolean) => {
   </div>
   <DefaultLayout v-else>
     <template #header>
-      <AppHeader v-if="showHeader" />
+      <AppHeader v-if="showHeader">
+        <template #voice>
+          <VoiceButton v-if="isDesktop" />
+        </template>
+      </AppHeader>
     </template>
     <router-view />
   </DefaultLayout>
