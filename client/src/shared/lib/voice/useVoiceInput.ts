@@ -28,6 +28,20 @@ declare global {
 
 export type VoiceInputState = 'idle' | 'listening' | 'error';
 
+function uniqueTranscripts(values: Array<string | undefined | null>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(trimmed);
+  }
+  return result;
+}
+
 export function useVoiceInput() {
   const state = ref<VoiceInputState>('idle');
   const error = ref<string | null>(null);
@@ -38,7 +52,7 @@ export function useVoiceInput() {
     state.value = 'idle';
   };
 
-  async function _listenNative(): Promise<string | null> {
+  async function _listenNative(): Promise<string[] | null> {
     try {
       const { speechRecognition } = await SpeechRecognition.requestPermissions();
       if (speechRecognition !== 'granted') {
@@ -47,7 +61,7 @@ export function useVoiceInput() {
         return null;
       }
 
-      const startOpts = { language: 'ru-RU', maxResults: 1, popup: false, partialResults: false };
+      const startOpts = { language: 'ru-RU', maxResults: 3, popup: false, partialResults: false };
 
       let matches: string[] | undefined;
       try {
@@ -59,7 +73,8 @@ export function useVoiceInput() {
       }
 
       state.value = 'idle';
-      return matches?.[0] ?? null;
+      const transcripts = uniqueTranscripts(matches ?? []);
+      return transcripts.length > 0 ? transcripts : null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Ошибка распознавания речи';
       state.value = 'error';
@@ -67,7 +82,7 @@ export function useVoiceInput() {
     }
   }
 
-  function _listenWeb(): Promise<string | null> {
+  function _listenWeb(): Promise<string[] | null> {
     return new Promise((resolve) => {
       const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
       if (!Ctor) {
@@ -80,12 +95,19 @@ export function useVoiceInput() {
       const recognition = new Ctor();
       recognition.lang = 'ru-RU';
       recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+      recognition.maxAlternatives = 3;
 
       recognition.onresult = (e: SpeechRecognitionEvent) => {
-        const text = e.results[0]?.[0]?.transcript ?? null;
+        const result = e.results[0];
+        const alts: string[] = [];
+        if (result) {
+          for (let i = 0; i < result.length; i += 1) {
+            alts.push(result[i]?.transcript ?? '');
+          }
+        }
         state.value = 'idle';
-        resolve(text);
+        const transcripts = uniqueTranscripts(alts);
+        resolve(transcripts.length > 0 ? transcripts : null);
       };
 
       recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
@@ -105,7 +127,7 @@ export function useVoiceInput() {
     });
   }
 
-  const listen = (): Promise<string | null> => {
+  const listen = (): Promise<string[] | null> => {
     error.value = null;
     state.value = 'listening';
 

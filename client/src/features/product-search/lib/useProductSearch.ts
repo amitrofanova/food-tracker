@@ -4,6 +4,7 @@ import { useDebounce } from '@/shared/lib/debounce';
 import type { IProduct } from '@/entities/product';
 import { searchProducts as searchApi } from '../api/openFoodFactsApi';
 import { mapOpenFoodFactsToProduct, type OpenFoodFactsProduct } from '../model/mappers';
+import { rankProductsByQuery } from './rankProductsByQuery';
 
 interface ApiProductsPage {
   products: IProduct[];
@@ -136,7 +137,7 @@ export const useProductSearch = () => {
     pushUnique(merged, seen, recipesData.value || []);
     pushUnique(merged, seen, cachedProductsData.value || []);
     pushUnique(merged, seen, data.value?.pages.flatMap((page) => page.products) || []);
-    return merged;
+    return rankProductsByQuery(merged, trimmedQuery.value);
   });
 
   const localFetching = computed(

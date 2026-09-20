@@ -20,29 +20,41 @@ const emit = defineEmits<{
 const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null);
 const weight = ref(100);
 const meal = ref<MealType>('breakfast');
+const preferSearch = ref(false);
 
 const isDirectAdd = computed(() => (props.intent?.calories ?? null) !== null);
-// true when the user didn't mention weight (calories are an absolute total for the dish)
+const isCatalogMatch = computed(
+  () => !!props.intent?.matchedProduct && !isDirectAdd.value && !preferSearch.value,
+);
+const isSearch = computed(() => !isDirectAdd.value && !isCatalogMatch.value);
 const isTotalCalories = computed(() => isDirectAdd.value && props.intent?.weight === null);
+
+const searchQuery = computed(
+  () => props.intent?.searchQuery || props.intent?.productName || '',
+);
 
 watch(
   () => props.intent,
   (intent) => {
+    preferSearch.value = false;
     if (intent) {
       weight.value = intent.weight ?? 100;
       meal.value = intent.meal;
-      if (!intent.calories) {
-        nextTick(() => productSearchRef.value?.setQuery(intent.productName));
-      }
     }
   },
   { immediate: true },
 );
 
 watch(
-  () => props.modelValue,
-  (open) => {
-    if (!open) productSearchRef.value?.clearSearch();
+  [() => props.modelValue, isSearch, searchQuery],
+  ([open, search, query]) => {
+    if (!open) {
+      productSearchRef.value?.clearSearch();
+      return;
+    }
+    if (search && query) {
+      nextTick(() => productSearchRef.value?.setQuery(query));
+    }
   },
 );
 
@@ -54,7 +66,6 @@ const onProductSelect = (product: IProduct, rowWeight: number) => {
 const onDirectConfirm = () => {
   const intent = props.intent!;
   const w = Math.max(1, weight.value);
-  // AI returns totals for the given portion; convert to per-100g for the product
   const factor = 100 / w;
   const product: IProduct = {
     id: `voice_${Date.now()}`,
@@ -67,6 +78,13 @@ const onDirectConfirm = () => {
   emit('confirm', product, w, meal.value);
   emit('update:modelValue', false);
 };
+
+const onCatalogConfirm = () => {
+  const product = props.intent?.matchedProduct;
+  if (!product) return;
+  emit('confirm', product, Math.max(1, weight.value), meal.value);
+  emit('update:modelValue', false);
+};
 </script>
 
 <template>
@@ -74,7 +92,7 @@ const onDirectConfirm = () => {
     :model-value="modelValue"
     title="Добавить в дневник"
     width="600px"
-    :fill="!isDirectAdd"
+    :fill="isSearch"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div class="vc-meta">
@@ -82,7 +100,6 @@ const onDirectConfirm = () => {
       <MealSelect v-model="meal" class="vc-meal" />
     </div>
 
-    <!-- Direct-add: calories were provided in voice command -->
     <template v-if="isDirectAdd">
       <div class="vc-direct">
         <p class="vc-direct__name">{{ intent?.productName }}</p>
@@ -109,7 +126,22 @@ const onDirectConfirm = () => {
       <button class="vc-confirm-btn" @click="onDirectConfirm">Добавить</button>
     </template>
 
-    <!-- Normal flow: search for a product -->
+    <template v-else-if="isCatalogMatch">
+      <div class="vc-direct">
+        <p class="vc-direct__name">{{ intent?.matchedProduct?.name }}</p>
+        <ul class="vc-direct__macros">
+          <li>
+            <strong>{{ intent?.matchedProduct?.calories }}</strong> ккал / 100 г
+          </li>
+          <li>Белки: <strong>{{ intent?.matchedProduct?.protein }}</strong> г</li>
+          <li>Жиры: <strong>{{ intent?.matchedProduct?.fat }}</strong> г</li>
+          <li>Углеводы: <strong>{{ intent?.matchedProduct?.carbs }}</strong> г</li>
+        </ul>
+      </div>
+      <button class="vc-confirm-btn" @click="onCatalogConfirm">Добавить</button>
+      <button class="vc-other-btn" type="button" @click="preferSearch = true">Другой продукт</button>
+    </template>
+
     <template v-else>
       <div class="vc-search">
         <ProductSearch
@@ -177,5 +209,16 @@ const onDirectConfirm = () => {
 }
 .vc-confirm-btn:hover {
   opacity: 0.9;
+}
+.vc-other-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #888);
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 </style>

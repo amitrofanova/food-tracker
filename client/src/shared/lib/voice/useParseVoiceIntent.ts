@@ -1,27 +1,9 @@
 import type { MealType } from '@/shared/config';
 import { http } from '@/shared/api';
 import axios from 'axios';
+import { mapVoiceParseResponse, type VoiceIntent, type VoiceParseApiResponse } from './mapVoiceParseResponse';
 
-export interface VoiceIntent {
-  productName: string;
-  weight: number | null;
-  meal: MealType;
-  calories: number | null;
-  protein: number | null;
-  fat: number | null;
-  carbs: number | null;
-}
-
-const MEAL_ALIASES: Record<string, MealType> = {
-  завтрак: 'breakfast',
-  breakfast: 'breakfast',
-  обед: 'lunch',
-  lunch: 'lunch',
-  ужин: 'dinner',
-  dinner: 'dinner',
-  перекус: 'snack',
-  snack: 'snack',
-};
+export type { VoiceIntent } from './mapVoiceParseResponse';
 
 const PARSE_FAIL_MESSAGE = 'Не получилось разобрать фразу. Попробуйте ещё раз';
 const UNAVAILABLE_MESSAGE =
@@ -34,44 +16,30 @@ export function useParseVoiceIntent() {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const parse = async (transcript: string, defaultMeal?: MealType): Promise<VoiceIntent | null> => {
+  const parse = async (
+    transcript: string | string[],
+    defaultMeal?: MealType,
+  ): Promise<VoiceIntent | null> => {
     isLoading.value = true;
     error.value = null;
 
+    const transcripts = (Array.isArray(transcript) ? transcript : [transcript])
+      .map((item) => item.trim())
+      .filter(Boolean);
+
     try {
-      const { data } = await http.post<{
-        productName: string;
-        weight: number | null;
-        meal: string;
-        calories: number | null;
-        protein: number | null;
-        fat: number | null;
-        carbs: number | null;
-      }>('/voice/parse', { transcript, defaultMeal });
+      const { data } = await http.post<VoiceParseApiResponse>('/voice/parse', {
+        transcript: transcripts[0],
+        transcripts,
+        defaultMeal,
+      });
 
-      const meal: MealType = MEAL_ALIASES[String(data.meal ?? '').toLowerCase()] ?? 'breakfast';
-
-      const toNullable = (v: number | null): number | null =>
-        v !== null && !isNaN(v) ? Math.max(0, Math.round(v)) : null;
-
-      const productName = String(data.productName ?? '').trim();
-      if (!productName) {
+      const intent = mapVoiceParseResponse(data);
+      if (!intent) {
         error.value = PARSE_FAIL_MESSAGE;
         return null;
       }
-
-      return {
-        productName,
-        weight:
-          data.weight !== null && data.weight !== undefined
-            ? Math.max(1, Math.round(Number(data.weight) || 1))
-            : null,
-        meal,
-        calories: toNullable(data.calories),
-        protein: toNullable(data.protein),
-        fat: toNullable(data.fat),
-        carbs: toNullable(data.carbs),
-      };
+      return intent;
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;

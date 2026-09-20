@@ -5,7 +5,13 @@ import { useDiaryStore } from '@/entities/diary-entry';
 import { useUserStore } from '@/entities/user';
 import type { IProduct } from '@/entities/product';
 import type { MealType } from '@/shared/config';
-import { useVoiceInput, useParseVoiceIntent, SESSION_EXPIRED_MESSAGE, type VoiceIntent } from '@/shared/lib/voice';
+import {
+  useVoiceInput,
+  useParseVoiceIntent,
+  SESSION_EXPIRED_MESSAGE,
+  defaultMealByHour,
+  type VoiceIntent,
+} from '@/shared/lib/voice';
 import VoiceConfirmModal from './VoiceConfirmModal.vue';
 import { useBreakpoints } from '@/shared/lib/breakpoints';
 
@@ -22,6 +28,7 @@ const { parse, isLoading: isParsing, error: parseError } = useParseVoiceIntent()
 const voiceIntent = ref<VoiceIntent | null>(null);
 const confirmOpen = ref(false);
 const authRequiredError = ref<string | null>(null);
+const lastMeal = ref<MealType>(defaultMealByHour(new Date().getHours()));
 
 const isListening = computed(() => state.value === 'listening');
 const isBusy = computed(() => isListening.value || isParsing.value);
@@ -55,14 +62,14 @@ const onClick = async () => {
 
   if (!isLoggedIn.value) {
     authRequiredError.value = AUTH_REQUIRED_MESSAGE;
-    // userStore.openAuthModal();
+    userStore.openAuthModal();
     return;
   }
 
-  const transcript = await listen();
-  if (!transcript) return;
+  const transcripts = await listen();
+  if (!transcripts?.length) return;
 
-  const intent = await parse(transcript);
+  const intent = await parse(transcripts, lastMeal.value);
   if (!intent) {
     if (parseError.value === SESSION_EXPIRED_MESSAGE) {
       userStore.openAuthModal();
@@ -79,6 +86,7 @@ watch(confirmOpen, (open) => {
 });
 
 const onConfirm = (product: IProduct, weight: number, meal: MealType) => {
+  lastMeal.value = meal;
   diaryStore.addEntry(product, weight, meal);
   voiceIntent.value = null;
 };
@@ -170,10 +178,6 @@ const onConfirm = (product: IProduct, weight: number, meal: MealType) => {
   animation: mic-pulse 1.2s ease-in-out infinite;
 }
 
-/* .voice-btn--parsing {
-  background-color: rgb(var(--color-darkgreen));
-}
- */
 .voice-btn--error {
   background-color: rgb(var(--bg-warm));
   color: rgb(var(--color-red));
