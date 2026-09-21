@@ -66,7 +66,7 @@
 `client/` и `server/` — git-субмодули ([food-tracker-client](https://github.com/amitrofanova/food-tracker-client), [food-tracker-server](https://github.com/amitrofanova/food-tracker-server)).
 
 ```
-food-tracker-deploy/
+food-tracker/
 ├── client/                     # Vue 3 SPA
 │   └── src/
 │       ├── app/                # Инициализация, роутер, стили
@@ -116,11 +116,10 @@ docker compose up --build
 Сервер (Node 22, обязательны `DATABASE_URL` и `JWT_SECRET`):
 
 ```bash
-cd server
-npm install
-npx prisma generate
-npx prisma migrate deploy
-npm run dev
+yarn
+yarn workspace server prisma generate
+yarn workspace server prisma migrate deploy
+yarn dev:server
 ```
 
 Клиент (Yarn):

@@ -2,6 +2,14 @@
 **/dist
 server/src/generated
 **/*.log
-.env*
-android/
-ios/
+.env
+.env.*
+!.env.example
+.git
+.cursor
+docs
+client/android
+client/ios
+**/.DS_Store
+*.md
+!client/README.md

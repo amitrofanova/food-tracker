@@ -1,49 +1,51 @@
-# ---- Stage 1: Build Vue client ----
-FROM node:22-alpine AS client-builder
+# ---- Stage 1: install monorepo deps (shared cache) ----
+FROM node:22-alpine AS deps
 
-RUN apk add --no-cache git
+WORKDIR /app
 
-WORKDIR /client
+COPY package.json yarn.lock ./
+COPY client/package.json ./client/
+COPY server/package.json ./server/
 
-RUN git clone https://github.com/amitrofanova/food-tracker-client.git .
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
-# Use yarn because the client project uses yarn
-RUN yarn install
-RUN yarn build
+# ---- Stage 2: Build Vue client ----
+FROM deps AS client-builder
 
-# ---- Stage 2: Build server ----
-FROM node:22-alpine AS server-builder
+COPY client ./client
+RUN yarn workspace food-tracker-client build-only
 
-RUN apk add --no-cache git
+# ---- Stage 3: Build server ----
+FROM deps AS server-builder
 
-WORKDIR /server
-
-RUN git clone https://github.com/amitrofanova/food-tracker-server.git .
-
-# prisma generate (part of npm run build) needs DATABASE_URL to parse prisma.config.ts
-# A dummy value is fine here — no real DB connection is made during code generation
+# prisma generate needs DATABASE_URL to parse prisma.config.ts
+# A dummy value is fine — no real DB connection during generation
 ENV DATABASE_URL=postgresql://dummy:dummy@localhost:5433/dummy
 
-RUN npm install
-# Generates Prisma client into src/generated/prisma, then compiles TypeScript to dist/
-RUN npm run build
+COPY server ./server
+RUN yarn workspace server build
 
-# ---- Stage 3: Production runtime ----
+# ---- Stage 4: Production runtime ----
 FROM node:22-alpine
 
 WORKDIR /app
 
-COPY --from=server-builder /server/package*.json ./
-RUN npm install --omit=dev
+COPY package.json yarn.lock ./
+COPY client/package.json ./client/
+COPY server/package.json ./server/
 
-# Compiled server
-COPY --from=server-builder /server/dist ./dist
+RUN yarn install --production --frozen-lockfile --network-timeout 600000 \
+  && yarn cache clean
+
+# Compiled server (dist/server.js expects ../public)
+COPY --from=server-builder /app/server/dist ./dist
 
 # Built Vue SPA — Fastify serves this as static files
-COPY --from=client-builder /client/dist ./public
+COPY --from=client-builder /app/client/dist ./public
 
 # Prisma schema and migrations (needed for `prisma migrate deploy`)
-COPY --from=server-builder /server/prisma ./prisma
+COPY --from=server-builder /app/server/prisma ./prisma
+COPY --from=server-builder /app/server/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3001
 

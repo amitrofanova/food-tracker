@@ -63,10 +63,10 @@ Client and server both use Vitest.
 
 ## Project structure
 
-`client/` and `server/` are git submodules ([food-tracker-client](https://github.com/amitrofanova/food-tracker-client), [food-tracker-server](https://github.com/amitrofanova/food-tracker-server)).
+`client/` and `server/` live in this monorepo (Yarn workspaces).
 
 ```
-food-tracker-deploy/
+food-tracker/
 ├── client/                     # Vue 3 SPA
 │   └── src/
 │       ├── app/                # Bootstrap, router, styles
@@ -90,14 +90,11 @@ food-tracker-deploy/
 
 ## Local development
 
-Clone with submodules:
-
 ```bash
-git clone --recurse-submodules git@github.com:amitrofanova/food-tracker-deploy.git
-cd food-tracker-deploy
+git clone git@github.com:amitrofanova/food-tracker.git
+cd food-tracker
+yarn
 ```
-
-If the repo is already cloned: `git submodule update --init --recursive`.
 
 ### Docker Compose
 
@@ -116,24 +113,22 @@ Voice parse needs `OPENROUTER_API_KEY` in the environment (Compose passes it int
 Server (Node 22, `DATABASE_URL` and `JWT_SECRET` required):
 
 ```bash
-cd server
-npm install
-npx prisma generate
-npx prisma migrate deploy
-npm run dev
+yarn
+yarn workspace server prisma generate
+yarn workspace server prisma migrate deploy
+yarn dev:server
 ```
 
-Client (Yarn):
+Client:
 
 ```bash
-cd client
-yarn
-yarn dev
+yarn dev:client
+# or: yarn workspace food-tracker-client dev
 ```
 
 Vite proxies `/api` to `http://localhost:3001` (or `API_PROXY_TARGET`).
 
-Tests: `yarn test` in `client/`, `npm test` in `server/`.
+Tests: `yarn test` (both workspaces), or `yarn test:client` / `yarn test:server`.
 
 ## Environment (production)
 
@@ -153,7 +148,7 @@ Copy `.env.example` to `.env`. Compose builds `DATABASE_URL` from `POSTGRES_*` �
 
 Production is one Docker host: `docker-compose.prod.yml` builds from `Dockerfile` and starts the app next to Postgres. Postgres is not published; the app binds to `127.0.0.1:3001`.
 
-The production **Dockerfile clones** client and server from GitHub at build time (current `main` of those repos), not the local submodule working trees.
+The production **Dockerfile** builds from the repository context (`COPY client` / `COPY server`), so the image matches the git commit you deploy.
 
 ```bash
 cp .env.example .env   # POSTGRES_PASSWORD, JWT_SECRET, APP_ORIGIN
