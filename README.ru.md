@@ -63,7 +63,7 @@
 
 ## Структура проекта
 
-`client/` и `server/` — git-субмодули ([food-tracker-client](https://github.com/amitrofanova/food-tracker-client), [food-tracker-server](https://github.com/amitrofanova/food-tracker-server)).
+`client/` и `server/` лежат в этом монорепозитории (Yarn workspaces).
 
 ```
 food-tracker/
@@ -82,7 +82,7 @@ food-tracker/
 │   │   ├── middleware/         # JWT из cookie или Bearer
 │   │   └── lib/                # Prisma, cookie/токены, схемы Zod
 │   └── prisma/
-├── Dockerfile                  # Продакшн-образ (клонирует client и server с GitHub)
+├── Dockerfile                  # Продакшн-образ (COPY client / COPY server)
 ├── docker-compose.yml          # Локальная разработка с hot reload
 ├── docker-compose.prod.yml     # Приложение + Postgres на одном хосте
 └── .env.example
@@ -90,14 +90,11 @@ food-tracker/
 
 ## Локальная разработка
 
-Клонировать вместе с субмодулями:
-
 ```bash
-git clone --recurse-submodules git@github.com:amitrofanova/food-tracker-deploy.git
-cd food-tracker-deploy
+git clone git@github.com:amitrofanova/food-tracker.git
+cd food-tracker
+yarn
 ```
-
-Если репозиторий уже скачан: `git submodule update --init --recursive`.
 
 ### Docker Compose
 
@@ -122,17 +119,16 @@ yarn workspace server prisma migrate deploy
 yarn dev:server
 ```
 
-Клиент (Yarn):
+Клиент:
 
 ```bash
-cd client
-yarn
-yarn dev
+yarn dev:client
+# или: yarn workspace food-tracker-client dev
 ```
 
 Vite проксирует `/api` на `http://localhost:3001` (или на `API_PROXY_TARGET`).
 
-Тесты: `yarn test` в `client/`, `npm test` в `server/`.
+Тесты: `yarn test` (оба workspace), или `yarn test:client` / `yarn test:server`.
 
 ## Переменные окружения (продакшн)
 
@@ -152,7 +148,7 @@ Vite проксирует `/api` на `http://localhost:3001` (или на `API_
 
 Продакшн — один Docker-хост: `docker-compose.prod.yml` собирает образ из `Dockerfile` и поднимает приложение рядом с Postgres. Postgres в интернет не публикуется; приложение слушает `127.0.0.1:3001`.
 
-Продакшн-**Dockerfile клонирует** клиент и сервер с GitHub в момент сборки (текущий `main` этих репозиториев), а не локальные рабочие копии субмодулей.
+Продакшн-**Dockerfile** собирает образ из контекста репозитория (`COPY client` / `COPY server`), поэтому образ соответствует тому git-коммиту, который вы деплоите.
 
 ```bash
 cp .env.example .env   # POSTGRES_PASSWORD, JWT_SECRET, APP_ORIGIN
