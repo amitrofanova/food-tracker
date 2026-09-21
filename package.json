@@ -1,0 +1,20 @@
+{
+  "name": "food-tracker",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev:client": "yarn workspace food-tracker-client dev",
+    "dev:server": "yarn workspace server dev",
+    "build:client": "yarn workspace food-tracker-client build",
+    "build:server": "yarn workspace server build",
+    "test": "yarn workspaces run test",
+    "test:client": "yarn workspace food-tracker-client test",
+    "test:server": "yarn workspace server test"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}
