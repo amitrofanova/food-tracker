@@ -1,0 +1,10 @@
+---
+globs: {client,server}/src/**/*.{ts,vue}
+---
+
+# Nutrition units
+
+IProduct / CustomProduct / Recipe.calories|protein|fat|carbs = на 100 г.
+Порция = macros100g * weight / 100 только на чтении или в отдельном поле portion*.
+Офлайн IndexedDB для записей дневника хранит те же per-100g, что и API, либо явно два поля.
+Не слать в POST /api/entries калории порции в полях calories/protein/fat/carbs.

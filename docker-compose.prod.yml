@@ -1,0 +1,55 @@
+# Production: Fastify + Vue SPA and PostgreSQL on the same host.
+# Postgres is not published to the internet — only the app container can reach it.
+#
+#   cp .env.example .env   # POSTGRES_PASSWORD, JWT_SECRET, APP_ORIGIN
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-foodtracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-food_tracker}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    mem_limit: 384m
+    shm_size: 64m
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - max_connections=50
+      - -c
+      - effective_cache_size=256MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3001:3001"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodtracker}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-food_tracker}
+      NODE_OPTIONS: "--max-old-space-size=512 --dns-result-order=ipv4first --no-network-family-autoselection"
+    mem_limit: 768m
+
+volumes:
+  postgres_data:

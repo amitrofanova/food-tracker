@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Dependencies & build
+node_modules/
+**/dist/
+server/src/generated/
+*.log
+.DS_Store
+
+# Client tooling caches
+client/.eslintcache
+client/node_modules/
+
+# Capacitor native build artifacts (source android/ios stay in git)
+client/android/.gradle/
+client/android/app/build/
+client/android/build/
+client/ios/App/Pods/
+client/ios/DerivedData/

@@ -1,0 +1,13 @@
+---
+globs: client/src/**/*.{ts,vue}
+---
+
+# FSD
+Слои: app → pages → widgets → features → entities → shared.
+Импорт только вниз. Слайсы одного слоя не импортируют друг друга.
+Снаружи слайса — только index.ts public API.
+shared не импортирует entities/features/widgets/pages.
+Виджеты не импортируют виджеты.
+Логин/регистрация — feature auth, не UI entity user.
+Типы домена для DB/API либо в entities/*/api, либо нейтральные DTO в shared без импорта entities.
+Новый код не обходит public API глубокими путями.

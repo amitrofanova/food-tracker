@@ -1,0 +1,11 @@
+---
+globs: server/src/**/*.ts
+---
+
+# API security
+Zod на POST/PATCH/PUT. Ошибки валидации — 400 с сообщением из схемы.
+upsert/update/delete по id: сначала find, сверка userId, иначе 404 (не палить чужое).
+Не обновлять чужую строку через upsert where: { id }.
+Refresh/access в JSON-теле — только native (заголовок/флаг). Веб — только httpOnly cookies.
+Не логировать token, password, полный refresh.
+JWT_SECRET обязателен, без фолбэка в коде.

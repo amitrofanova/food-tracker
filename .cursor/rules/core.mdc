@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+
+# Core
+Рефакторинг существующего приложения, не rewrite и не смена стека
+(Vue 3, Pinia, Fastify, Prisma, Dexie, Capacitor).
+Один Agent-чат = один блок из docs/refactoring-roadmap.md.
+Менять только файлы из промпта блока. Не «заодно» править соседние темы
+(FSD, Docker, UI), если это не этот блок.
