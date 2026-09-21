@@ -82,7 +82,7 @@ food-tracker/
 │   │   ├── middleware/         # JWT from cookie or Bearer
 │   │   └── lib/                # Prisma, cookies/tokens, Zod schemas
 │   └── prisma/
-├── Dockerfile                  # Production image (clones client and server from GitHub)
+├── Dockerfile                  # Production image (COPY client / COPY server)
 ├── docker-compose.yml          # Local dev with hot reload
 ├── docker-compose.prod.yml     # App + Postgres on one host
 └── .env.example
