@@ -1,4 +1,4 @@
-import type { MealType } from '@/shared/config';
+import type { MealType } from "@/shared/config";
 
 export type NutritionMacrosDto = {
   calories: number;

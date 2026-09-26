@@ -1,4 +1,4 @@
-import { useBreakpoints as useVueUseBreakpoints } from '@vueuse/core';
+import { useBreakpoints as useVueUseBreakpoints } from "@vueuse/core";
 
 export const BREAKPOINTS = {
   mobile: 0,
@@ -14,9 +14,9 @@ export function useBreakpoints() {
 
   return {
     ...breakpoints,
-    isMobile: breakpoints.smaller('tablet'),
-    isTablet: breakpoints.between('tablet', 'desktop'),
-    isDesktop: breakpoints.greaterOrEqual('desktop'),
+    isMobile: breakpoints.smaller("tablet"),
+    isTablet: breakpoints.between("tablet", "desktop"),
+    isDesktop: breakpoints.greaterOrEqual("desktop"),
 
     current: breakpoints.active(),
   };

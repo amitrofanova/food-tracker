@@ -1,5 +1,5 @@
-import { useResizeObserver } from '@vueuse/core';
-import type { MaybeRefOrGetter } from 'vue';
+import { useResizeObserver } from "@vueuse/core";
+import type { MaybeRefOrGetter } from "vue";
 
 /**
  * Fetch the next page when the user is near the bottom of `containerRef`,

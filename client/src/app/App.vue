@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { AppHeader } from '@/widgets/header';
-import { VoiceButton } from '@/widgets/voice-diary-entry';
-import { DefaultLayout } from '@/shared/ui/layout';
-import { useUserStore } from '@/entities/user';
-import { useDiaryStore } from '@/entities/diary-entry';
-import { useRoute } from 'vue-router';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { SyncConfirmModal } from '@/features/sync-local-data';
-import AppleSpinner from './ui/AppleSpinner.vue';
+import { storeToRefs } from "pinia";
+import { AppHeader } from "@/widgets/header";
+import { VoiceButton } from "@/widgets/voice-diary-entry";
+import { DefaultLayout } from "@/shared/ui/layout";
+import { useUserStore } from "@/entities/user";
+import { useDiaryStore } from "@/entities/diary-entry";
+import { useRoute } from "vue-router";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
+import { SyncConfirmModal } from "@/features/sync-local-data";
+import AppleSpinner from "./ui/AppleSpinner.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 const diaryStore = useDiaryStore();
@@ -45,7 +45,7 @@ watch(isLoggedIn, (loggedIn: boolean) => {
 </template>
 
 <style>
-@import 'styles/index.css';
+@import "styles/index.css";
 
 .loading-screen {
   height: 100vh;

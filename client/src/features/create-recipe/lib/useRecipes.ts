@@ -1,9 +1,9 @@
-import { db } from '@/shared/db';
-import type { IRecipe } from '@/entities/recipe';
-import { fetchRecipes, upsertRecipe, deleteRecipeApi } from '@/shared/api';
-import { useUserStore } from '@/entities/user';
-import { useSyncedEntity } from '@/shared/lib/useSyncedEntity';
-import { toRef } from 'vue';
+import { db } from "@/shared/db";
+import type { IRecipe } from "@/entities/recipe";
+import { fetchRecipes, upsertRecipe, deleteRecipeApi } from "@/shared/api";
+import { useUserStore } from "@/entities/user";
+import { useSyncedEntity } from "@/shared/lib/useSyncedEntity";
+import { toRef } from "vue";
 
 export function useRecipes() {
   const userStore = useUserStore();
@@ -25,7 +25,7 @@ export function useRecipes() {
       putLocal: (item) => db.putRecipe(item),
       deleteLocal: (id) => db.deleteRecipe(id),
     },
-    toRef(userStore, 'syncVersion'),
+    toRef(userStore, "syncVersion"),
   );
 
   return { recipes, isLoading, save, remove, loadAll };

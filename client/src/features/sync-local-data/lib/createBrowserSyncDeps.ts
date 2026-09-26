@@ -1,15 +1,15 @@
-import { db } from '@/shared/db';
-import { toEntryCreatePayload, type IDiaryEntry } from '@/entities/diary-entry';
-import type { IProduct } from '@/entities/product';
-import type { IRecipe } from '@/entities/recipe';
+import { db } from "@/shared/db";
+import { toEntryCreatePayload, type IDiaryEntry } from "@/entities/diary-entry";
+import type { IProduct } from "@/entities/product";
+import type { IRecipe } from "@/entities/recipe";
 import {
   fetchCustomProducts,
   upsertCustomProduct,
   fetchRecipes,
   upsertRecipe,
   saveDiaryEntry,
-} from '@/shared/api';
-import { createLocalDataSyncer, type SyncLocalDataDeps } from './syncLocalData';
+} from "@/shared/api";
+import { createLocalDataSyncer, type SyncLocalDataDeps } from "./syncLocalData";
 
 export function createBrowserSyncDeps(): SyncLocalDataDeps<IProduct, IRecipe, IDiaryEntry> {
   return {

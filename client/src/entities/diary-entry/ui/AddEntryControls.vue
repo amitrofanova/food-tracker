@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
+import { Icon } from "@/shared/ui/icon";
 
 const props = defineProps<{
   disabled: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   defaultWeight?: number;
 }>();
 
 const emit = defineEmits<{
-  (e: 'add-entry', weight: number): void;
+  (e: "add-entry", weight: number): void;
 }>();
 
 const weight = ref<number | undefined>(props.defaultWeight);
@@ -24,7 +24,7 @@ watch(
 const handleAdd = () => {
   if (!weight.value || weight.value <= 0) return;
   isAdded.value = true;
-  emit('add-entry', weight.value);
+  emit("add-entry", weight.value);
   setTimeout(() => {
     isAdded.value = false;
     weight.value = undefined;

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useQueryClient } from '@tanstack/vue-query';
-import { AppModal } from '@/shared/ui/modal';
-import { AppButton } from '@/shared/ui/button';
-import { useUserStore } from '@/entities/user';
-import { useDiaryStore } from '@/entities/diary-entry';
-import { createBrowserLocalDataSyncer } from '../lib/createBrowserSyncDeps';
-import { formatPendingLocalSummary, type PendingLocalCounts } from '../lib/syncLocalData';
+import { useQueryClient } from "@tanstack/vue-query";
+import { AppModal } from "@/shared/ui/modal";
+import { AppButton } from "@/shared/ui/button";
+import { useUserStore } from "@/entities/user";
+import { useDiaryStore } from "@/entities/diary-entry";
+import { createBrowserLocalDataSyncer } from "../lib/createBrowserSyncDeps";
+import { formatPendingLocalSummary, type PendingLocalCounts } from "../lib/syncLocalData";
 
 const userStore = useUserStore();
 const diaryStore = useDiaryStore();
@@ -13,7 +13,7 @@ const queryClient = useQueryClient();
 const syncer = createBrowserLocalDataSyncer();
 
 const pendingCounts = ref<PendingLocalCounts>({ entries: 0, products: 0, recipes: 0 });
-const activeAction = ref<'sync' | 'discard' | null>(null);
+const activeAction = ref<"sync" | "discard" | null>(null);
 const syncError = ref<string | null>(null);
 
 const isBusy = computed(() => activeAction.value !== null);
@@ -32,25 +32,25 @@ watch(
 );
 
 async function onConfirmSync() {
-  activeAction.value = 'sync';
+  activeAction.value = "sync";
   syncError.value = null;
   try {
     await syncer.confirmSync();
     userStore.hasPendingSync = false;
     userStore.notifySynced();
-    queryClient.invalidateQueries({ queryKey: ['custom-products'] });
-    queryClient.invalidateQueries({ queryKey: ['recipes-search'] });
+    queryClient.invalidateQueries({ queryKey: ["custom-products"] });
+    queryClient.invalidateQueries({ queryKey: ["recipes-search"] });
     await diaryStore.loadEntries();
   } catch (err) {
     syncError.value =
-      err instanceof Error ? err.message : 'Не удалось синхронизировать локальные данные';
+      err instanceof Error ? err.message : "Не удалось синхронизировать локальные данные";
   } finally {
     activeAction.value = null;
   }
 }
 
 async function onDiscardLocal() {
-  activeAction.value = 'discard';
+  activeAction.value = "discard";
   syncError.value = null;
   try {
     await syncer.discardLocal();
@@ -58,7 +58,7 @@ async function onDiscardLocal() {
     userStore.notifySynced();
     await diaryStore.loadEntries();
   } catch (err) {
-    syncError.value = err instanceof Error ? err.message : 'Не удалось удалить локальные данные';
+    syncError.value = err instanceof Error ? err.message : "Не удалось удалить локальные данные";
   } finally {
     activeAction.value = null;
   }
@@ -86,7 +86,7 @@ async function onDiscardLocal() {
         Не переносить
       </AppButton>
       <AppButton :disabled="isBusy" @click="onConfirmSync">
-        {{ activeAction === 'sync' ? 'Синхронизация…' : 'Да, синхронизировать' }}
+        {{ activeAction === "sync" ? "Синхронизация…" : "Да, синхронизировать" }}
       </AppButton>
     </div>
   </AppModal>

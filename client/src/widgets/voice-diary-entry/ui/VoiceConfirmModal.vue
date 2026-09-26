@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config';
-import type { VoiceIntent } from '@/shared/lib/voice';
-import { ProductSearch } from '@/features/product-search';
-import { AppModal } from '@/shared/ui/modal';
-import { AppInput } from '@/shared/ui/input';
-import { MealSelect } from '@/shared/ui/select';
+import type { IProduct } from "@/entities/product";
+import type { MealType } from "@/shared/config";
+import type { VoiceIntent } from "@/shared/lib/voice";
+import { ProductSearch } from "@/features/product-search";
+import { AppModal } from "@/shared/ui/modal";
+import { AppInput } from "@/shared/ui/input";
+import { MealSelect } from "@/shared/ui/select";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -13,13 +13,13 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'confirm', product: IProduct, weight: number, meal: MealType): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "confirm", product: IProduct, weight: number, meal: MealType): void;
 }>();
 
 const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null);
 const weight = ref(100);
-const meal = ref<MealType>('breakfast');
+const meal = ref<MealType>("breakfast");
 const preferSearch = ref(false);
 
 const isDirectAdd = computed(() => (props.intent?.calories ?? null) !== null);
@@ -29,9 +29,7 @@ const isCatalogMatch = computed(
 const isSearch = computed(() => !isDirectAdd.value && !isCatalogMatch.value);
 const isTotalCalories = computed(() => isDirectAdd.value && props.intent?.weight === null);
 
-const searchQuery = computed(
-  () => props.intent?.searchQuery || props.intent?.productName || '',
-);
+const searchQuery = computed(() => props.intent?.searchQuery || props.intent?.productName || "");
 
 watch(
   () => props.intent,
@@ -45,22 +43,19 @@ watch(
   { immediate: true },
 );
 
-watch(
-  [() => props.modelValue, isSearch, searchQuery],
-  ([open, search, query]) => {
-    if (!open) {
-      productSearchRef.value?.clearSearch();
-      return;
-    }
-    if (search && query) {
-      nextTick(() => productSearchRef.value?.setQuery(query));
-    }
-  },
-);
+watch([() => props.modelValue, isSearch, searchQuery], ([open, search, query]) => {
+  if (!open) {
+    productSearchRef.value?.clearSearch();
+    return;
+  }
+  if (search && query) {
+    nextTick(() => productSearchRef.value?.setQuery(query));
+  }
+});
 
 const onProductSelect = (product: IProduct, rowWeight: number) => {
-  emit('confirm', product, rowWeight, meal.value);
-  emit('update:modelValue', false);
+  emit("confirm", product, rowWeight, meal.value);
+  emit("update:modelValue", false);
 };
 
 const onDirectConfirm = () => {
@@ -75,15 +70,15 @@ const onDirectConfirm = () => {
     fat: Math.round((intent.fat ?? 0) * factor),
     carbs: Math.round((intent.carbs ?? 0) * factor),
   };
-  emit('confirm', product, w, meal.value);
-  emit('update:modelValue', false);
+  emit("confirm", product, w, meal.value);
+  emit("update:modelValue", false);
 };
 
 const onCatalogConfirm = () => {
   const product = props.intent?.matchedProduct;
   if (!product) return;
-  emit('confirm', product, Math.max(1, weight.value), meal.value);
-  emit('update:modelValue', false);
+  emit("confirm", product, Math.max(1, weight.value), meal.value);
+  emit("update:modelValue", false);
 };
 </script>
 
@@ -119,7 +114,7 @@ const onCatalogConfirm = () => {
         </ul>
         <p class="vc-direct__hint">
           {{
-            isTotalCalories ? 'Итого для порции' : `Значения указаны для ${intent?.weight}\u00a0г`
+            isTotalCalories ? "Итого для порции" : `Значения указаны для ${intent?.weight}\u00a0г`
           }}
         </p>
       </div>
@@ -133,13 +128,21 @@ const onCatalogConfirm = () => {
           <li>
             <strong>{{ intent?.matchedProduct?.calories }}</strong> ккал / 100 г
           </li>
-          <li>Белки: <strong>{{ intent?.matchedProduct?.protein }}</strong> г</li>
-          <li>Жиры: <strong>{{ intent?.matchedProduct?.fat }}</strong> г</li>
-          <li>Углеводы: <strong>{{ intent?.matchedProduct?.carbs }}</strong> г</li>
+          <li>
+            Белки: <strong>{{ intent?.matchedProduct?.protein }}</strong> г
+          </li>
+          <li>
+            Жиры: <strong>{{ intent?.matchedProduct?.fat }}</strong> г
+          </li>
+          <li>
+            Углеводы: <strong>{{ intent?.matchedProduct?.carbs }}</strong> г
+          </li>
         </ul>
       </div>
       <button class="vc-confirm-btn" @click="onCatalogConfirm">Добавить</button>
-      <button class="vc-other-btn" type="button" @click="preferSearch = true">Другой продукт</button>
+      <button class="vc-other-btn" type="button" @click="preferSearch = true">
+        Другой продукт
+      </button>
     </template>
 
     <template v-else>

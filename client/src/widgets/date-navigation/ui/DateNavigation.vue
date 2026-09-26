@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useDiaryStore } from '@/entities/diary-entry';
-import { storeToRefs } from 'pinia';
-import { Icon } from '@/shared/ui/icon';
-import { AppButton, ButtonIcon } from '@/shared/ui/button';
+import { useDiaryStore } from "@/entities/diary-entry";
+import { storeToRefs } from "pinia";
+import { Icon } from "@/shared/ui/icon";
+import { AppButton, ButtonIcon } from "@/shared/ui/button";
 
 const diaryStore = useDiaryStore();
 const { selectedDate } = storeToRefs(diaryStore);
 
 const formattedDate = computed(() => {
-  const [year, month, day] = selectedDate.value.split('-');
+  const [year, month, day] = selectedDate.value.split("-");
   return `${day}.${month}.${year}`;
 });
 

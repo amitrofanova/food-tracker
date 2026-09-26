@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CalorieCalculator } from '@/features/calorie-budget';
-import { PageHeader } from '@/shared/ui/page-header';
+import { CalorieCalculator } from "@/features/calorie-budget";
+import { PageHeader } from "@/shared/ui/page-header";
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-import type { ActivityLevel, Gender } from './types';
+import type { ActivityLevel, Gender } from "./types";
 
 export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
   sedentary: 1.2, // Little or no exercise

@@ -1,5 +1,5 @@
-import { http } from './http';
-import type { MealType } from '@/shared/config';
+import { http } from "./http";
+import type { MealType } from "@/shared/config";
 
 export interface EntryCreatePayload {
   date: string;
@@ -28,12 +28,12 @@ export type ApiDiaryEntry = {
 
 export async function fetchDiaryEntries(date?: string): Promise<ApiDiaryEntry[]> {
   const params = date ? { date } : {};
-  const { data } = await http.get<ApiDiaryEntry[]>('/entries', { params });
+  const { data } = await http.get<ApiDiaryEntry[]>("/entries", { params });
   return data;
 }
 
 export async function saveDiaryEntry(entry: EntryCreatePayload) {
-  return http.post('/entries', entry);
+  return http.post("/entries", entry);
 }
 
 export async function updateDiaryEntry(

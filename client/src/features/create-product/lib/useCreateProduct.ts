@@ -1,8 +1,8 @@
-import { db } from '@/shared/db';
-import type { IProduct } from '@/entities/product';
-import { upsertCustomProduct } from '@/shared/api';
-import { isAuthenticated } from '@/shared/lib/auth';
-import { extractErrorMessage } from '@/shared/lib/error';
+import { db } from "@/shared/db";
+import type { IProduct } from "@/entities/product";
+import { upsertCustomProduct } from "@/shared/api";
+import { isAuthenticated } from "@/shared/lib/auth";
+import { extractErrorMessage } from "@/shared/lib/error";
 
 export function useCreateProduct() {
   const error = ref<string | null>(null);
@@ -20,8 +20,8 @@ export function useCreateProduct() {
         return formData;
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Ошибка создания продукта');
-      console.error('Failed to create product:', err);
+      error.value = extractErrorMessage(err, "Ошибка создания продукта");
+      console.error("Failed to create product:", err);
       throw err;
     }
   };

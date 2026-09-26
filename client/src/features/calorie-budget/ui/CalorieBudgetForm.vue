@@ -1,21 +1,21 @@
 <script lang="ts" setup>
-import { useUserStore } from '@/entities/user';  
-import { AppButton } from '@/shared/ui/button';
-import { AppInput } from '@/shared/ui/input';
-import { storeToRefs } from 'pinia';
-import { RouterLink } from 'vue-router';
+import { useUserStore } from "@/entities/user";
+import { AppButton } from "@/shared/ui/button";
+import { AppInput } from "@/shared/ui/input";
+import { storeToRefs } from "pinia";
+import { RouterLink } from "vue-router";
 
 const userStore = useUserStore();
-const { user } = storeToRefs(userStore)
+const { user } = storeToRefs(userStore);
 const calorieBudget = ref(user.value?.calorieBudget);
 
 const emit = defineEmits<{
-  (e: 'close'): void;
+  (e: "close"): void;
 }>();
 
 const saveBudget = async () => {
-    await userStore.setCalorieBudget(Number(calorieBudget.value) || 0);
-    emit('close');
+  await userStore.setCalorieBudget(Number(calorieBudget.value) || 0);
+  emit("close");
 };
 </script>
 
@@ -43,6 +43,6 @@ h1 {
   display: block;
   margin-top: 12px;
   text-align: center;
-  color: rgb(var(--color-darkgreen))
+  color: rgb(var(--color-darkgreen));
 }
-</style
+</style>

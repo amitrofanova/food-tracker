@@ -1,5 +1,5 @@
-import { onMounted, ref, watch, type Ref } from 'vue';
-import { isAuthenticated } from './auth';
+import { onMounted, ref, watch, type Ref } from "vue";
+import { isAuthenticated } from "./auth";
 
 interface SyncedEntityOptions<T extends { id: string }> {
   fetchServer: () => Promise<T[]>;
@@ -25,7 +25,7 @@ export function mergeServerItemsPreservingLocalOnly<T extends { id: string }>(
 export async function reconcileSyncedCollection<T extends { id: string }>(
   options: Pick<
     SyncedEntityOptions<T>,
-    'fetchServer' | 'getAllLocal' | 'clearLocal' | 'bulkPutLocal'
+    "fetchServer" | "getAllLocal" | "clearLocal" | "bulkPutLocal"
   >,
 ): Promise<T[]> {
   const serverItems = await options.fetchServer();

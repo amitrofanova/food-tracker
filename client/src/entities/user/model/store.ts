@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
+import { defineStore } from "pinia";
+import axios from "axios";
 import {
   registerUser,
   loginUser,
@@ -10,18 +10,18 @@ import {
   fetchRecipes,
   type AuthSessionResponse,
   type AuthUser,
-} from '@/shared/api';
-import { db } from '@/shared/db';
-import type { IUser } from './types';
+} from "@/shared/api";
+import { db } from "@/shared/db";
+import type { IUser } from "./types";
 import {
   clearNativeTokens,
   isNativePlatform,
   setNativeTokens,
   setSessionHint,
   setUnauthorizedHandler,
-} from '@/shared/lib/auth';
+} from "@/shared/lib/auth";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
   const hasPendingSync = ref(false);
@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', () => {
 
   function toUser(data: AuthUser): IUser {
     const next: IUser = { id: data.id, email: data.email };
-    if (typeof data.calorieBudget === 'number') {
+    if (typeof data.calorieBudget === "number") {
       next.calorieBudget = data.calorieBudget;
     }
     return next;
@@ -78,7 +78,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function init() {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     try {
       const { data } = await getCurrentUser();
       user.value = toUser(data);
@@ -98,8 +98,8 @@ export const useUserStore = defineStore('user', () => {
       await checkLocalData();
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Ошибка входа')
-        : 'Ошибка входа';
+        ? (err.response?.data?.error ?? "Ошибка входа")
+        : "Ошибка входа";
     }
   }
 
@@ -110,8 +110,8 @@ export const useUserStore = defineStore('user', () => {
       await login(email, password);
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
-        ? (err.response?.data?.error ?? 'Ошибка регистрации')
-        : 'Ошибка регистрации';
+        ? (err.response?.data?.error ?? "Ошибка регистрации")
+        : "Ошибка регистрации";
     }
   }
 

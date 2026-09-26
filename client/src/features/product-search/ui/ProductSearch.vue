@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import { useProductSearch } from '../lib/useProductSearch';
-import { useLoadMoreOnScroll } from '../lib/useLoadMoreOnScroll';
-import { useBarcodeScanner } from '../lib/useBarcodeScanner';
-import { AppInput } from '@/shared/ui/input';
-import ProductSearchItem from './ProductSearchItem.vue';
-import { ButtonIcon } from '@/shared/ui/button';
+import type { IProduct } from "@/entities/product";
+import { useProductSearch } from "../lib/useProductSearch";
+import { useLoadMoreOnScroll } from "../lib/useLoadMoreOnScroll";
+import { useBarcodeScanner } from "../lib/useBarcodeScanner";
+import { AppInput } from "@/shared/ui/input";
+import ProductSearchItem from "./ProductSearchItem.vue";
+import { ButtonIcon } from "@/shared/ui/button";
 
 const emit = defineEmits<{
-  (e: 'select', product: IProduct, weight: number): void;
+  (e: "select", product: IProduct, weight: number): void;
 }>();
 
 const props = defineProps<{ suggestedWeight?: number }>();
@@ -65,7 +65,7 @@ watch(searchQuery, () => {
 
 defineExpose({
   clearSearch: () => {
-    setSearchQuery('');
+    setSearchQuery("");
     barcodeProduct.value = null;
   },
   setQuery: (q: string) => {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { MealSelect } from '@/shared/ui/select';
-import type { MealType } from '@/shared/config';
-import type { IProduct } from '@/entities/product';
-import { AddEntryControls } from '@/entities/diary-entry';
+import { MealSelect } from "@/shared/ui/select";
+import type { MealType } from "@/shared/config";
+import type { IProduct } from "@/entities/product";
+import { AddEntryControls } from "@/entities/diary-entry";
 
 const props = defineProps<{
   disabled: boolean;
@@ -11,14 +11,14 @@ const props = defineProps<{
   defaultMeal?: MealType;
 }>();
 
-const emit = defineEmits<{ 'add-entry': [weight: number, mealType: MealType] }>();
+const emit = defineEmits<{ "add-entry": [weight: number, mealType: MealType] }>();
 
 const form = reactive<{ meal: MealType }>({
-  meal: props.defaultMeal ?? 'breakfast',
+  meal: props.defaultMeal ?? "breakfast",
 });
 
 const addEntry = (weight: number) => {
-  emit('add-entry', weight, form.meal);
+  emit("add-entry", weight, form.meal);
 };
 </script>
 

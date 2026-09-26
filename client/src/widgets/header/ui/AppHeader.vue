@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { useUserStore, UserMenu } from '@/entities/user';
-import { UserAuthModal } from '@/features/auth';
-import { CalorieBudgetBtn, CalorieBudgetForm } from '@/features/calorie-budget';
-import { AppModal } from '@/shared/ui/modal';
-import { AppButton } from '@/shared/ui/button';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { storeToRefs } from "pinia";
+import { useUserStore, UserMenu } from "@/entities/user";
+import { UserAuthModal } from "@/features/auth";
+import { CalorieBudgetBtn, CalorieBudgetForm } from "@/features/calorie-budget";
+import { AppModal } from "@/shared/ui/modal";
+import { AppButton } from "@/shared/ui/button";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
 const userStore = useUserStore();
 const { isLoggedIn, authModalOpen } = storeToRefs(userStore);

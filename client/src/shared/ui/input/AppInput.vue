@@ -7,28 +7,28 @@ const props = withDefaults(
     placeholder?: string;
     error?: string;
     disabled?: boolean;
-    size?: 'sm' | 'md' | 'lg';
+    size?: "sm" | "md" | "lg";
   }>(),
   {
-    label: '',
-    type: 'text',
-    placeholder: '',
-    error: '',
+    label: "",
+    type: "text",
+    placeholder: "",
+    error: "",
     disabled: false,
-    size: 'md',
+    size: "md",
   },
 );
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string | number): void;
-  (e: 'input'): void;
+  (e: "update:modelValue", value: string | number): void;
+  (e: "input"): void;
 }>();
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const value = props.type === 'number' ? Number(target.value) : target.value;
-  emit('update:modelValue', value);
-  emit('input');
+  const value = props.type === "number" ? Number(target.value) : target.value;
+  emit("update:modelValue", value);
+  emit("input");
 };
 </script>
 

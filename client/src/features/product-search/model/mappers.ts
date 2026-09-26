@@ -1,11 +1,11 @@
-import type { IProduct } from '@/entities/product';
+import type { IProduct } from "@/entities/product";
 
 export interface OpenFoodFactsProduct {
   code: string;
   product_name: string;
   generic_name: string;
   nutriments?: {
-    'energy-kcal_100g'?: number;
+    "energy-kcal_100g"?: number;
     energy_100g?: number;
     proteins_100g?: number;
     fat_100g?: number;
@@ -18,7 +18,7 @@ export function mapOpenFoodFactsToProduct(dto: OpenFoodFactsProduct): IProduct {
   return {
     id: dto.code,
     name: dto.generic_name || dto.product_name,
-    calories: Math.round(nutriments['energy-kcal_100g'] || 0),
+    calories: Math.round(nutriments["energy-kcal_100g"] || 0),
     protein: Math.round(nutriments.proteins_100g || 0),
     fat: Math.round(nutriments.fat_100g || 0),
     carbs: Math.round(nutriments.carbohydrates_100g || 0),

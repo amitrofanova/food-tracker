@@ -1,1 +1,1 @@
-export { default as MobileBottomMenu } from './MobileBottomMenu.vue';
+export { default as MobileBottomMenu } from "./MobileBottomMenu.vue";

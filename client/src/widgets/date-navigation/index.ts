@@ -1,1 +1,1 @@
-export { default as DateNavigation } from './ui/DateNavigation.vue';
+export { default as DateNavigation } from "./ui/DateNavigation.vue";

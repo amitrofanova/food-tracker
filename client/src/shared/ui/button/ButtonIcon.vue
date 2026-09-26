@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
+import { Icon } from "@/shared/ui/icon";
 
 defineProps<{
   name: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   color?: string;
 }>();
 </script>

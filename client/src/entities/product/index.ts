@@ -1,1 +1,1 @@
-export type { IProduct } from './model/types';
+export type { IProduct } from "./model/types";

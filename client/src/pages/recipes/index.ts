@@ -1,1 +1,1 @@
-export { default } from './ui/RecipesPage.vue';
+export { default } from "./ui/RecipesPage.vue";

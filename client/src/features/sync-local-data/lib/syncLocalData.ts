@@ -29,7 +29,7 @@ export class LocalDataSyncAborted extends Error {
 
   constructor(message: string, cause?: unknown) {
     super(message);
-    this.name = 'LocalDataSyncAborted';
+    this.name = "LocalDataSyncAborted";
     this.cause = cause;
   }
 }
@@ -50,27 +50,27 @@ export function formatPendingLocalSummary(counts: PendingLocalCounts): string {
   const parts: string[] = [];
   if (counts.entries > 0) {
     parts.push(
-      `${counts.entries} ${ruPlural(counts.entries, 'запись дневника', 'записи дневника', 'записей дневника')}`,
+      `${counts.entries} ${ruPlural(counts.entries, "запись дневника", "записи дневника", "записей дневника")}`,
     );
   }
   if (counts.products > 0) {
     parts.push(
-      `${counts.products} ${ruPlural(counts.products, 'продукт', 'продукта', 'продуктов')}`,
+      `${counts.products} ${ruPlural(counts.products, "продукт", "продукта", "продуктов")}`,
     );
   }
   if (counts.recipes > 0) {
-    parts.push(`${counts.recipes} ${ruPlural(counts.recipes, 'рецепт', 'рецепта', 'рецептов')}`);
+    parts.push(`${counts.recipes} ${ruPlural(counts.recipes, "рецепт", "рецепта", "рецептов")}`);
   }
-  return parts.join(', ');
+  return parts.join(", ");
 }
 
 export function messageFromSyncError(
   err: unknown,
-  fallback = 'Не удалось синхронизировать локальные данные',
+  fallback = "Не удалось синхронизировать локальные данные",
 ): string {
-  if (typeof err === 'object' && err !== null && 'response' in err) {
+  if (typeof err === "object" && err !== null && "response" in err) {
     const data = (err as { response?: { data?: { error?: unknown } } }).response?.data;
-    if (typeof data?.error === 'string' && data.error.trim()) {
+    if (typeof data?.error === "string" && data.error.trim()) {
       return data.error;
     }
   }

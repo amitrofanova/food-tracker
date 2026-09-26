@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { MEAL_TYPES, MEAL_LABELS, type MealType } from '@/shared/config';
-import AppSelect from './AppSelect.vue';
+import { MEAL_TYPES, MEAL_LABELS, type MealType } from "@/shared/config";
+import AppSelect from "./AppSelect.vue";
 
 withDefaults(
   defineProps<{
@@ -13,7 +13,7 @@ withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: MealType): void;
+  (e: "update:modelValue", value: MealType): void;
 }>();
 
 const options = MEAL_TYPES.map((type) => ({
@@ -25,7 +25,7 @@ const isMealType = (value: string): value is MealType => value in MEAL_LABELS;
 
 const handleUpdate = (value: string) => {
   if (isMealType(value)) {
-    emit('update:modelValue', value);
+    emit("update:modelValue", value);
   }
 };
 </script>

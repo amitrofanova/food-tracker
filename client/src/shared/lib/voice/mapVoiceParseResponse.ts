@@ -1,6 +1,6 @@
-import type { MealType } from '@/shared/config';
+import type { MealType } from "@/shared/config";
 
-export type VoiceIntentKind = 'add_entry' | 'unknown' | 'needs_clarification';
+export type VoiceIntentKind = "add_entry" | "unknown" | "needs_clarification";
 
 export interface VoiceMatchedProduct {
   id: string;
@@ -24,14 +24,14 @@ export interface VoiceIntent {
 }
 
 const MEAL_ALIASES: Record<string, MealType> = {
-  завтрак: 'breakfast',
-  breakfast: 'breakfast',
-  обед: 'lunch',
-  lunch: 'lunch',
-  ужин: 'dinner',
-  dinner: 'dinner',
-  перекус: 'snack',
-  snack: 'snack',
+  завтрак: "breakfast",
+  breakfast: "breakfast",
+  обед: "lunch",
+  lunch: "lunch",
+  ужин: "dinner",
+  dinner: "dinner",
+  перекус: "snack",
+  snack: "snack",
 };
 
 export type VoiceParseApiResponse = {
@@ -53,16 +53,16 @@ function toNullable(value: number | null | undefined): number | null {
 }
 
 export function mapVoiceParseResponse(data: VoiceParseApiResponse): VoiceIntent | null {
-  if (data.intent && data.intent !== 'add_entry') return null;
+  if (data.intent && data.intent !== "add_entry") return null;
 
-  const productName = String(data.productName ?? '').trim();
+  const productName = String(data.productName ?? "").trim();
   if (!productName) return null;
 
-  const meal: MealType = MEAL_ALIASES[String(data.meal ?? '').toLowerCase()] ?? 'breakfast';
+  const meal: MealType = MEAL_ALIASES[String(data.meal ?? "").toLowerCase()] ?? "breakfast";
   const searchQuery = String(data.searchQuery ?? productName).trim() || productName;
   const matched = data.matchedProduct;
   const matchedProduct =
-    matched && typeof matched.id === 'string' && typeof matched.name === 'string' ? matched : null;
+    matched && typeof matched.id === "string" && typeof matched.name === "string" ? matched : null;
 
   return {
     productName,

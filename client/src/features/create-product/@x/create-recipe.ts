@@ -1,1 +1,1 @@
-export { default as AddEntryForm } from '../ui/AddEntryForm.vue';
+export { default as AddEntryForm } from "../ui/AddEntryForm.vue";

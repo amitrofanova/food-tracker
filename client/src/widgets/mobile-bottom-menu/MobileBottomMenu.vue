@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import { CreateProductModal } from '@/features/create-product';
+import type { IProduct } from "@/entities/product";
+import { CreateProductModal } from "@/features/create-product";
 
 const showAddModal = ref(false);
 const onCreated = (product: IProduct) => {

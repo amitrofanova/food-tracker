@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import { AppModal } from '@/shared/ui/modal';
-import { AppInput } from '@/shared/ui/input';
-import { AppButton } from '@/shared/ui/button';
+import type { IProduct } from "@/entities/product";
+import { AppModal } from "@/shared/ui/modal";
+import { AppInput } from "@/shared/ui/input";
+import { AppButton } from "@/shared/ui/button";
 
 interface EditForm {
   name: string;
@@ -23,9 +23,9 @@ interface ValidatedEditForm {
 function isValid(f: EditForm): f is ValidatedEditForm {
   return (
     f.name.trim().length > 0 &&
-    typeof f.calories === 'number' &&
+    typeof f.calories === "number" &&
     f.calories > 0 &&
-    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === 'number' && v >= 0)
+    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === "number" && v >= 0)
   );
 }
 
@@ -35,8 +35,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'save', product: IProduct): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "save", product: IProduct): void;
 }>();
 
 const form = reactive<EditForm>({
@@ -70,8 +70,8 @@ const handleSubmit = () => {
     fat: form.fat,
     carbs: form.carbs,
   };
-  emit('save', updated);
-  emit('update:modelValue', false);
+  emit("save", updated);
+  emit("update:modelValue", false);
 };
 </script>
 

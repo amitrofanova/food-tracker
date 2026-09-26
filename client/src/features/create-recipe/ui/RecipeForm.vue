@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import type { IRecipe, IRecipeIngredient } from '@/entities/recipe';
-import { IngredientEditModal } from '@/entities/recipe';
-import { ProductSearch } from '@/features/product-search/@x/create-recipe';
-import { AddEntryForm } from '@/features/create-product/@x/create-recipe';
-import { useDiaryStore } from '@/entities/diary-entry';
-import type { MealType } from '@/shared/config';
-import { AppButton } from '@/shared/ui/button';
-import { EntryRow } from '@/entities/diary-entry';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { AppInput } from '@/shared/ui/input';
-import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
+import type { IProduct } from "@/entities/product";
+import type { IRecipe, IRecipeIngredient } from "@/entities/recipe";
+import { IngredientEditModal } from "@/entities/recipe";
+import { ProductSearch } from "@/features/product-search/@x/create-recipe";
+import { AddEntryForm } from "@/features/create-product/@x/create-recipe";
+import { useDiaryStore } from "@/entities/diary-entry";
+import type { MealType } from "@/shared/config";
+import { AppButton } from "@/shared/ui/button";
+import { EntryRow } from "@/entities/diary-entry";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
+import { AppInput } from "@/shared/ui/input";
+import { MobileBottomControls } from "@/shared/ui/mobile-bottom-controls";
 
 const props = defineProps<{ initialRecipe?: IRecipe; defaultMeal?: MealType }>();
 const emit = defineEmits<{ saved: [recipe: IRecipe]; added: [] }>();
@@ -20,7 +20,7 @@ const diaryStore = useDiaryStore();
 
 const savedRecipe = ref<IRecipe | null>(null);
 const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null);
-const recipeName = ref(props.initialRecipe?.name ?? '');
+const recipeName = ref(props.initialRecipe?.name ?? "");
 const ingredients = ref<IRecipeIngredient[]>(
   props.initialRecipe?.ingredients.map((i) => ({ ...i })) ?? [],
 );
@@ -30,13 +30,13 @@ const totalWeight = computed(() => ingredients.value.reduce((s, i) => s + i.weig
 const per100g = computed(() => {
   const w = totalWeight.value;
   if (w === 0) return { calories: 0, protein: 0, fat: 0, carbs: 0 };
-  const calc = (k: keyof Pick<IRecipeIngredient, 'calories' | 'protein' | 'fat' | 'carbs'>) =>
+  const calc = (k: keyof Pick<IRecipeIngredient, "calories" | "protein" | "fat" | "carbs">) =>
     Math.round((ingredients.value.reduce((s, i) => s + (i[k] * i.weight) / 100, 0) * 100) / w);
   return {
-    calories: calc('calories'),
-    protein: calc('protein'),
-    fat: calc('fat'),
-    carbs: calc('carbs'),
+    calories: calc("calories"),
+    protein: calc("protein"),
+    fat: calc("fat"),
+    carbs: calc("carbs"),
   };
 });
 
@@ -76,16 +76,16 @@ const handleSave = () => {
     totalWeight: totalWeight.value,
     ...per100g.value,
   };
-  emit('saved', recipe);
+  emit("saved", recipe);
   savedRecipe.value = recipe;
 };
 
 const handleAddEntry = (weight: number, meal: MealType) => {
   if (!savedRecipe.value) return;
   diaryStore.addEntry(savedRecipe.value, weight, meal);
-  emit('added');
+  emit("added");
   savedRecipe.value = null;
-  recipeName.value = '';
+  recipeName.value = "";
   ingredients.value = [];
 };
 

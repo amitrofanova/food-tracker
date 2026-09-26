@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import type { IRecipe } from '@/entities/recipe';
-import { useDiaryStore, EntryRow } from '@/entities/diary-entry';
-import { storeToRefs } from 'pinia';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-import type { MealType } from '@/shared/config';
-import { CreateProductModal } from '@/features/create-product';
-import { ProductSearch } from '@/features/product-search';
-import { RecipeFormModal, useRecipes } from '@/features/create-recipe';
-import { AppButton } from '@/shared/ui/button';
-import { MealSelect } from '@/shared/ui/select';
-import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
+import type { IProduct } from "@/entities/product";
+import type { IRecipe } from "@/entities/recipe";
+import { useDiaryStore, EntryRow } from "@/entities/diary-entry";
+import { storeToRefs } from "pinia";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
+import type { MealType } from "@/shared/config";
+import { CreateProductModal } from "@/features/create-product";
+import { ProductSearch } from "@/features/product-search";
+import { RecipeFormModal, useRecipes } from "@/features/create-recipe";
+import { AppButton } from "@/shared/ui/button";
+import { MealSelect } from "@/shared/ui/select";
+import { MobileBottomControls } from "@/shared/ui/mobile-bottom-controls";
 
 const diaryStore = useDiaryStore();
 const { entriesByMeal } = storeToRefs(diaryStore);
 const { save } = useRecipes();
 const { isMobile, isDesktop } = useBreakpoints();
 const props = defineProps<{ mealType?: MealType }>();
-const selectedMeal = ref<MealType>(props.mealType || 'breakfast');
+const selectedMeal = ref<MealType>(props.mealType || "breakfast");
 const productModal = ref(false);
 const showRecipesModal = ref(false);
 
@@ -32,8 +32,8 @@ const onSaved = async (recipe: IRecipe) => {
 };
 
 const mobileButtons = computed(() => [
-  { label: 'Новый продукт', event: 'new-product' },
-  { label: 'Новый рецепт', event: 'new-recipe' },
+  { label: "Новый продукт", event: "new-product" },
+  { label: "Новый рецепт", event: "new-recipe" },
 ]);
 </script>
 

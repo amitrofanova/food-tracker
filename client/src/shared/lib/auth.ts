@@ -1,9 +1,9 @@
-import { Capacitor } from '@capacitor/core';
-import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from "@capacitor/core";
+import { Preferences } from "@capacitor/preferences";
 
-const SESSION_HINT_KEY = 'hasSession';
-const NATIVE_ACCESS_KEY = 'accessToken';
-const NATIVE_REFRESH_KEY = 'refreshToken';
+const SESSION_HINT_KEY = "hasSession";
+const NATIVE_ACCESS_KEY = "accessToken";
+const NATIVE_REFRESH_KEY = "refreshToken";
 
 let unauthorizedHandler: (() => void) | null = null;
 
@@ -12,16 +12,16 @@ export function isNativePlatform(): boolean {
 }
 
 export function isAuthenticated(): boolean {
-  return localStorage.getItem(SESSION_HINT_KEY) === '1';
+  return localStorage.getItem(SESSION_HINT_KEY) === "1";
 }
 
 export function setSessionHint(value: boolean): void {
   if (value) {
-    localStorage.setItem(SESSION_HINT_KEY, '1');
+    localStorage.setItem(SESSION_HINT_KEY, "1");
   } else {
     localStorage.removeItem(SESSION_HINT_KEY);
   }
-  localStorage.removeItem('token');
+  localStorage.removeItem("token");
 }
 
 export function setUnauthorizedHandler(handler: () => void): void {

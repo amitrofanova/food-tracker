@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { useCalorieCalculator } from '../model/useCalorieCalculator';
-import { useUserStore } from '@/entities/user';
-import { AppButton } from '@/shared/ui/button';
-import { AppSelect } from '@/shared/ui/select';
-import { AppInput } from '@/shared/ui/input';
+import { useCalorieCalculator } from "../model/useCalorieCalculator";
+import { useUserStore } from "@/entities/user";
+import { AppButton } from "@/shared/ui/button";
+import { AppSelect } from "@/shared/ui/select";
+import { AppInput } from "@/shared/ui/input";
 
 const { form, errors, result, calculate, clearError } = useCalorieCalculator();
 
 const userStore = useUserStore();
 
 const activityOptions = [
-  { value: 'sedentary', label: 'Сидячий (мало/нет тренировок)' },
-  { value: 'light', label: 'Лёгкая (1–3 раза/неделю)' },
-  { value: 'moderate', label: 'Средняя (3–5 раз/неделю)' },
-  { value: 'active', label: 'Высокая (6–7 раз/неделю)' },
-  { value: 'very_active', label: 'Очень высокая (физ. труд / 2x)' },
+  { value: "sedentary", label: "Сидячий (мало/нет тренировок)" },
+  { value: "light", label: "Лёгкая (1–3 раза/неделю)" },
+  { value: "moderate", label: "Средняя (3–5 раз/неделю)" },
+  { value: "active", label: "Высокая (6–7 раз/неделю)" },
+  { value: "very_active", label: "Очень высокая (физ. труд / 2x)" },
 ];
 
 const save = async () => {
@@ -27,9 +27,9 @@ const minTargetDate = computed(() => {
   d.setDate(d.getDate() + 14);
   return [
     d.getFullYear(),
-    String(d.getMonth() + 1).padStart(2, '0'),
-    String(d.getDate()).padStart(2, '0'),
-  ].join('-');
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
 });
 </script>
 
@@ -135,7 +135,7 @@ const minTargetDate = computed(() => {
         <p>
           ⚖️ Темп: вес будет
           <strong
-            >{{ result.weeklyWeightChange > 0 ? '+' : ''
+            >{{ result.weeklyWeightChange > 0 ? "+" : ""
             }}{{ result.weeklyWeightChange }} кг</strong
           >
           / неделю

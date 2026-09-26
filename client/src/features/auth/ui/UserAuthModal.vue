@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { AppModal } from '@/shared/ui/modal';
-import LoginForm from './LoginForm.vue';
-import RegisterForm from './RegisterForm.vue';
+import { AppModal } from "@/shared/ui/modal";
+import LoginForm from "./LoginForm.vue";
+import RegisterForm from "./RegisterForm.vue";
 
 const show = defineModel<boolean>({ default: false });
 const isLoginMode = ref(true);
@@ -14,7 +14,7 @@ watch(show, (val) => {
   if (val) isLoginMode.value = true;
 });
 
-const title = computed(() => (isLoginMode.value ? 'Вход' : 'Регистрация'));
+const title = computed(() => (isLoginMode.value ? "Вход" : "Регистрация"));
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { IProduct } from '@/entities/product';
-import { AddEntryControls } from '@/entities/diary-entry';
+import type { IProduct } from "@/entities/product";
+import { AddEntryControls } from "@/entities/diary-entry";
 
 const props = defineProps<{
   product: IProduct;
@@ -8,11 +8,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'select', product: IProduct, weight: number): void;
+  (e: "select", product: IProduct, weight: number): void;
 }>();
 
 const handleAddEntry = (weight: number) => {
-  emit('select', props.product, weight);
+  emit("select", props.product, weight);
 };
 </script>
 
@@ -26,7 +26,12 @@ const handleAddEntry = (weight: number) => {
         <span>Ж: {{ product.fat }}</span>
         <span>У: {{ product.carbs }}</span>
       </div>
-      <AddEntryControls :disabled="false" size="sm" :default-weight="suggestedWeight" @add-entry="handleAddEntry" />
+      <AddEntryControls
+        :disabled="false"
+        size="sm"
+        :default-weight="suggestedWeight"
+        @add-entry="handleAddEntry"
+      />
     </div>
   </div>
 </template>

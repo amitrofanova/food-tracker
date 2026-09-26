@@ -1,6 +1,6 @@
-export type Gender = 'male' | 'female';
-export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-export type Goal = 'lose' | 'maintain' | 'gain';
+export type Gender = "male" | "female";
+export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
+export type Goal = "lose" | "maintain" | "gain";
 
 export interface CalorieFormData {
   gender: Gender;

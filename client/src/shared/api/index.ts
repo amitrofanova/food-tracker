@@ -1,4 +1,4 @@
-export { http } from './http';
+export { http } from "./http";
 export {
   registerUser,
   loginUser,
@@ -7,7 +7,7 @@ export {
   logoutUser,
   type AuthUser,
   type AuthSessionResponse,
-} from './auth';
+} from "./auth";
 export {
   fetchDiaryEntries,
   saveDiaryEntry,
@@ -15,7 +15,7 @@ export {
   deleteDiaryEntry,
   type ApiDiaryEntry,
   type EntryCreatePayload,
-} from './diary';
-export { fetchRecipes, upsertRecipe, deleteRecipeApi } from './recipes';
-export { fetchCustomProducts, upsertCustomProduct, deleteCustomProduct } from './customProducts';
-export { upsertProduct } from './products';
+} from "./diary";
+export { fetchRecipes, upsertRecipe, deleteRecipeApi } from "./recipes";
+export { fetchCustomProducts, upsertCustomProduct, deleteCustomProduct } from "./customProducts";
+export { upsertProduct } from "./products";

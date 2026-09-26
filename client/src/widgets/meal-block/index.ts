@@ -1,1 +1,1 @@
-export { default as MealBlock } from './ui/MealBlock.vue';
+export { default as MealBlock } from "./ui/MealBlock.vue";

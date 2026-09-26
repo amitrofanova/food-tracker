@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IRecipe } from '@/entities/recipe';
-import type { MealType } from '@/shared/config';
-import { AppModal } from '@/shared/ui/modal';
-import RecipeForm from './RecipeForm.vue';
+import type { IRecipe } from "@/entities/recipe";
+import type { MealType } from "@/shared/config";
+import { AppModal } from "@/shared/ui/modal";
+import RecipeForm from "./RecipeForm.vue";
 
 defineProps<{
   modelValue: boolean;
@@ -12,13 +12,13 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'saved', recipe: IRecipe): void;
-  (e: 'added'): void;
-  (e: 'closed'): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "saved", recipe: IRecipe): void;
+  (e: "added"): void;
+  (e: "closed"): void;
 }>();
 
-const close = () => emit('update:modelValue', false);
+const close = () => emit("update:modelValue", false);
 </script>
 
 <template>

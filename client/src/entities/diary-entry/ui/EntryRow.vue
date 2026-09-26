@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
-import DiaryEntryEditModal from './DiaryEntryEditModal.vue';
-import { portionMacros, type IDiaryEntry } from '../model/types';
-import type { MealType } from '@/shared/config';
+import { Icon } from "@/shared/ui/icon";
+import DiaryEntryEditModal from "./DiaryEntryEditModal.vue";
+import { portionMacros, type IDiaryEntry } from "../model/types";
+import type { MealType } from "@/shared/config";
 
 const props = defineProps<{ entry: IDiaryEntry; compact?: boolean; mini?: boolean }>();
 const emit = defineEmits<{
-  (e: 'remove', id: string): void;
-  (e: 'update', payload: { id: string; weight: number; mealType: MealType }): void;
+  (e: "remove", id: string): void;
+  (e: "update", payload: { id: string; weight: number; mealType: MealType }): void;
 }>();
 
 const isOpen = ref(false);
@@ -28,7 +28,9 @@ const portion = computed(() => portionMacros(props.entry));
       <div class="data-wrap">
         <span class="weight">{{ entry.weight }} г</span>
         <span class="calories">{{ portion.calories }} ккал</span>
-        <span class="macros">Б:{{ portion.protein }} Ж:{{ portion.fat }} У:{{ portion.carbs }}</span>
+        <span class="macros"
+          >Б:{{ portion.protein }} Ж:{{ portion.fat }} У:{{ portion.carbs }}</span
+        >
       </div>
     </div>
     <button @click="isOpen = true" class="edit-btn">

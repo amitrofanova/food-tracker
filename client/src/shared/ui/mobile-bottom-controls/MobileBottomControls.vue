@@ -17,12 +17,12 @@ const barRef = ref<HTMLElement | null>(null);
 onMounted(() => {
   if (barRef.value) {
     const h = barRef.value.offsetHeight;
-    document.documentElement.style.setProperty('--mobile-bottom-bar-height', `${h}px`);
+    document.documentElement.style.setProperty("--mobile-bottom-bar-height", `${h}px`);
   }
 });
 
 onUnmounted(() => {
-  document.documentElement.style.removeProperty('--mobile-bottom-bar-height');
+  document.documentElement.style.removeProperty("--mobile-bottom-bar-height");
 });
 </script>
 

@@ -2,11 +2,11 @@
 const props = withDefaults(
   defineProps<{
     color?: string;
-    size?: 'sm' | 'md' | 'lg';
+    size?: "sm" | "md" | "lg";
   }>(),
   {
-    color: 'rgb(var(--color-darkgreen))',
-    size: 'md',
+    color: "rgb(var(--color-darkgreen))",
+    size: "md",
   },
 );
 
@@ -21,13 +21,13 @@ const toRgbTuple = (values: number[]): RGB | null => {
 };
 
 const parseRgbFromColor = (color: string): RGB | null => {
-  if (color.startsWith('rgb(var(')) {
+  if (color.startsWith("rgb(var(")) {
     const varMatch = color.match(/var\((--[^)]+)\)/);
     const varName = varMatch?.[1];
     if (!varName) return null;
 
     const value = getComputedStyle(document.documentElement).getPropertyValue(varName);
-    return toRgbTuple(value.split(',').map((segment) => parseInt(segment.trim(), 10)));
+    return toRgbTuple(value.split(",").map((segment) => parseInt(segment.trim(), 10)));
   }
 
   const numericParts = color.match(/\d+/g)?.map(Number) ?? [];
@@ -35,14 +35,14 @@ const parseRgbFromColor = (color: string): RGB | null => {
 };
 
 const textColor = computed(() => {
-  if (props.color === 'transparent') return 'rgb(var(--color-darkgreen))';
+  if (props.color === "transparent") return "rgb(var(--color-darkgreen))";
 
   const rgb = parseRgbFromColor(props.color);
-  if (!rgb) return '#fff';
+  if (!rgb) return "#fff";
 
   const [r, g, b] = rgb;
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 185 ? '#000' : '#fff';
+  return brightness > 185 ? "#000" : "#fff";
 });
 </script>
 

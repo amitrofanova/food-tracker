@@ -1,8 +1,8 @@
-@import '@/shared/styles/variables.css';
-@import '@/shared/styles/fonts';
+@import "@/shared/styles/variables.css";
+@import "@/shared/styles/fonts";
 
 body {
-  font-family: 'Gilroy-Regular', sans-serif;
+  font-family: "Gilroy-Regular", sans-serif;
   color: rgb(var(--text-primary));
   background-color: rgb(var(--bg-primary));
 }

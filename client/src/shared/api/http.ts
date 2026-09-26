@@ -1,34 +1,34 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import {
   clearClientSession,
   getNativeAccessToken,
   getNativeRefreshToken,
   isNativePlatform,
   setNativeTokens,
-} from '@/shared/lib/auth';
+} from "@/shared/lib/auth";
 
 interface RetryConfig extends InternalAxiosRequestConfig {
   _authRetry?: boolean;
 }
 
 export const http = axios.create({
-  baseURL: (import.meta.env.VITE_API_BASE_URL ?? '') + '/api',
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: (import.meta.env.VITE_API_BASE_URL ?? "") + "/api",
+  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-function isAuthSkipUrl(url = ''): boolean {
+function isAuthSkipUrl(url = ""): boolean {
   return (
-    url.includes('/auth/login') ||
-    url.includes('/auth/register') ||
-    url.includes('/auth/refresh') ||
-    url.includes('/auth/logout')
+    url.includes("/auth/login") ||
+    url.includes("/auth/register") ||
+    url.includes("/auth/refresh") ||
+    url.includes("/auth/logout")
   );
 }
 
 http.interceptors.request.use(async (config) => {
   if (isNativePlatform()) {
-    config.headers['X-Client'] = 'capacitor';
+    config.headers["X-Client"] = "capacitor";
     const token = await getNativeAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -45,7 +45,7 @@ async function refreshSession(): Promise<boolean> {
     try {
       const nativeRefresh = isNativePlatform() ? await getNativeRefreshToken() : null;
       const { data } = await http.post<{ token?: string; refreshToken?: string }>(
-        '/auth/refresh',
+        "/auth/refresh",
         nativeRefresh ? { refreshToken: nativeRefresh } : {},
       );
       if (isNativePlatform() && data.token && data.refreshToken) {
@@ -66,7 +66,7 @@ http.interceptors.response.use(
   async (error: AxiosError) => {
     const config = error.config as RetryConfig | undefined;
     const status = error.response?.status;
-    const url = config?.url ?? '';
+    const url = config?.url ?? "";
 
     if (status !== 401 || !config || config._authRetry || isAuthSkipUrl(url)) {
       return Promise.reject(error);

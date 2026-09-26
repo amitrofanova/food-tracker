@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useDiaryStore } from '@/entities/diary-entry';
-import { useUserStore } from '@/entities/user';
-import { AppProgress } from '@/shared/ui/progress';
-import { storeToRefs } from 'pinia';
+import { useDiaryStore } from "@/entities/diary-entry";
+import { useUserStore } from "@/entities/user";
+import { AppProgress } from "@/shared/ui/progress";
+import { storeToRefs } from "pinia";
 
 const diaryStore = useDiaryStore();
 const { dailyTotals } = storeToRefs(diaryStore);

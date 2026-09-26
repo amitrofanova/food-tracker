@@ -50,12 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from "vue";
 
 const maskPath = ref<SVGPathElement | null>(null);
 
 const pathData =
-  'M13.2,26.5L13.2,26.5c-1.1,0.7-2.6,0.6-3.7-0.1c-2.1-1.4-5.1-4.4-5.2-10.7c-0.1-2.9,2.1-5.5,5-5.7c1.2-0.1,2.4,0.3,3.3,0.9c1.4,0.9,3.3,0.9,4.7,0c0.9-0.6,2.1-1,3.3-0.9c2.9,0.2,5.1,2.8,5,5.7c-0.1,6.3-3.1,9.4-5.2,10.7c-1.1,0.7-2.5,0.7-3.7,0.1l0,0C15.7,25.9,14.3,25.9,13.2,26.5z M15.3,4.5c-1.3,1.3-1.8,3-1.5,4.6c1.6,0.3,3.3-0.2,4.6-1.5s1.8-3,1.5-4.6C18.4,2.7,16.6,3.2,15.3,4.5z';
+  "M13.2,26.5L13.2,26.5c-1.1,0.7-2.6,0.6-3.7-0.1c-2.1-1.4-5.1-4.4-5.2-10.7c-0.1-2.9,2.1-5.5,5-5.7c1.2-0.1,2.4,0.3,3.3,0.9c1.4,0.9,3.3,0.9,4.7,0c0.9-0.6,2.1-1,3.3-0.9c2.9,0.2,5.1,2.8,5,5.7c-0.1,6.3-3.1,9.4-5.2,10.7c-1.1,0.7-2.5,0.7-3.7,0.1l0,0C15.7,25.9,14.3,25.9,13.2,26.5z M15.3,4.5c-1.3,1.3-1.8,3-1.5,4.6c1.6,0.3,3.3-0.2,4.6-1.5s1.8-3,1.5-4.6C18.4,2.7,16.6,3.2,15.3,4.5z";
 
 let pathLength = 0;
 let animationId: number | null = null;
@@ -69,7 +69,7 @@ function animate(timestamp: number) {
   const offset = -progress * pathLength;
 
   if (maskPath.value) {
-    maskPath.value.setAttribute('stroke-dashoffset', String(offset));
+    maskPath.value.setAttribute("stroke-dashoffset", String(offset));
   }
 
   animationId = requestAnimationFrame(animate);
@@ -89,7 +89,7 @@ onMounted(() => {
     const dash = pathLength * greenRatio;
     const gap = pathLength * (1 - greenRatio);
 
-    maskPath.value.setAttribute('stroke-dasharray', `${dash} ${gap}`);
+    maskPath.value.setAttribute("stroke-dasharray", `${dash} ${gap}`);
 
     animationId = requestAnimationFrame(animate);
   }

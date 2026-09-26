@@ -13,13 +13,13 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 'md',
+  size: "md",
 });
 
 const iconStyle = computed(() => {
   let size: number;
 
-  if (typeof props.size === 'number') {
+  if (typeof props.size === "number") {
     size = props.size;
   } else if (props.size && props.size in SIZE_MAP) {
     size = SIZE_MAP[props.size as IconSize];
@@ -33,7 +33,7 @@ const iconStyle = computed(() => {
   };
 });
 
-const modules = import.meta.glob('./icons/*.vue');
+const modules = import.meta.glob("./icons/*.vue");
 
 const iconComponent = computed(() => {
   const path = `./icons/${props.name}.vue`;

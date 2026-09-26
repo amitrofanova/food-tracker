@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { MealType } from '@/shared/config';
-import type { IRecipe } from '@/entities/recipe';
-import { RecipeDetailModal } from '@/entities/recipe';
-import { useDiaryStore } from '@/entities/diary-entry';
-import { AddEntryControls } from '@/entities/diary-entry';
-import { AppButton } from '@/shared/ui/button';
-import { AppInput } from '@/shared/ui/input';
-import { PageHeader } from '@/shared/ui/page-header';
-import { Icon } from '@/shared/ui/icon';
-import { MealSelect } from '@/shared/ui/select';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { RecipeFormModal, useRecipes } from '@/features/create-recipe';
-import { useRouter } from 'vue-router';
+import type { MealType } from "@/shared/config";
+import type { IRecipe } from "@/entities/recipe";
+import { RecipeDetailModal } from "@/entities/recipe";
+import { useDiaryStore } from "@/entities/diary-entry";
+import { AddEntryControls } from "@/entities/diary-entry";
+import { AppButton } from "@/shared/ui/button";
+import { AppInput } from "@/shared/ui/input";
+import { PageHeader } from "@/shared/ui/page-header";
+import { Icon } from "@/shared/ui/icon";
+import { MealSelect } from "@/shared/ui/select";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
+import { RecipeFormModal, useRecipes } from "@/features/create-recipe";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const diaryStore = useDiaryStore();
@@ -20,9 +20,9 @@ const { isMobile, isDesktop } = useBreakpoints();
 
 const showForm = ref(false);
 const editingRecipe = ref<IRecipe | undefined>(undefined);
-const selectedMeal = ref<MealType>('breakfast');
+const selectedMeal = ref<MealType>("breakfast");
 const viewedRecipe = ref<IRecipe | undefined>(undefined);
-const searchQuery = ref('');
+const searchQuery = ref("");
 
 const filteredRecipes = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
@@ -30,7 +30,7 @@ const filteredRecipes = computed(() => {
   return recipes.value.filter((r) => r.name.toLowerCase().includes(q));
 });
 
-const formTitle = computed(() => (editingRecipe.value ? 'Редактировать рецепт' : 'Новый рецепт'));
+const formTitle = computed(() => (editingRecipe.value ? "Редактировать рецепт" : "Новый рецепт"));
 
 const addToDiary = (recipe: IRecipe, weight: number) => {
   diaryStore.addEntry(recipe, weight, selectedMeal.value);
@@ -38,7 +38,7 @@ const addToDiary = (recipe: IRecipe, weight: number) => {
 
 const openDetail = (recipe: IRecipe) => {
   if (isMobile.value) {
-    router.push({ name: 'recipe-detail', params: { id: recipe.id } });
+    router.push({ name: "recipe-detail", params: { id: recipe.id } });
   } else {
     viewedRecipe.value = recipe;
   }

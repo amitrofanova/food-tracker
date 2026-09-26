@@ -1,8 +1,8 @@
-import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
-import { Capacitor } from '@capacitor/core';
-import type { IProduct } from '@/entities/product';
-import { getProductByBarcode } from '../api/openFoodFactsApi';
-import { mapOpenFoodFactsToProduct } from '../model/mappers';
+import { BarcodeScanner, BarcodeFormat } from "@capacitor-mlkit/barcode-scanning";
+import { Capacitor } from "@capacitor/core";
+import type { IProduct } from "@/entities/product";
+import { getProductByBarcode } from "../api/openFoodFactsApi";
+import { mapOpenFoodFactsToProduct } from "../model/mappers";
 
 export function useBarcodeScanner() {
   const scanning = ref(false);
@@ -13,7 +13,7 @@ export function useBarcodeScanner() {
     scanError.value = null;
 
     if (!isNative) {
-      scanError.value = 'Сканирование доступно только в мобильном приложении';
+      scanError.value = "Сканирование доступно только в мобильном приложении";
       return null;
     }
 
@@ -21,8 +21,8 @@ export function useBarcodeScanner() {
       scanning.value = true;
 
       const { camera } = await BarcodeScanner.requestPermissions();
-      if (camera !== 'granted' && camera !== 'limited') {
-        scanError.value = 'Нет доступа к камере';
+      if (camera !== "granted" && camera !== "limited") {
+        scanError.value = "Нет доступа к камере";
         return null;
       }
 
@@ -37,13 +37,13 @@ export function useBarcodeScanner() {
 
       const dto = await getProductByBarcode(rawValue);
       if (!dto) {
-        scanError.value = 'Продукт не найден';
+        scanError.value = "Продукт не найден";
         return null;
       }
 
       return mapOpenFoodFactsToProduct(dto);
     } catch {
-      scanError.value = 'Ошибка сканирования';
+      scanError.value = "Ошибка сканирования";
       return null;
     } finally {
       scanning.value = false;

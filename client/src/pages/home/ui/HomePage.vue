@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useBreakpoints } from '@/shared/lib/breakpoints';
-import { MEAL_TYPES } from '@/shared/config';
-import { DateNavigation } from '@/widgets/date-navigation';
-import { DailySummary } from '@/widgets/daily-summary';
-import { MealBlock } from '@/widgets/meal-block';
-import { AddDiaryEntry } from '@/widgets/add-diary-entry';
-import { VoiceButton } from '@/widgets/voice-diary-entry';
+import { useBreakpoints } from "@/shared/lib/breakpoints";
+import { MEAL_TYPES } from "@/shared/config";
+import { DateNavigation } from "@/widgets/date-navigation";
+import { DailySummary } from "@/widgets/daily-summary";
+import { MealBlock } from "@/widgets/meal-block";
+import { AddDiaryEntry } from "@/widgets/add-diary-entry";
+import { VoiceButton } from "@/widgets/voice-diary-entry";
 
 const { isDesktop } = useBreakpoints();
 </script>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { AppButton } from '@/shared/ui/button';
-import { AppInput } from '@/shared/ui/input';
-import type { IProduct } from '@/entities/product';
-import { useCreateProduct } from '../lib/useCreateProduct';
+import { AppButton } from "@/shared/ui/button";
+import { AppInput } from "@/shared/ui/input";
+import type { IProduct } from "@/entities/product";
+import { useCreateProduct } from "../lib/useCreateProduct";
 
 const { createProduct } = useCreateProduct();
 
@@ -29,14 +29,14 @@ interface ValidatedProductForm {
 function isValidProductForm(f: ProductForm): f is ValidatedProductForm {
   return (
     f.name.trim().length > 0 &&
-    typeof f.calories === 'number' &&
+    typeof f.calories === "number" &&
     f.calories > 0 &&
-    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === 'number' && v >= 0)
+    [f.protein, f.fat, f.carbs].every((v): v is number => typeof v === "number" && v >= 0)
   );
 }
 
 const form = reactive<ProductForm>({
-  name: '',
+  name: "",
   calories: null,
   protein: null,
   fat: null,
@@ -46,7 +46,7 @@ const form = reactive<ProductForm>({
 const isValid = computed(() => isValidProductForm(form));
 
 const resetForm = () => {
-  form.name = '';
+  form.name = "";
   form.calories = null;
   form.protein = null;
   form.fat = null;
@@ -66,7 +66,7 @@ const handleSubmit = async () => {
   };
   await createProduct(newProduct);
   resetForm();
-  emit('created', newProduct);
+  emit("created", newProduct);
 };
 </script>
 

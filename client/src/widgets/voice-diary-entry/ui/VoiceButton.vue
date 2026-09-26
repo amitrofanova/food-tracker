@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { Icon } from '@/shared/ui/icon';
-import { useDiaryStore } from '@/entities/diary-entry';
-import { useUserStore } from '@/entities/user';
-import type { IProduct } from '@/entities/product';
-import type { MealType } from '@/shared/config';
+import { storeToRefs } from "pinia";
+import { Icon } from "@/shared/ui/icon";
+import { useDiaryStore } from "@/entities/diary-entry";
+import { useUserStore } from "@/entities/user";
+import type { IProduct } from "@/entities/product";
+import type { MealType } from "@/shared/config";
 import {
   useVoiceInput,
   useParseVoiceIntent,
   SESSION_EXPIRED_MESSAGE,
   defaultMealByHour,
   type VoiceIntent,
-} from '@/shared/lib/voice';
-import VoiceConfirmModal from './VoiceConfirmModal.vue';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+} from "@/shared/lib/voice";
+import VoiceConfirmModal from "./VoiceConfirmModal.vue";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
-const AUTH_REQUIRED_MESSAGE = 'Голосовой ввод с ИИ доступен после входа в аккаунт';
+const AUTH_REQUIRED_MESSAGE = "Голосовой ввод с ИИ доступен после входа в аккаунт";
 
 const { isDesktop } = useBreakpoints();
 const diaryStore = useDiaryStore();
@@ -30,15 +30,15 @@ const confirmOpen = ref(false);
 const authRequiredError = ref<string | null>(null);
 const lastMeal = ref<MealType>(defaultMealByHour(new Date().getHours()));
 
-const isListening = computed(() => state.value === 'listening');
+const isListening = computed(() => state.value === "listening");
 const isBusy = computed(() => isListening.value || isParsing.value);
 const statusError = computed(() => voiceError.value || parseError.value || authRequiredError.value);
 
 const statusText = computed(() => {
-  if (isListening.value) return 'Слушаю...';
-  if (isParsing.value) return 'Распознаю...';
+  if (isListening.value) return "Слушаю...";
+  if (isParsing.value) return "Распознаю...";
   if (statusError.value) return statusError.value;
-  return isDesktop.value ? 'Скажите, что добавить к дневнику' : '';
+  return isDesktop.value ? "Скажите, что добавить к дневнику" : "";
 });
 
 const isExpanded = computed(() => !!statusText.value);

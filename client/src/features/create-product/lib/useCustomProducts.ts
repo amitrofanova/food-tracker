@@ -1,13 +1,13 @@
-import { db } from '@/shared/db';
-import type { IProduct } from '@/entities/product';
+import { db } from "@/shared/db";
+import type { IProduct } from "@/entities/product";
 import {
   fetchCustomProducts,
   upsertCustomProduct,
   deleteCustomProduct as deleteCustomProductApi,
-} from '@/shared/api';
-import { useUserStore } from '@/entities/user';
-import { useSyncedEntity } from '@/shared/lib/useSyncedEntity';
-import { toRef } from 'vue';
+} from "@/shared/api";
+import { useUserStore } from "@/entities/user";
+import { useSyncedEntity } from "@/shared/lib/useSyncedEntity";
+import { toRef } from "vue";
 
 export function useCustomProducts() {
   const userStore = useUserStore();
@@ -29,7 +29,7 @@ export function useCustomProducts() {
       putLocal: (item) => db.putCustomProduct(item),
       deleteLocal: (id) => db.deleteCustomProduct(id),
     },
-    toRef(userStore, 'syncVersion'),
+    toRef(userStore, "syncVersion"),
   );
 
   return { products, isLoading, loadAll, remove, save };

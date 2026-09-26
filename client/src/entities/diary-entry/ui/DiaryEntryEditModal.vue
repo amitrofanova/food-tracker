@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { AppModal } from '@/shared/ui/modal';
-import { AppInput } from '@/shared/ui/input';
-import { AppButton } from '@/shared/ui/button';
-import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
-import { MealSelect } from '@/shared/ui/select';
-import { Icon } from '@/shared/ui/icon';
-import type { IDiaryEntry } from '../model/types';
-import type { MealType } from '@/shared/config';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { AppModal } from "@/shared/ui/modal";
+import { AppInput } from "@/shared/ui/input";
+import { AppButton } from "@/shared/ui/button";
+import { MobileBottomControls } from "@/shared/ui/mobile-bottom-controls";
+import { MealSelect } from "@/shared/ui/select";
+import { Icon } from "@/shared/ui/icon";
+import type { IDiaryEntry } from "../model/types";
+import type { MealType } from "@/shared/config";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -15,9 +15,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'update', payload: { id: string; weight: number; mealType: MealType }): void;
-  (e: 'remove', id: string): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "update", payload: { id: string; weight: number; mealType: MealType }): void;
+  (e: "remove", id: string): void;
 }>();
 
 const { isMobile } = useBreakpoints();
@@ -37,14 +37,14 @@ watch(
 
 const onSave = () => {
   if (localWeight.value > 0) {
-    emit('update', { id: props.entry.id, weight: localWeight.value, mealType: localMeal.value });
-    emit('update:modelValue', false);
+    emit("update", { id: props.entry.id, weight: localWeight.value, mealType: localMeal.value });
+    emit("update:modelValue", false);
   }
 };
 
 const onRemove = () => {
-  emit('remove', props.entry.id);
-  emit('update:modelValue', false);
+  emit("remove", props.entry.id);
+  emit("update:modelValue", false);
 };
 </script>
 

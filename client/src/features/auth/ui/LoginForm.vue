@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useUserStore } from '@/entities/user';
-import { AppButton } from '@/shared/ui/button';
-import { AppInput } from '@/shared/ui/input';
+import { useUserStore } from "@/entities/user";
+import { AppButton } from "@/shared/ui/button";
+import { AppInput } from "@/shared/ui/input";
 
 const userStore = useUserStore();
 
-const emit = defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{ (e: "close"): void }>();
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 const loading = ref(false);
 const error = computed(() => userStore.error);
 
@@ -17,9 +17,9 @@ const onSubmit = async () => {
   await userStore.login(email.value, password.value);
   loading.value = false;
   if (!userStore.error) {
-    email.value = '';
-    password.value = '';
-    emit('close');
+    email.value = "";
+    password.value = "";
+    emit("close");
   }
 };
 </script>

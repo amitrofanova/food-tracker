@@ -1,16 +1,20 @@
-import type { MealType } from '@/shared/config';
-import { http } from '@/shared/api';
-import axios from 'axios';
-import { mapVoiceParseResponse, type VoiceIntent, type VoiceParseApiResponse } from './mapVoiceParseResponse';
+import type { MealType } from "@/shared/config";
+import { http } from "@/shared/api";
+import axios from "axios";
+import {
+  mapVoiceParseResponse,
+  type VoiceIntent,
+  type VoiceParseApiResponse,
+} from "./mapVoiceParseResponse";
 
-export type { VoiceIntent } from './mapVoiceParseResponse';
+export type { VoiceIntent } from "./mapVoiceParseResponse";
 
-const PARSE_FAIL_MESSAGE = 'Не получилось разобрать фразу. Попробуйте ещё раз';
+const PARSE_FAIL_MESSAGE = "Не получилось разобрать фразу. Попробуйте ещё раз";
 const UNAVAILABLE_MESSAGE =
-  'Нет связи с сервисом распознавания. Проверьте соединение и попробуйте ещё раз';
+  "Нет связи с сервисом распознавания. Проверьте соединение и попробуйте ещё раз";
 export const SESSION_EXPIRED_MESSAGE =
-  'Сессия истекла. Войдите снова, чтобы использовать голосовой ввод';
-const RATE_LIMIT_MESSAGE = 'Слишком много запросов подряд. Подождите немного';
+  "Сессия истекла. Войдите снова, чтобы использовать голосовой ввод";
+const RATE_LIMIT_MESSAGE = "Слишком много запросов подряд. Подождите немного";
 
 export function useParseVoiceIntent() {
   const isLoading = ref(false);
@@ -28,7 +32,7 @@ export function useParseVoiceIntent() {
       .filter(Boolean);
 
     try {
-      const { data } = await http.post<VoiceParseApiResponse>('/voice/parse', {
+      const { data } = await http.post<VoiceParseApiResponse>("/voice/parse", {
         transcript: transcripts[0],
         transcripts,
         defaultMeal,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IRecipe } from '../model/types';
-import { AppModal } from '@/shared/ui/modal';
-import { AppButton } from '@/shared/ui/button';
-import { Icon } from '@/shared/ui/icon';
+import type { IRecipe } from "../model/types";
+import { AppModal } from "@/shared/ui/modal";
+import { AppButton } from "@/shared/ui/button";
+import { Icon } from "@/shared/ui/icon";
 
 defineProps<{
   modelValue: boolean;
@@ -10,9 +10,9 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'edit', recipe: IRecipe): void;
-  (e: 'delete', id: string): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "edit", recipe: IRecipe): void;
+  (e: "delete", id: string): void;
 }>();
 </script>
 

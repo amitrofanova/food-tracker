@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
-import { useRoute } from 'vue-router';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { Icon } from "@/shared/ui/icon";
+import { useRoute } from "vue-router";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
 const route = useRoute();
 
@@ -20,22 +20,22 @@ const props = withDefaults(
   {
     closeOnClickOutside: true,
     showCloseButton: true,
-    maxWidth: '100vw',
-    transitionName: 'modal-fade',
+    maxWidth: "100vw",
+    transitionName: "modal-fade",
     fill: false,
   },
 );
 
 const { isMobile } = useBreakpoints();
-const adaptedWidth = computed(() => props.width || (isMobile.value ? '100%' : 'auto'));
+const adaptedWidth = computed(() => props.width || (isMobile.value ? "100%" : "auto"));
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'closed'): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "closed"): void;
 }>();
 
 const close = () => {
-  emit('update:modelValue', false);
+  emit("update:modelValue", false);
 };
 
 const handleOverlayClick = () => {
@@ -48,9 +48,9 @@ watch(
   () => props.modelValue,
   (open) => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
   },
   { immediate: true },

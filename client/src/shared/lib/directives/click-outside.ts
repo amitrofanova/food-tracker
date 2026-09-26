@@ -1,4 +1,4 @@
-import type { Directive } from 'vue';
+import type { Directive } from "vue";
 
 type ClickOutsideElement = HTMLElement & { _clickOutsideHandler?: (e: MouseEvent) => void };
 
@@ -9,11 +9,11 @@ export const vClickOutside: Directive<ClickOutsideElement, () => void> = {
         binding.value();
       }
     };
-    document.addEventListener('mousedown', el._clickOutsideHandler);
+    document.addEventListener("mousedown", el._clickOutsideHandler);
   },
   unmounted(el) {
     if (el._clickOutsideHandler) {
-      document.removeEventListener('mousedown', el._clickOutsideHandler);
+      document.removeEventListener("mousedown", el._clickOutsideHandler);
       delete el._clickOutsideHandler;
     }
   },

@@ -1,1 +1,1 @@
-export { default as DailySummary } from './ui/DailySummary.vue';
+export { default as DailySummary } from "./ui/DailySummary.vue";

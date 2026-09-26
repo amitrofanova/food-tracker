@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
-import { useRouter } from 'vue-router';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { Icon } from "@/shared/ui/icon";
+import { useRouter } from "vue-router";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
 defineProps<{
   title?: string;

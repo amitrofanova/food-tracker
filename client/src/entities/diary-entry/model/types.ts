@@ -1,5 +1,5 @@
-import type { MealType } from '@/shared/config'; //TODO export here
-import type { ApiDiaryEntry, EntryCreatePayload } from '@/shared/api';
+import type { MealType } from "@/shared/config"; //TODO export here
+import type { ApiDiaryEntry, EntryCreatePayload } from "@/shared/api";
 
 export type DiaryMacros = {
   calories: number;
@@ -90,7 +90,7 @@ export function fromApiDiaryEntry(data: ApiDiaryEntry): IDiaryEntry {
   return {
     id: String(data.id),
     date: data.date,
-    productId: data.productId ?? '',
+    productId: data.productId ?? "",
     productName: data.productName,
     mealType: data.mealType,
     weight: data.weight,

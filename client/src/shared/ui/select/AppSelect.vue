@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '@/shared/ui/icon';
+import { Icon } from "@/shared/ui/icon";
 
 interface SelectOption {
   value: string;
@@ -12,22 +12,22 @@ withDefaults(
     modelValue: string;
     placeholder?: string;
     disabled?: boolean;
-    size?: 'sm' | 'md' | 'lg';
+    size?: "sm" | "md" | "lg";
   }>(),
   {
-    placeholder: '',
+    placeholder: "",
     disabled: false,
-    size: 'md',
+    size: "md",
   },
 );
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
+  (e: "update:modelValue", value: string): void;
 }>();
 
 const handleChange = (event: Event) => {
   if (event.target instanceof HTMLSelectElement) {
-    emit('update:modelValue', event.target.value);
+    emit("update:modelValue", event.target.value);
   }
 };
 </script>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { AppModal } from '@/shared/ui/modal';
-import { AppInput } from '@/shared/ui/input';
-import { AppButton } from '@/shared/ui/button';
-import { MobileBottomControls } from '@/shared/ui/mobile-bottom-controls';
-import { Icon } from '@/shared/ui/icon';
-import type { IRecipeIngredient } from '../model/types';
-import { useBreakpoints } from '@/shared/lib/breakpoints';
+import { AppModal } from "@/shared/ui/modal";
+import { AppInput } from "@/shared/ui/input";
+import { AppButton } from "@/shared/ui/button";
+import { MobileBottomControls } from "@/shared/ui/mobile-bottom-controls";
+import { Icon } from "@/shared/ui/icon";
+import type { IRecipeIngredient } from "../model/types";
+import { useBreakpoints } from "@/shared/lib/breakpoints";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -13,9 +13,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'update', payload: { productId: string; weight: number }): void;
-  (e: 'remove', productId: string): void;
+  (e: "update:modelValue", value: boolean): void;
+  (e: "update", payload: { productId: string; weight: number }): void;
+  (e: "remove", productId: string): void;
 }>();
 
 const { isMobile } = useBreakpoints();
@@ -33,14 +33,14 @@ watch(
 
 const onSave = () => {
   if (localWeight.value > 0) {
-    emit('update', { productId: props.ingredient.productId, weight: localWeight.value });
-    emit('update:modelValue', false);
+    emit("update", { productId: props.ingredient.productId, weight: localWeight.value });
+    emit("update:modelValue", false);
   }
 };
 
 const onRemove = () => {
-  emit('remove', props.ingredient.productId);
-  emit('update:modelValue', false);
+  emit("remove", props.ingredient.productId);
+  emit("update:modelValue", false);
 };
 </script>
 

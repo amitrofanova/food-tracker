@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useUserStore } from '@/entities/user';
-import { AppButton } from '@/shared/ui/button';
-import { AppInput } from '@/shared/ui/input';
+import { useUserStore } from "@/entities/user";
+import { AppButton } from "@/shared/ui/button";
+import { AppInput } from "@/shared/ui/input";
 
 const userStore = useUserStore();
 
-const emit = defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{ (e: "close"): void }>();
 
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
 const loading = ref(false);
 const localError = ref<string | null>(null);
 const error = computed(() => localError.value ?? userStore.error);
@@ -23,17 +23,17 @@ const onSubmit = async () => {
     return;
   }
   if (password.value !== confirmPassword.value) {
-    localError.value = 'Пароли не совпадают';
+    localError.value = "Пароли не совпадают";
     return;
   }
   loading.value = true;
   await userStore.register(email.value, password.value);
   loading.value = false;
   if (!userStore.error) {
-    email.value = '';
-    password.value = '';
-    confirmPassword.value = '';
-    emit('close');
+    email.value = "";
+    password.value = "";
+    confirmPassword.value = "";
+    emit("close");
   }
 };
 </script>

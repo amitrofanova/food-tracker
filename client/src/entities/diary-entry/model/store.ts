@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import type { MealType } from '@/shared/config';
+import { defineStore } from "pinia";
+import type { MealType } from "@/shared/config";
 import {
   createLocalDiaryEntry,
   fromApiDiaryEntry,
@@ -8,18 +8,18 @@ import {
   toEntryCreatePayload,
   type DiaryProductSnapshot,
   type IDiaryEntry,
-} from './types';
+} from "./types";
 import {
   fetchDiaryEntries,
   saveDiaryEntry,
   updateDiaryEntry,
   deleteDiaryEntry,
-} from '@/shared/api';
-import { db } from '@/shared/db';
-import { isAuthenticated } from '@/shared/lib/auth';
-import { extractErrorMessage } from '@/shared/lib/error';
+} from "@/shared/api";
+import { db } from "@/shared/db";
+import { isAuthenticated } from "@/shared/lib/auth";
+import { extractErrorMessage } from "@/shared/lib/error";
 
-export const useDiaryStore = defineStore('diary', () => {
+export const useDiaryStore = defineStore("diary", () => {
   const entries = ref<IDiaryEntry[]>([]);
   const selectedDate = ref(new Date().toISOString().slice(0, 10));
   const isLoading = ref(false);
@@ -31,7 +31,9 @@ export const useDiaryStore = defineStore('diary', () => {
     try {
       if (isAuthenticated()) {
         // Server rows are snapshots: productName + per-100g macros, not a live Product join.
-        entries.value = (await fetchDiaryEntries(date || selectedDate.value)).map(fromApiDiaryEntry);
+        entries.value = (await fetchDiaryEntries(date || selectedDate.value)).map(
+          fromApiDiaryEntry,
+        );
       } else {
         const all = await db.getAllEntries();
         const normalized = all.map(normalizeIndexedDbDiaryEntry);
@@ -40,15 +42,15 @@ export const useDiaryStore = defineStore('diary', () => {
           try {
             await Promise.all(migrated.map((entry) => db.saveEntry(entry)));
           } catch (err) {
-            console.error('Failed to migrate diary macros to per-100g:', err);
+            console.error("Failed to migrate diary macros to per-100g:", err);
           }
         }
         const target = date || selectedDate.value;
         entries.value = normalized.filter((e) => e.date === target);
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Ошибка загрузки дневника');
-      console.error('Failed to load entries:', err);
+      error.value = extractErrorMessage(err, "Ошибка загрузки дневника");
+      console.error("Failed to load entries:", err);
     } finally {
       isLoading.value = false;
     }
@@ -68,8 +70,8 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = [...entries.value, localEntry];
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Ошибка сохранения записи');
-      console.error('Failed to save entry:', err);
+      error.value = extractErrorMessage(err, "Ошибка сохранения записи");
+      console.error("Failed to save entry:", err);
       throw err;
     }
   }
@@ -92,8 +94,8 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = entries.value.map((e) => (e.id === id ? updated : e));
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Ошибка обновления записи');
-      console.error('Failed to update entry:', err);
+      error.value = extractErrorMessage(err, "Ошибка обновления записи");
+      console.error("Failed to update entry:", err);
       throw err;
     }
   }
@@ -109,8 +111,8 @@ export const useDiaryStore = defineStore('diary', () => {
         entries.value = entries.value.filter((e) => e.id !== id);
       }
     } catch (err) {
-      error.value = extractErrorMessage(err, 'Ошибка удаления записи');
-      console.error('Failed to delete entry:', err);
+      error.value = extractErrorMessage(err, "Ошибка удаления записи");
+      console.error("Failed to delete entry:", err);
       throw err;
     }
   }
