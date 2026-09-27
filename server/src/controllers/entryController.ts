@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { formatUtcCalendarDate, parseCalendarDate } from "../lib/calendarDate";
 import { prisma } from "../lib/prisma";
 import {
   createEntrySchema,
@@ -24,7 +25,7 @@ type DiaryEntryRow = {
 function serializeEntry(entry: DiaryEntryRow) {
   return {
     id: String(entry.id),
-    date: entry.date.toISOString().slice(0, 10),
+    date: formatUtcCalendarDate(entry.date),
     productId: entry.productId,
     productName: entry.productName,
     mealType: entry.mealType.toLowerCase(),
@@ -66,11 +67,15 @@ export const createEntry = async (
     carbs,
   } = parsed.data;
   const userId = request.user!.id;
+  const calendarDate = parseCalendarDate(date);
+  if (!calendarDate) {
+    return reply.status(400).send({ error: "Invalid date" });
+  }
 
   try {
     const entry = await prisma.diaryEntry.create({
       data: {
-        date: new Date(date),
+        date: calendarDate,
         weight,
         mealType,
         userId,
@@ -97,21 +102,20 @@ export const getEntriesByDate = async (
   const { date } = request.query;
   const userId = request.user!.id;
 
-  const targetDate = date ? new Date(date) : new Date();
-  // Обнуляем время, чтобы выбрать весь день
-  targetDate.setHours(0, 0, 0, 0);
+  if (!date) {
+    return reply.status(400).send({ error: "date is required" });
+  }
 
-  const endOfDay = new Date(targetDate);
-  endOfDay.setDate(endOfDay.getDate() + 1);
+  const calendarDate = parseCalendarDate(date);
+  if (!calendarDate) {
+    return reply.status(400).send({ error: "Invalid date" });
+  }
 
   try {
     const entries = await prisma.diaryEntry.findMany({
       where: {
         userId,
-        date: {
-          gte: targetDate,
-          lt: endOfDay,
-        },
+        date: calendarDate,
       },
       orderBy: { createdAt: "desc" },
     });

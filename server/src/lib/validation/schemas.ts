@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseCalendarDate } from "../calendarDate";
 
 export const nutritionValueSchema = z
   .number({ error: "must be a non-negative number" })
@@ -70,6 +71,13 @@ export const productSchema = z.object({
   carbs: nutritionValueSchema,
 });
 
+export const calendarDateSchema = z
+  .string({ error: "date is required" })
+  .trim()
+  .refine((value) => parseCalendarDate(value) !== null, {
+    error: "Invalid date",
+  });
+
 const optionalNonEmptyString = z
   .string()
   .trim()
@@ -77,13 +85,7 @@ const optionalNonEmptyString = z
   .transform((value) => (value ? value : undefined));
 
 export const createEntrySchema = z.object({
-  date: z
-    .string({ error: "date is required" })
-    .trim()
-    .min(1, { error: "date is required" })
-    .refine((value) => !Number.isNaN(Date.parse(value)), {
-      error: "Invalid date",
-    }),
+  date: calendarDateSchema,
   productId: optionalNonEmptyString,
   productName: productNameSchema,
   mealType: mealTypeSchema,

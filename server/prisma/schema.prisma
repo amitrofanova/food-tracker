@@ -55,7 +55,7 @@ model Product {
 
 model DiaryEntry {
   id          Int       @id @default(autoincrement())
-  date        DateTime
+  date        DateTime  @db.Date // календарный день, YYYY-MM-DD
   weight      Float
   mealType    MealType
   userId      Int

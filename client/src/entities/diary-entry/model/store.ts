@@ -17,11 +17,12 @@ import {
 } from "@/shared/api";
 import { db } from "@/shared/db";
 import { isAuthenticated } from "@/shared/lib/auth";
+import { localCalendarDate } from "@/shared/lib/calendarDate";
 import { extractErrorMessage } from "@/shared/lib/error";
 
 export const useDiaryStore = defineStore("diary", () => {
   const entries = ref<IDiaryEntry[]>([]);
-  const selectedDate = ref(new Date().toISOString().slice(0, 10));
+  const selectedDate = ref(localCalendarDate());
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 

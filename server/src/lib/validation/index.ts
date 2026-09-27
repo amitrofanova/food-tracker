@@ -6,6 +6,7 @@ export {
   customProductSchema,
   recipeSchema,
   productSchema,
+  calendarDateSchema,
   createEntrySchema,
   updateEntrySchema,
   updateMeSchema,

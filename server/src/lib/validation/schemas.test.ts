@@ -3,7 +3,6 @@ import { parseWithSchema } from "./parse";
 import {
   createEntrySchema,
   customProductSchema,
-  productSchema,
   recipeSchema,
   updateMeSchema,
 } from "./schemas";
@@ -86,6 +85,17 @@ describe("createEntrySchema", () => {
     expect("error" in parsed).toBe(true);
   });
 
+  it("rejects a timestamp and an impossible calendar day", () => {
+    expect("error" in parseWithSchema(createEntrySchema, {
+      ...validEntry,
+      date: "2026-09-18T00:00:00.000Z",
+    })).toBe(true);
+    expect("error" in parseWithSchema(createEntrySchema, {
+      ...validEntry,
+      date: "2026-02-31",
+    })).toBe(true);
+  });
+
   it("rejects missing per-100g macros", () => {
     const { calories: _calories, ...withoutCalories } = validEntry;
     const parsed = parseWithSchema(createEntrySchema, withoutCalories);
@@ -112,14 +122,17 @@ describe("customProductSchema", () => {
   });
 });
 
-describe("productSchema and recipeSchema", () => {
-  it("rejects a blank product name", () => {
-    const parsed = parseWithSchema(productSchema, {
+describe("recipeSchema", () => {
+  it("rejects a blank recipe name", () => {
+    const parsed = parseWithSchema(recipeSchema, {
+      id: "recipe_1",
       name: "  ",
-      calories: 1,
-      protein: 1,
+      totalWeight: 200,
+      calories: 50,
+      protein: 2,
       fat: 1,
-      carbs: 1,
+      carbs: 8,
+      ingredients: [],
     });
     expect("error" in parsed).toBe(true);
   });

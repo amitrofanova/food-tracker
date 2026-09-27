@@ -3,10 +3,6 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 vi.mock("../lib/prisma", () => ({
   prisma: {
-    product: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-    },
     customProduct: {
       update: vi.fn(),
     },
@@ -149,11 +145,9 @@ describe("createEntry snapshot identity", () => {
       reply as unknown as FastifyReply,
     );
 
-    expect(prisma.product.upsert).not.toHaveBeenCalled();
-    expect(prisma.product.findUnique).not.toHaveBeenCalled();
     expect(prisma.diaryEntry.create).toHaveBeenCalledWith({
       data: {
-        date: new Date("2026-09-18"),
+        date: new Date(Date.UTC(2026, 8, 18)),
         weight: 150,
         mealType: "BREAKFAST",
         userId: ownUserId,
@@ -190,7 +184,6 @@ describe("createEntry snapshot identity", () => {
     await createEntry(mockRequest(tvorogA, ownUserId), replyA as unknown as FastifyReply);
     await createEntry(mockRequest(tvorogB, otherUserId), replyB as unknown as FastifyReply);
 
-    expect(prisma.product.upsert).not.toHaveBeenCalled();
     expect(prisma.diaryEntry.create).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -258,7 +251,6 @@ describe("createEntry snapshot identity", () => {
     const reply = mockReply();
     await createEntry(mockRequest(recipeBody), reply as unknown as FastifyReply);
 
-    expect(prisma.product.upsert).not.toHaveBeenCalled();
     expect(prisma.diaryEntry.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -276,19 +268,20 @@ describe("getEntriesByDate snapshot read", () => {
     vi.clearAllMocks();
   });
 
-  it("returns the stored snapshot and does not read Product", async () => {
+  it("returns the stored snapshot for that calendar date", async () => {
     const snapshot = entryRow(tvorogA, ownUserId, 1);
     vi.mocked(prisma.diaryEntry.findMany).mockResolvedValue([snapshot] as never);
 
     const reply = mockReply();
     await getEntriesByDate(mockGetRequest(ownUserId), reply as unknown as FastifyReply);
 
-    expect(prisma.product.findUnique).not.toHaveBeenCalled();
-    expect(prisma.diaryEntry.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ userId: ownUserId }),
-      }),
-    );
+    expect(prisma.diaryEntry.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: ownUserId,
+        date: new Date(Date.UTC(2026, 8, 18)),
+      },
+      orderBy: { createdAt: "desc" },
+    });
     expect(reply.payload).toEqual([
       expect.objectContaining({
         productName: "Творог",
@@ -297,8 +290,35 @@ describe("getEntriesByDate snapshot read", () => {
         fat: 5,
         carbs: 3,
         weight: 150,
+        date: "2026-09-18",
       }),
     ]);
+  });
+
+  it("rejects a missing or impossible date without querying a local day range", async () => {
+    const missing = mockReply();
+    await getEntriesByDate(
+      {
+        user: { id: ownUserId },
+        query: {},
+      } as FastifyRequest<{ Querystring: { date?: string } }>,
+      missing as unknown as FastifyReply,
+    );
+
+    expect(missing.statusCode).toBe(400);
+    expect(prisma.diaryEntry.findMany).not.toHaveBeenCalled();
+
+    const invalid = mockReply();
+    await getEntriesByDate(
+      {
+        user: { id: ownUserId },
+        query: { date: "2026-02-31" },
+      } as FastifyRequest<{ Querystring: { date?: string } }>,
+      invalid as unknown as FastifyReply,
+    );
+
+    expect(invalid.statusCode).toBe(400);
+    expect(prisma.diaryEntry.findMany).not.toHaveBeenCalled();
   });
 
   it("does not drift when a custom product is later edited", async () => {

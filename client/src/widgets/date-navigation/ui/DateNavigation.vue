@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useDiaryStore } from "@/entities/diary-entry";
 import { storeToRefs } from "pinia";
-import { Icon } from "@/shared/ui/icon";
-import { AppButton, ButtonIcon } from "@/shared/ui/button";
+import { shiftCalendarDate } from "@/shared/lib/calendarDate";
+import { ButtonIcon } from "@/shared/ui/button";
 
 const diaryStore = useDiaryStore();
 const { selectedDate } = storeToRefs(diaryStore);
@@ -13,15 +13,11 @@ const formattedDate = computed(() => {
 });
 
 const prevDay = () => {
-  const date = new Date(selectedDate.value);
-  date.setDate(date.getDate() - 1);
-  diaryStore.setSelectedDate(date.toISOString().slice(0, 10));
+  diaryStore.setSelectedDate(shiftCalendarDate(selectedDate.value, -1));
 };
 
 const nextDay = () => {
-  const date = new Date(selectedDate.value);
-  date.setDate(date.getDate() + 1);
-  diaryStore.setSelectedDate(date.toISOString().slice(0, 10));
+  diaryStore.setSelectedDate(shiftCalendarDate(selectedDate.value, 1));
 };
 </script>
 
