@@ -63,14 +63,6 @@ export const recipeSchema = z.object({
   ingredients: z.array(recipeIngredientSchema),
 });
 
-export const productSchema = z.object({
-  name: productNameSchema,
-  calories: nutritionValueSchema,
-  protein: nutritionValueSchema,
-  fat: nutritionValueSchema,
-  carbs: nutritionValueSchema,
-});
-
 export const calendarDateSchema = z
   .string({ error: "date is required" })
   .trim()
@@ -114,7 +106,6 @@ export const updateMeSchema = z.object({
 
 export type CustomProductInput = z.infer<typeof customProductSchema>;
 export type RecipeInput = z.infer<typeof recipeSchema>;
-export type ProductInput = z.infer<typeof productSchema>;
 export type CreateEntryInput = z.infer<typeof createEntrySchema>;
 export type UpdateEntryInput = z.infer<typeof updateEntrySchema>;
 export type UpdateMeInput = z.infer<typeof updateMeSchema>;

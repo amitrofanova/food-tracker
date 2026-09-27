@@ -5,7 +5,6 @@ export {
   mealTypeSchema,
   customProductSchema,
   recipeSchema,
-  productSchema,
   calendarDateSchema,
   createEntrySchema,
   updateEntrySchema,
@@ -14,7 +13,6 @@ export {
 export type {
   CustomProductInput,
   RecipeInput,
-  ProductInput,
   CreateEntryInput,
   UpdateEntryInput,
   UpdateMeInput,

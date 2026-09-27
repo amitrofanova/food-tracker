@@ -26,7 +26,7 @@
 - **Браузер:** сессия в httpOnly-cookie (`access_token`, `refresh_token`), `withCredentials`. В JSON login/refresh только пользователь, без токенов.
 - **Capacitor:** заголовок `X-Client: capacitor`; access и refresh JWT в теле ответа, в Preferences; к API — `Authorization: Bearer`.
 - Refresh ротируется; повтор отозванного refresh инвалидирует семейство токенов пользователя.
-- Тела write-запросов (auth, дневник, свои продукты, рецепты, продукты, `PATCH /api/auth/me`) проверяются Zod.
+- Тела write-запросов (auth, дневник, свои продукты, рецепты, `PATCH /api/auth/me`) проверяются Zod.
 
 Поиск каталога (`GET /api/products/search`, штрихкод) доступен без входа. Дневник, свои продукты, рецепты, профиль и разбор голоса — только с сессией.
 

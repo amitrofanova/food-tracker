@@ -18,4 +18,3 @@ export {
 } from "./diary";
 export { fetchRecipes, upsertRecipe, deleteRecipeApi } from "./recipes";
 export { fetchCustomProducts, upsertCustomProduct, deleteCustomProduct } from "./customProducts";
-export { upsertProduct } from "./products";

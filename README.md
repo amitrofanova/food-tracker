@@ -26,7 +26,7 @@ Calories, protein, fat, and carbs on products, recipes, and diary rows are **per
 - **Browser:** session in httpOnly cookies (`access_token`, `refresh_token`), `withCredentials`. Login/refresh JSON is the user object only — no tokens in the body.
 - **Capacitor:** `X-Client: capacitor`; access and refresh JWTs in the JSON body, stored in Preferences; `Authorization: Bearer` on API calls.
 - Refresh tokens are rotated; reusing a revoked refresh invalidates that user’s refresh family.
-- Write endpoints (auth, diary, custom products, recipes, products, `PATCH /api/auth/me`) are validated with Zod.
+- Write endpoints (auth, diary, custom products, recipes, `PATCH /api/auth/me`) are validated with Zod.
 
 Catalog search (`GET /api/products/search`, barcode) does not require login. Diary, custom products, recipes, profile, and voice parse do.
 
