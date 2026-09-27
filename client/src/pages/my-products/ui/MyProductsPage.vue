@@ -18,10 +18,6 @@ const selectedMeal = ref<MealType>("breakfast");
 
 const { isMobile } = useBreakpoints();
 
-const onCreated = (product: IProduct) => {
-  products.value.push(product);
-};
-
 const onAddEntry = (product: IProduct, weight: number, meal: MealType) => {
   diaryStore.addEntry(product, weight, meal);
   showAddModal.value = false;
@@ -70,7 +66,6 @@ const handleSave = async (product: IProduct) => {
   <CreateProductModal
     v-model="showAddModal"
     :default-meal="selectedMeal"
-    @created="onCreated"
     @add-entry="onAddEntry"
   />
 

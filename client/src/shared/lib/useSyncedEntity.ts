@@ -38,25 +38,31 @@ export async function reconcileSyncedCollection<T extends { id: string }>(
 
 export function useSyncedEntity<T extends { id: string }>(
   options: SyncedEntityOptions<T>,
-  syncVersion?: Ref<number>,
+  binding?: { syncVersion?: Ref<number>; bindLifecycle?: boolean },
 ) {
   const items = ref<T[]>([]) as Ref<T[]>;
   const isLoading = ref(false);
+  const bindLifecycle = binding?.bindLifecycle !== false;
+  let loadSeq = 0;
 
   const loadAll = async (): Promise<void> => {
+    const seq = ++loadSeq;
     isLoading.value = true;
     try {
+      let next: T[];
       if (isAuthenticated()) {
         try {
-          items.value = await reconcileSyncedCollection(options);
+          next = await reconcileSyncedCollection(options);
         } catch {
-          items.value = await options.getAllLocal();
+          next = await options.getAllLocal();
         }
       } else {
-        items.value = await options.getAllLocal();
+        next = await options.getAllLocal();
       }
+      if (seq !== loadSeq) return;
+      items.value = next;
     } finally {
-      isLoading.value = false;
+      if (seq === loadSeq) isLoading.value = false;
     }
   };
 
@@ -74,8 +80,10 @@ export function useSyncedEntity<T extends { id: string }>(
     items.value = items.value.filter((i) => i.id !== id);
   };
 
-  onMounted(loadAll);
-  if (syncVersion) watch(syncVersion, loadAll);
+  if (bindLifecycle) {
+    onMounted(loadAll);
+    if (binding?.syncVersion) watch(binding.syncVersion, loadAll);
+  }
 
   return { items, isLoading, loadAll, save, remove };
 }

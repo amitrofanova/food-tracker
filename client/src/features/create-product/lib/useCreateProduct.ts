@@ -1,24 +1,16 @@
-import { db } from "@/shared/db";
 import type { IProduct } from "@/entities/product";
-import { upsertCustomProduct } from "@/shared/api";
-import { isAuthenticated } from "@/shared/lib/auth";
+import { useCustomProductStore } from "@/entities/product";
 import { extractErrorMessage } from "@/shared/lib/error";
 
 export function useCreateProduct() {
+  const store = useCustomProductStore();
   const error = ref<string | null>(null);
 
   const createProduct = async (formData: IProduct): Promise<IProduct> => {
     try {
       error.value = null;
-
-      if (isAuthenticated()) {
-        const saved = await upsertCustomProduct(formData);
-        await db.putCustomProduct(saved);
-        return saved;
-      } else {
-        await db.putCustomProduct(formData);
-        return formData;
-      }
+      await store.save(formData);
+      return formData;
     } catch (err) {
       error.value = extractErrorMessage(err, "Ошибка создания продукта");
       console.error("Failed to create product:", err);

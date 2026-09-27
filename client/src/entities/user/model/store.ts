@@ -13,6 +13,7 @@ import {
 } from "@/shared/api";
 import { db } from "@/shared/db";
 import type { IUser } from "./types";
+import { bumpDataSyncVersion, dataSyncVersion } from "@/shared/lib/dataSync";
 import {
   clearNativeTokens,
   isNativePlatform,
@@ -25,7 +26,6 @@ export const useUserStore = defineStore("user", () => {
   const user = ref<IUser | null>(null);
   const error = ref<string | null>(null);
   const hasPendingSync = ref(false);
-  const syncVersion = ref(0);
   const authModalOpen = ref(false);
 
   setUnauthorizedHandler(() => {
@@ -75,6 +75,7 @@ export const useUserStore = defineStore("user", () => {
     }
     user.value = toUser(data.user);
     authModalOpen.value = false;
+    bumpDataSyncVersion();
   }
 
   async function init() {
@@ -83,10 +84,12 @@ export const useUserStore = defineStore("user", () => {
       const { data } = await getCurrentUser();
       user.value = toUser(data);
       setSessionHint(true);
+      bumpDataSyncVersion();
       await checkLocalData();
     } catch {
       setSessionHint(false);
       await clearNativeTokens();
+      bumpDataSyncVersion();
     }
   }
 
@@ -125,6 +128,7 @@ export const useUserStore = defineStore("user", () => {
     await clearNativeTokens();
     user.value = null;
     hasPendingSync.value = false;
+    bumpDataSyncVersion();
   }
 
   async function setCalorieBudget(budget: number) {
@@ -134,7 +138,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function notifySynced() {
-    syncVersion.value++;
+    bumpDataSyncVersion();
   }
 
   function openAuthModal() {
@@ -151,7 +155,7 @@ export const useUserStore = defineStore("user", () => {
     isLoggedIn,
     authModalOpen,
     hasPendingSync,
-    syncVersion,
+    syncVersion: dataSyncVersion,
     notifySynced,
     openAuthModal,
     login,

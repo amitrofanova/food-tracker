@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useQueryClient } from "@tanstack/vue-query";
 import { AppModal } from "@/shared/ui/modal";
 import { AppButton } from "@/shared/ui/button";
 import { useUserStore } from "@/entities/user";
@@ -9,7 +8,6 @@ import { formatPendingLocalSummary, type PendingLocalCounts } from "../lib/syncL
 
 const userStore = useUserStore();
 const diaryStore = useDiaryStore();
-const queryClient = useQueryClient();
 const syncer = createBrowserLocalDataSyncer();
 
 const pendingCounts = ref<PendingLocalCounts>({ entries: 0, products: 0, recipes: 0 });
@@ -38,8 +36,6 @@ async function onConfirmSync() {
     await syncer.confirmSync();
     userStore.hasPendingSync = false;
     userStore.notifySynced();
-    queryClient.invalidateQueries({ queryKey: ["custom-products"] });
-    queryClient.invalidateQueries({ queryKey: ["recipes-search"] });
     await diaryStore.loadEntries();
   } catch (err) {
     syncError.value =

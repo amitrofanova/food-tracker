@@ -1,7 +1,8 @@
-import { useQuery, useInfiniteQuery, type InfiniteData } from "@tanstack/vue-query";
+import { useInfiniteQuery, type InfiniteData } from "@tanstack/vue-query";
+import { useCustomProductStore, type IProduct } from "@/entities/product";
+import { useRecipeStore, type IRecipe } from "@/entities/recipe";
 import { db } from "@/shared/db";
 import { useDebounce } from "@/shared/lib/debounce";
-import type { IProduct } from "@/entities/product";
 import { searchProducts as searchApi } from "../api/openFoodFactsApi";
 import { mapOpenFoodFactsToProduct, type OpenFoodFactsProduct } from "../model/mappers";
 import { rankProductsByQuery } from "./rankProductsByQuery";
@@ -21,8 +22,23 @@ const pushUnique = (target: IProduct[], seen: Set<string>, items: IProduct[]) =>
   }
 };
 
+function recipeAsProduct(recipe: IRecipe): IProduct {
+  return {
+    id: recipe.id,
+    name: recipe.name,
+    calories: recipe.calories,
+    protein: recipe.protein,
+    fat: recipe.fat,
+    carbs: recipe.carbs,
+  };
+}
+
 export const useProductSearch = () => {
+  const customProductStore = useCustomProductStore();
+  const recipeStore = useRecipeStore();
   const searchQuery = ref<string>("");
+  const cachedProducts = ref<IProduct[]>([]);
+  const cacheLoading = ref(false);
   const dbError = ref<string | null>(null);
   const MIN_QUERY_LENGTH = 2;
   const STALE_TIME = 300000; // 5 * 60 * 1000
@@ -42,53 +58,32 @@ export const useProductSearch = () => {
   const trimmedQuery = computed(() => searchQuery.value.trim());
   const isEnabled = computed(() => trimmedQuery.value.length >= MIN_QUERY_LENGTH);
 
-  const { data: customProductsData, isFetching: customFetching } = useQuery<IProduct[]>({
-    queryKey: computed(() => ["custom-products", trimmedQuery.value]),
-    queryFn: async () => {
+  watch(
+    trimmedQuery,
+    async (query) => {
+      if (query.length < MIN_QUERY_LENGTH) {
+        cachedProducts.value = [];
+        cacheLoading.value = false;
+        return;
+      }
+
+      cacheLoading.value = true;
       try {
+        const rows = await db.getProducts(query);
+        if (trimmedQuery.value !== query) return;
+        cachedProducts.value = rows;
         dbError.value = null;
-        return await db.getCustomProducts(searchQuery.value);
       } catch (err) {
-        dbError.value =
-          err instanceof Error ? err.message : "Ошибка загрузки пользовательских продуктов";
-        console.error("Failed to load custom products:", err);
-        return [];
-      }
-    },
-    enabled: isEnabled,
-    staleTime: Infinity,
-  });
-
-  const { data: recipesData, isFetching: recipesFetching } = useQuery<IProduct[]>({
-    queryKey: computed(() => ["recipes-search", trimmedQuery.value]),
-    queryFn: async () => {
-      try {
-        const q = trimmedQuery.value.toLowerCase();
-        const all = await db.getAllRecipes();
-        return all.filter((r) => r.name.toLowerCase().includes(q)) as IProduct[];
-      } catch (err) {
-        console.error("Failed to load recipes for search:", err);
-        return [];
-      }
-    },
-    enabled: isEnabled,
-    staleTime: Infinity,
-  });
-
-  const { data: cachedProductsData, isFetching: cachedFetching } = useQuery<IProduct[]>({
-    queryKey: computed(() => ["cached-products", trimmedQuery.value]),
-    queryFn: async () => {
-      try {
-        return await db.getProducts(searchQuery.value);
-      } catch (err) {
+        if (trimmedQuery.value !== query) return;
         dbError.value = err instanceof Error ? err.message : "Ошибка загрузки продуктов";
         console.error("Failed to load local products:", err);
-        return [];
+        cachedProducts.value = [];
+      } finally {
+        if (trimmedQuery.value === query) cacheLoading.value = false;
       }
     },
-    enabled: isEnabled,
-    staleTime: Infinity,
-  });
+    { immediate: true },
+  );
 
   const {
     data,
@@ -98,8 +93,7 @@ export const useProductSearch = () => {
     isLoading: isApiLoading,
     error,
   } = useInfiniteQuery<ApiProductsPage, Error, ApiProductsPages, [string, string], number>({
-    // 'paged' busts caches from the old "skip API when local is enough" queryFn
-    queryKey: computed(() => ["api-products-paged", trimmedQuery.value]),
+    queryKey: computed(() => ["off-products", trimmedQuery.value]),
     queryFn: async ({ pageParam = 1 }) => {
       try {
         dbError.value = null;
@@ -130,25 +124,35 @@ export const useProductSearch = () => {
     staleTime: STALE_TIME,
   });
 
+  const ownedMatches = computed<IProduct[]>(() => {
+    if (!isEnabled.value) return [];
+    const query = trimmedQuery.value.toLowerCase();
+    const custom = customProductStore.products.filter((product) =>
+      product.name.toLowerCase().startsWith(query),
+    );
+    const recipes = recipeStore.recipes
+      .filter((recipe) => recipe.name.toLowerCase().includes(query))
+      .map(recipeAsProduct);
+    return [...custom, ...recipes];
+  });
+
   const allProducts = computed<IProduct[]>(() => {
     const seen = new Set<string>();
     const merged: IProduct[] = [];
-    pushUnique(merged, seen, customProductsData.value || []);
-    pushUnique(merged, seen, recipesData.value || []);
-    pushUnique(merged, seen, cachedProductsData.value || []);
+    pushUnique(merged, seen, ownedMatches.value);
+    pushUnique(merged, seen, cachedProducts.value);
     pushUnique(merged, seen, data.value?.pages.flatMap((page) => page.products) || []);
     return rankProductsByQuery(merged, trimmedQuery.value);
   });
-
-  const localFetching = computed(
-    () => customFetching.value || recipesFetching.value || cachedFetching.value,
-  );
 
   const isInitialLoading = computed(
     () =>
       isEnabled.value &&
       allProducts.value.length === 0 &&
-      (isApiLoading.value || localFetching.value),
+      (isApiLoading.value ||
+        cacheLoading.value ||
+        customProductStore.isLoading ||
+        recipeStore.isLoading),
   );
 
   const isFetchingMore = computed(
