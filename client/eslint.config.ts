@@ -65,4 +65,12 @@ export default defineConfigWithVueTs(
   },
 
   skipFormatting,
+
+  {
+    files: ["src/shared/ui/icon/icons/*.vue"],
+    rules: {
+      // File name is the icon registry key: <Icon name="Close" />.
+      "vue/multi-word-component-names": "off",
+    },
+  },
 );

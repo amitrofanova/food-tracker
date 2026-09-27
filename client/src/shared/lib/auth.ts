@@ -28,6 +28,12 @@ export function setUnauthorizedHandler(handler: () => void): void {
   unauthorizedHandler = handler;
 }
 
+export async function clearNativeTokens(): Promise<void> {
+  if (!isNativePlatform()) return;
+  await Preferences.remove({ key: NATIVE_ACCESS_KEY });
+  await Preferences.remove({ key: NATIVE_REFRESH_KEY });
+}
+
 export function clearClientSession(): void {
   setSessionHint(false);
   void clearNativeTokens();
@@ -50,10 +56,4 @@ export async function setNativeTokens(accessToken: string, refreshToken: string)
   if (!isNativePlatform()) return;
   await Preferences.set({ key: NATIVE_ACCESS_KEY, value: accessToken });
   await Preferences.set({ key: NATIVE_REFRESH_KEY, value: refreshToken });
-}
-
-export async function clearNativeTokens(): Promise<void> {
-  if (!isNativePlatform()) return;
-  await Preferences.remove({ key: NATIVE_ACCESS_KEY });
-  await Preferences.remove({ key: NATIVE_REFRESH_KEY });
 }

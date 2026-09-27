@@ -24,6 +24,8 @@ declare global {
     SpeechRecognition?: new () => WebSpeechRecognition;
     webkitSpeechRecognition?: new () => WebSpeechRecognition;
   }
+  var SpeechRecognition: (new () => WebSpeechRecognition) | undefined;
+  var webkitSpeechRecognition: (new () => WebSpeechRecognition) | undefined;
 }
 
 export type VoiceInputState = "idle" | "listening" | "error";
@@ -84,7 +86,7 @@ export function useVoiceInput() {
 
   function _listenWeb(): Promise<string[] | null> {
     return new Promise((resolve) => {
-      const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+      const Ctor = globalThis.SpeechRecognition ?? globalThis.webkitSpeechRecognition;
       if (!Ctor) {
         error.value = "Голосовой ввод не поддерживается в этом браузере";
         state.value = "error";

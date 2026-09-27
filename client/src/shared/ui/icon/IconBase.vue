@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Component } from "vue";
+
 const SIZE_MAP = {
   sm: 16,
   md: 24,
@@ -13,7 +15,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: "md",
+  size: SIZE_MAP.md,
 });
 
 const iconStyle = computed(() => {
@@ -33,12 +35,13 @@ const iconStyle = computed(() => {
   };
 });
 
-const modules = import.meta.glob("./icons/*.vue");
+const modules = import.meta.glob<{ default: Component }>("./icons/*.vue");
 
 const iconComponent = computed(() => {
   const path = `./icons/${props.name}.vue`;
-  if (modules[path]) {
-    return defineAsyncComponent(modules[path] as any);
+  const loader = modules[path];
+  if (loader) {
+    return defineAsyncComponent(loader);
   }
   console.warn(`Icon "${props.name}" not found`);
   return null;

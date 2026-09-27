@@ -40,7 +40,7 @@
 | TypeScript | Типы |
 | Pinia | Состояние клиента |
 | Vue Router | Маршруты |
-| TanStack Query | Серверное состояние и кэш |
+| TanStack Query | Кэш страниц поиска Open Food Facts |
 | Axios | HTTP (`/api`, cookie) |
 | Dexie (IndexedDB) | Гостевые данные и локальный кэш |
 | Vite | Dev-сервер и сборка |

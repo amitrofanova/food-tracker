@@ -40,7 +40,7 @@ Catalog search (`GET /api/products/search`, barcode) does not require login. Dia
 | TypeScript | Types |
 | Pinia | Client state |
 | Vue Router | Routes |
-| TanStack Query | Server state and caching |
+| TanStack Query | Cache for Open Food Facts search pages |
 | Axios | HTTP (`/api`, cookies) |
 | Dexie (IndexedDB) | Guest data and a local cache |
 | Vite | Dev server and build |
