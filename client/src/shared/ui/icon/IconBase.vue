@@ -1,66 +1,64 @@
 <script setup lang="ts">
-import type { Component } from "vue";
+import { icons, type IconName, type IconSize } from "./registry";
 
-const SIZE_MAP = {
-  sm: 16,
-  md: 24,
-  lg: 32,
-} as const;
+defineOptions({ inheritAttrs: false });
 
-type IconSize = keyof typeof SIZE_MAP;
+const props = withDefaults(
+  defineProps<{
+    name: IconName;
+    size?: IconSize;
+    /** CSS-цвет глифа. Без prop иконка наследует currentColor родителя. */
+    color?: string;
+    /**
+     * Доступное имя, если смысл несёт сама иконка.
+     * Без label иконка декоративная и скрыта от скринридера.
+     * У кнопки без текста имя задаётся на <button> через aria-label.
+     */
+    label?: string;
+  }>(),
+  {
+    size: "md",
+  },
+);
 
-interface Props {
-  name: string;
-  size?: IconSize | number;
-}
+const attrs = useAttrs();
 
-const props = withDefaults(defineProps<Props>(), {
-  size: SIZE_MAP.md,
-});
-
-const iconStyle = computed(() => {
-  let size: number;
-
-  if (typeof props.size === "number") {
-    size = props.size;
-  } else if (props.size && props.size in SIZE_MAP) {
-    size = SIZE_MAP[props.size as IconSize];
-  } else {
-    size = SIZE_MAP.md;
-  }
-
-  return {
-    width: `${size}px`,
-    height: `${size}px`,
-  };
-});
-
-const modules = import.meta.glob<{ default: Component }>("./icons/*.vue");
-
-const iconComponent = computed(() => {
-  const path = `./icons/${props.name}.vue`;
-  const loader = modules[path];
-  if (loader) {
-    return defineAsyncComponent(loader);
-  }
-  console.warn(`Icon "${props.name}" not found`);
-  return null;
-});
+const iconStyle = computed(() => (props.color ? { color: props.color } : undefined));
 </script>
 
 <template>
-  <component :is="iconComponent" v-bind="$attrs" class="icon" :style="iconStyle" />
+  <component
+    :is="icons[name]"
+    v-bind="attrs"
+    class="icon"
+    :class="`icon_${size}`"
+    :style="iconStyle"
+    focusable="false"
+    :role="label ? 'img' : undefined"
+    :aria-label="label || undefined"
+    :aria-hidden="label ? undefined : true"
+  />
 </template>
 
 <style scoped>
 .icon {
   display: inline-block;
   flex-shrink: 0;
-  width: 1em;
-  height: 1em;
   vertical-align: middle;
   fill: currentColor;
   stroke: currentColor;
+}
+.icon_sm {
+  width: 16px;
+  height: 16px;
+}
+.icon_md {
+  width: 24px;
+  height: 24px;
+}
+.icon_lg {
+  width: 32px;
+  height: 32px;
 }
 .icon :deep(svg) {
   display: block;
