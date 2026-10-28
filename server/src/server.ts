@@ -6,6 +6,7 @@ import staticFiles from "@fastify/static";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import cookie from "@fastify/cookie";
+import { prepareDummyPasswordHash } from "./controllers/authController";
 import authRoutes from "./routes/authRoutes";
 import entryRoutes from "./routes/entryRoutes";
 import productRoutes from "./routes/productRoutes";
@@ -98,6 +99,8 @@ const start = async () => {
   }
 
   const port = parseInt(process.env.PORT || "3001", 10);
+
+  await prepareDummyPasswordHash();
 
   try {
     await fastify.listen({ port, host: "0.0.0.0" });

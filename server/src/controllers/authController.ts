@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { Prisma } from "../generated/prisma/client";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
@@ -18,8 +19,17 @@ import {
 import { parseWithSchema, updateMeSchema } from "../lib/validation";
 
 const SALT_ROUNDS = 12;
-const DUMMY_PASSWORD_HASH =
-  "$2b$12$pev8Qw.4vh7hBIPTvGiUf.zQpSH0KN4./xW0QvMidfWO.3bDNfNd6";
+
+let dummyPasswordHash: Promise<string> | undefined;
+
+function getDummyPasswordHash(): Promise<string> {
+  dummyPasswordHash ??= bcrypt.hash(randomBytes(32).toString("hex"), SALT_ROUNDS);
+  return dummyPasswordHash;
+}
+
+export function prepareDummyPasswordHash(): Promise<string> {
+  return getDummyPasswordHash();
+}
 
 type PublicUser = {
   id: number;
@@ -83,28 +93,25 @@ export const register = async (request: FastifyRequest, reply: FastifyReply) => 
 
   try {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         password: passwordHash,
         calorieBudget: 2000,
       },
-      select: { id: true, email: true, createdAt: true },
     });
-
-    return reply.status(201).send(user);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return reply
-          .status(409)
-          .send({ error: "Такой email уже используется" });
-      }
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return reply.status(201).send({ ok: true });
     }
     console.error("Registration error:", error);
     return reply.status(500).send({ error: "Ошибка сервера" });
   }
+
+  return reply.status(201).send({ ok: true });
 };
 
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -120,13 +127,9 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
       where: { email },
     });
 
-    if (!user) {
-      await bcrypt.compare(password, DUMMY_PASSWORD_HASH);
-      return reply.status(401).send({ error: "Неверный email или пароль" });
-    }
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
+    const passwordHash = user?.password ?? (await getDummyPasswordHash());
+    const passwordMatches = await bcrypt.compare(password, passwordHash);
+    if (!user || !passwordMatches) {
       return reply.status(401).send({ error: "Неверный email или пароль" });
     }
 

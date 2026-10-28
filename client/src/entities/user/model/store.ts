@@ -110,11 +110,16 @@ export const useUserStore = defineStore("user", () => {
     try {
       error.value = null;
       await registerUser({ email, password });
-      await login(email, password);
     } catch (err: unknown) {
       error.value = axios.isAxiosError(err)
         ? (err.response?.data?.error ?? "Ошибка регистрации")
         : "Ошибка регистрации";
+      return;
+    }
+
+    await login(email, password);
+    if (error.value) {
+      error.value = "Не удалось зарегистрироваться. Попробуйте ещё раз.";
     }
   }
 
