@@ -32,8 +32,9 @@ export async function fetchDiaryEntries(date?: string): Promise<ApiDiaryEntry[]>
   return data;
 }
 
-export async function saveDiaryEntry(entry: EntryCreatePayload) {
-  return http.post("/entries", entry);
+export async function saveDiaryEntry(entry: EntryCreatePayload): Promise<ApiDiaryEntry> {
+  const { data } = await http.post<ApiDiaryEntry>("/entries", entry);
+  return data;
 }
 
 export async function updateDiaryEntry(

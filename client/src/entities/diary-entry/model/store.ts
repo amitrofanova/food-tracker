@@ -24,6 +24,8 @@ export const useDiaryStore = defineStore("diary", () => {
   const entries = ref<IDiaryEntry[]>([]);
   const selectedDate = ref(localCalendarDate());
   const isLoading = ref(false);
+  /** True after the first loadEntries settles — App shell stays mounted after that. */
+  const isHydrated = ref(false);
   const error = ref<string | null>(null);
 
   async function loadEntries(date?: string) {
@@ -54,6 +56,7 @@ export const useDiaryStore = defineStore("diary", () => {
       console.error("Failed to load entries:", err);
     } finally {
       isLoading.value = false;
+      isHydrated.value = true;
     }
   }
 
@@ -64,8 +67,8 @@ export const useDiaryStore = defineStore("diary", () => {
       const localEntry = createLocalDiaryEntry(product, { date, weight, mealType });
       if (isAuthenticated()) {
         // Snapshot only: do not upsert a global Product by name for custom/recipe/offline food.
-        await saveDiaryEntry(toEntryCreatePayload(localEntry));
-        await loadEntries(date);
+        const created = await saveDiaryEntry(toEntryCreatePayload(localEntry));
+        entries.value = [...entries.value, fromApiDiaryEntry(created)];
       } else {
         await db.saveEntry(localEntry);
         entries.value = [...entries.value, localEntry];
@@ -81,8 +84,9 @@ export const useDiaryStore = defineStore("diary", () => {
     try {
       error.value = null;
       if (isAuthenticated()) {
-        await updateDiaryEntry(id, { weight, mealType });
-        await loadEntries();
+        const updated = await updateDiaryEntry(id, { weight, mealType });
+        const next = fromApiDiaryEntry(updated);
+        entries.value = entries.value.map((e) => (e.id === id ? next : e));
       } else {
         const entry = entries.value.find((e) => e.id === id);
         if (!entry) return;
@@ -106,11 +110,10 @@ export const useDiaryStore = defineStore("diary", () => {
       error.value = null;
       if (isAuthenticated()) {
         await deleteDiaryEntry(id);
-        await loadEntries();
       } else {
         await db.deleteEntry(id);
-        entries.value = entries.value.filter((e) => e.id !== id);
       }
+      entries.value = entries.value.filter((e) => e.id !== id);
     } catch (err) {
       error.value = extractErrorMessage(err, "Ошибка удаления записи");
       console.error("Failed to delete entry:", err);
@@ -181,6 +184,7 @@ export const useDiaryStore = defineStore("diary", () => {
     entries,
     selectedDate,
     isLoading,
+    isHydrated,
     error,
     loadEntries,
     addEntry,

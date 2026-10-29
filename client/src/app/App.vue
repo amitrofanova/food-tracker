@@ -12,23 +12,24 @@ import AppleSpinner from "./ui/AppleSpinner.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 const diaryStore = useDiaryStore();
-const { isLoading } = storeToRefs(diaryStore);
+const { isHydrated } = storeToRefs(diaryStore);
 const route = useRoute();
 const { isMobile, isDesktop } = useBreakpoints();
 
 const showHeader = computed(() => !(isMobile.value && route.meta.hideHeaderOnMobile));
 
-watch(isLoggedIn, (loggedIn: boolean) => {
-  if (loggedIn) {
+watch(
+  isLoggedIn,
+  (loggedIn: boolean) => {
+    if (!loggedIn) diaryStore.clearEntries();
     diaryStore.loadEntries();
-  } else {
-    diaryStore.clearEntries();
-  }
-});
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
-  <div v-if="isLoading" class="loading-screen">
+  <div v-if="!isHydrated" class="loading-screen">
     <AppleSpinner />
   </div>
   <DefaultLayout v-else>
