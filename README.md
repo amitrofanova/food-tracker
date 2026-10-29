@@ -1,94 +1,96 @@
 # Food Tracker
 
-🇬🇧 English | [🇷🇺 Русский](README.ru.md)
+[🇬🇧 English](README.en.md) | 🇷🇺 Русский
 
-Full-stack app for a daily food diary, calorie and macronutrient tracking. The UI is in Russian.
+Приложение для пищевого дневника и учёта калорий и БЖУ.
 
-Guest use is local (IndexedDB). An account stores the same data on the server; after login you can copy unsynced local diary entries, custom products, and recipes into the account.
+Демо доступно по адресу: https://food-tracker.37.46.129.184.sslip.io/
 
-## Features
+Без аккаунта данные живут локально (IndexedDB). С аккаунтом — на сервере; после входа можно перенести несинхронизированные записи дневника, свои продукты и рецепты в аккаунт.
 
-- Registration and login (email + password, at least 8 characters)
-- Guest mode — diary, custom products, and recipes without an account
-- Food diary by meal (breakfast, lunch, dinner, snack), with date navigation
-- Daily calories and macros (protein, fat, carbs); personal calorie budget when logged in
-- Product search in [Open Food Facts](https://world.openfoodfacts.org) (via the API)
-- Barcode scan on the native app (EAN/UPC → Open Food Facts)
-- Custom products and a recipe builder (nutrition per 100 g, portion on screen)
-- Calorie calculator (Mifflin–St Jeor BMR, TDEE, lose / maintain / gain)
-- Voice add-to-diary after login (speech → intent via OpenRouter)
-- After login: prompt to sync or discard local guest data
+## Функции
 
-Calories, protein, fat, and carbs on products, recipes, and diary rows are **per 100 g**. The UI multiplies by weight / 100 for the portion. A diary row stores a snapshot (`productName` + macros), so editing a custom product later does not rewrite past days.
+- Регистрация и вход (email + пароль, минимум 8 символов)
+- Гостевой режим — дневник, свои продукты и рецепты без аккаунта
+- Дневник по приёмам пищи (завтрак, обед, ужин, перекус) и датам
+- Сводка за день по калориям и БЖУ; своя норма калорий после входа
+- Поиск продуктов в [Open Food Facts](https://world.openfoodfacts.org) (через API)
+- Сканирование штрихкода в нативном приложении (EAN/UPC → Open Food Facts)
+- Свои продукты и конструктор рецептов (КБЖУ на 100 г, на экране — порция)
+- Калькулятор нормы (Mifflin–St Jeor, TDEE, похудение / поддержание / набор)
+- Голосовое добавление в дневник после входа (речь → разбор через OpenRouter)
+- После входа: перенести локальные данные в аккаунт или отбросить их
 
-## Auth and clients
+Калории, белки, жиры и углеводы у продуктов, рецептов и записей дневника хранятся **на 100 г**. Экран считает порцию как macros × вес / 100. Запись дневника — снимок (`productName` + КБЖУ): правка своего продукта не меняет уже сохранённые дни.
 
-- **Browser:** session in httpOnly cookies (`access_token`, `refresh_token`), `withCredentials`. Login/refresh JSON is the user object only — no tokens in the body.
-- **Capacitor:** `X-Client: capacitor`; access and refresh JWTs in the JSON body, stored in Preferences; `Authorization: Bearer` on API calls.
-- Refresh tokens are rotated; reusing a revoked refresh invalidates that user’s refresh family.
-- Write endpoints (auth, diary, custom products, recipes, `PATCH /api/auth/me`) are validated with Zod.
+## Авторизация и клиенты
 
-Catalog search (`GET /api/products/search`, barcode) does not require login. Diary, custom products, recipes, profile, and voice parse do.
+- **Браузер:** сессия в httpOnly-cookie (`access_token`, `refresh_token`), `withCredentials`. В JSON login/refresh только пользователь, без токенов.
+- **Capacitor:** заголовок `X-Client: capacitor`; access и refresh JWT в теле ответа, в Preferences; к API — `Authorization: Bearer`.
+- Refresh ротируется; повтор отозванного refresh инвалидирует семейство токенов пользователя.
+- Тела write-запросов (auth, дневник, свои продукты, рецепты, `PATCH /api/auth/me`) проверяются Zod.
 
-## Tech stack
+Поиск каталога (`GET /api/products/search`, штрихкод) доступен без входа. Дневник, свои продукты, рецепты, профиль и разбор голоса — только с сессией.
 
-### Client
+## Стек
 
-| Technology | Role |
+### Клиент
+
+| Технология | Роль |
 | --- | --- |
 | Vue 3 (Composition API, `<script setup>`) | UI |
-| TypeScript | Types |
-| Pinia | Client state |
-| Vue Router | Routes |
-| TanStack Query | Cache for Open Food Facts search pages |
-| Axios | HTTP (`/api`, cookies) |
-| Dexie (IndexedDB) | Guest data and a local cache |
-| Vite | Dev server and build |
-| Capacitor | Android / iOS shell |
-| FSD + Steiger | Layers and boundary lint |
+| TypeScript | Типы |
+| Pinia | Состояние клиента |
+| Vue Router | Маршруты |
+| TanStack Query | Кэш страниц поиска Open Food Facts |
+| Axios | HTTP (`/api`, cookie) |
+| Dexie (IndexedDB) | Гостевые данные и локальный кэш |
+| Vite | Dev-сервер и сборка |
+| Capacitor | Оболочка Android / iOS |
+| FSD + Steiger | Слои и проверка границ |
 
-### Server
+### Сервер
 
-| Technology | Role |
+| Технология | Роль |
 | --- | --- |
-| Fastify | HTTP, static SPA in production |
-| Prisma + PostgreSQL | Data |
-| JWT, httpOnly cookies, bcrypt | Auth |
-| Zod | Write-payload validation |
-| Helmet, CORS, rate limit | Hardening |
-| Open Food Facts | Product catalog proxy |
-| OpenRouter | Voice intent parse |
+| Fastify | HTTP, в проде — раздача SPA |
+| Prisma + PostgreSQL | Данные |
+| JWT, httpOnly-cookie, bcrypt | Аутентификация |
+| Zod | Валидация тел записи |
+| Helmet, CORS, rate limit | Защита |
+| Open Food Facts | Прокси каталога продуктов |
+| OpenRouter | Разбор голосовой фразы |
 
-Client and server both use Vitest.
+И клиент, и сервер покрыты тестами на Vitest.
 
-## Project structure
+## Структура проекта
 
-`client/` and `server/` live in this monorepo (Yarn workspaces).
+`client/` и `server/` лежат в этом монорепозитории (Yarn workspaces).
 
 ```
 food-tracker/
 ├── client/                     # Vue 3 SPA
 │   └── src/
-│       ├── app/                # Bootstrap, router, styles
+│       ├── app/                # Инициализация, роутер, стили
 │       ├── pages/              # home, search, my-products, recipes, recipe-detail, calorie-calculator
-│       ├── widgets/            # header, diary blocks, add-entry, voice
-│       ├── features/           # auth, search, create product/recipe, calorie budget, sync
+│       ├── widgets/            # шапка, блоки дневника, добавление, голос
+│       ├── features/           # auth, поиск, создание продукта/рецепта, норма калорий, sync
 │       ├── entities/           # user, product, diary-entry, recipe
-│       └── shared/             # UI, API client, Dexie, config
+│       └── shared/             # UI, API-клиент, Dexie, конфиг
 ├── server/                     # Fastify API
 │   ├── src/
 │   │   ├── controllers/
 │   │   ├── routes/             # /api/auth, entries, products, custom-products, recipes, voice
-│   │   ├── middleware/         # JWT from cookie or Bearer
-│   │   └── lib/                # Prisma, cookies/tokens, Zod schemas
+│   │   ├── middleware/         # JWT из cookie или Bearer
+│   │   └── lib/                # Prisma, cookie/токены, схемы Zod
 │   └── prisma/
-├── Dockerfile                  # Production image (COPY client / COPY server)
-├── docker-compose.yml          # Local dev with hot reload
-├── docker-compose.prod.yml     # App + Postgres on one host
+├── Dockerfile                  # Продакшн-образ (COPY client / COPY server)
+├── docker-compose.yml          # Локальная разработка с hot reload
+├── docker-compose.prod.yml     # Приложение + Postgres на одном хосте
 └── .env.example
 ```
 
-## Local development
+## Локальная разработка
 
 ```bash
 git clone git@github.com:amitrofanova/food-tracker.git
@@ -102,15 +104,15 @@ yarn
 docker compose up --build
 ```
 
-- Client: http://localhost:5174 (`/api` is proxied to the server)
+- Клиент: http://localhost:5174 (`/api` проксируется на сервер)
 - API: http://localhost:3001 (`GET /health`)
-- Postgres: `localhost:5433` (user/password/db: `postgres` / `postgres` / `food_tracker`)
+- Postgres: `localhost:5433` (пользователь/пароль/БД: `postgres` / `postgres` / `food_tracker`)
 
-Voice parse needs `OPENROUTER_API_KEY` in the environment (Compose passes it into the server). Without the key, the rest of the app still runs; voice returns 503.
+Для голоса нужен `OPENROUTER_API_KEY` в окружении (Compose пробрасывает его в сервер). Без ключа остальное работает; голос отвечает 503.
 
-### Without Compose
+### Без Compose
 
-Server (Node 22, `DATABASE_URL` and `JWT_SECRET` required):
+Сервер (Node 22, обязательны `DATABASE_URL` и `JWT_SECRET`):
 
 ```bash
 yarn
@@ -119,47 +121,47 @@ yarn workspace server prisma migrate deploy
 yarn dev:server
 ```
 
-Client:
+Клиент:
 
 ```bash
 yarn dev:client
-# or: yarn workspace food-tracker-client dev
+# или: yarn workspace food-tracker-client dev
 ```
 
-Vite proxies `/api` to `http://localhost:3001` (or `API_PROXY_TARGET`).
+Vite проксирует `/api` на `http://localhost:3001` (или на `API_PROXY_TARGET`).
 
-Tests: `yarn test` (both workspaces), or `yarn test:client` / `yarn test:server`.
+Тесты: `yarn test` (оба workspace), или `yarn test:client` / `yarn test:server`.
 
-## Environment (production)
+## Переменные окружения (продакшн)
 
-Copy `.env.example` to `.env`. Compose builds `DATABASE_URL` from `POSTGRES_*` — do not set `DATABASE_URL` in `.env`.
+Скопировать `.env.example` в `.env`. Compose собирает `DATABASE_URL` из `POSTGRES_*` — в `.env` её не задавать.
 
-| Variable | Purpose |
+| Переменная | Назначение |
 | --- | --- |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Postgres |
-| `JWT_SECRET` | Access-token signing (required, no code fallback) |
-| `APP_ORIGIN` | SPA origin for CORS (e.g. `https://your-domain`) |
-| `OPENROUTER_API_KEY` | Voice parse; omit to disable |
-| `OFF_USER_AGENT` | User-Agent for Open Food Facts (identify the app + contact) |
+| `JWT_SECRET` | Подпись access-токена (обязателен, в коде фолбэка нет) |
+| `APP_ORIGIN` | Origin SPA для CORS (например `https://your-domain`) |
+| `OPENROUTER_API_KEY` | Разбор голоса; без ключа функция выключена |
+| `OFF_USER_AGENT` | User-Agent для Open Food Facts (имя приложения + контакт) |
 | `NODE_ENV` | `production` |
-| `PORT` | Default `3001` |
+| `PORT` | По умолчанию `3001` |
 
-## Deployment
+## Деплой
 
-Production is one Docker host: `docker-compose.prod.yml` builds from `Dockerfile` and starts the app next to Postgres. Postgres is not published; the app binds to `127.0.0.1:3001`.
+Продакшн — один Docker-хост: `docker-compose.prod.yml` собирает образ из `Dockerfile` и поднимает приложение рядом с Postgres. Postgres в интернет не публикуется; приложение слушает `127.0.0.1:3001`.
 
-The production **Dockerfile** builds from the repository context (`COPY client` / `COPY server`), so the image matches the git commit you deploy.
+Продакшн-**Dockerfile** собирает образ из контекста репозитория (`COPY client` / `COPY server`), поэтому образ соответствует тому git-коммиту, который вы деплоите.
 
 ```bash
 cp .env.example .env   # POSTGRES_PASSWORD, JWT_SECRET, APP_ORIGIN
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-On start the container runs `prisma migrate deploy`, then serves the API and the built SPA.
+При старте контейнер выполняет `prisma migrate deploy`, затем отдаёт API и собранную SPA.
 
-## Mobile (Capacitor)
+## Мобильное приложение (Capacitor)
 
-The client is wrapped with [Capacitor](https://capacitorjs.com) (`client/android`, `client/ios`). Barcode scanning is native-only. For a non-same-origin API, set `VITE_API_BASE_URL` when building.
+Клиент обёрнут в [Capacitor](https://capacitorjs.com) (`client/android`, `client/ios`). Сканер штрихкода работает только нативно. Если API не same-origin, при сборке задайте `VITE_API_BASE_URL`.
 
 ```bash
 cd client
@@ -167,4 +169,4 @@ yarn
 yarn build:mobile   # vite build --mode mobile && cap sync
 ```
 
-There is no published APK/store listing yet.
+Готового APK и публикации в магазине пока нет.
